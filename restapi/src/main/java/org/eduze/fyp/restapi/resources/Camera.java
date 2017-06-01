@@ -4,6 +4,9 @@ public class Camera {
 
     private int id;
 
+    public Camera() {
+    }
+
     public Camera(int id) {
         this.id = id;
     }
@@ -14,5 +17,9 @@ public class Camera {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String toString() {
+        return String.valueOf(id);
     }
 }

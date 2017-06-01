@@ -6,6 +6,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.xml.XmlConfiguration;
 import org.eduze.fyp.restapi.controller.realtime.RealTimeController;
+import org.eduze.fyp.restapi.util.RequestLogger;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
@@ -55,6 +56,7 @@ public class RestServer {
         context.addServlet(servlet, CONTEXT_PATH);
         context.setSessionHandler(new SessionHandler());
         jettyServer.setHandler(context);
+        jettyServer.setRequestLog(new RequestLogger());
     }
 
     /**

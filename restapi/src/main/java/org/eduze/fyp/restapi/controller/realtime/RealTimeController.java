@@ -4,10 +4,7 @@ import org.eduze.fyp.restapi.resources.FrameInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -25,7 +22,14 @@ public class RealTimeController {
 
     @POST
     public Response postFrameInfo(FrameInfo frameInfo) {
-        logger.info("Received a frame info");
+        logger.debug("Received a FrameInfo request : {}", frameInfo);
+
+        return Response.status(200).build();
+    }
+
+    @GET
+    public Response getFrameInfo() {
+        logger.debug("Received frame info GET request");
         return Response.status(200).build();
     }
 }

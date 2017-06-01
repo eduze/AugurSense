@@ -1,8 +1,12 @@
-package org.eduze.fyp.restapi.resources;
 /*
  * Copyright to Eduze@UoM 2017
  */
 
+package org.eduze.fyp.restapi.resources;
+
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class FrameInfo {
 
     private Camera camera;
@@ -31,5 +35,9 @@ public class FrameInfo {
 
     public void setCoordinates(float[][] coordinates) {
         this.coordinates = coordinates;
+    }
+
+    public String toString() {
+        return String.format("{ camera : %s, timestamp : %d}", camera, timestamp);
     }
 }
