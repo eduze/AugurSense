@@ -5,6 +5,7 @@ import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.xml.XmlConfiguration;
+import org.eduze.fyp.restapi.controller.config.ConfigController;
 import org.eduze.fyp.restapi.controller.realtime.RealTimeController;
 import org.eduze.fyp.restapi.util.RequestLogger;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -12,7 +13,7 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URL;
+import java.io.File;
 
 /**
  * Main class of the <pre>restapi</pre> package. This class is using <pre>Jetty</pre> server to initialize the
@@ -32,13 +33,13 @@ public class RestServer {
     public RestServer() {
         XmlConfiguration configuration;
         try {
-            URL configFile = this.getClass().getClassLoader().getResource(JETTY_CONFIG);
-            if (configFile == null) {
+            File configFile = new File(JETTY_CONFIG);
+            if (!configFile.exists()) {
                 logger.error("Config file '{}' is null", JETTY_CONFIG);
                 throw new IllegalArgumentException("Jetty configuration could not be found");
             }
 
-            configuration = new XmlConfiguration(configFile);
+            configuration = new XmlConfiguration(configFile.toURI().toURL());
             this.jettyServer = (Server) configuration.configure();
         } catch (Exception e) {
             logger.error("Unable to configure server from configuration file : {}", JETTY_CONFIG);
@@ -47,6 +48,7 @@ public class RestServer {
 
         ResourceConfig config = new ResourceConfig();
         config.register(RealTimeController.class);
+        config.register(ConfigController.class);
         // TODO: 5/30/17 Add controllers
 
         final ServletContainer servletContainer = new ServletContainer(config);

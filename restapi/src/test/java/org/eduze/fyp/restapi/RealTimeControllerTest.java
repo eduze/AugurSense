@@ -22,19 +22,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 
-public class RealTimeControllerTest {
+public class RealTimeControllerTest extends AbstractTestCase {
 
     private static final Logger logger = LoggerFactory.getLogger(RealTimeControllerTest.class);
-
-    private static final String ENDPOINT_URL = "http://localhost:8085";
-    private static final String ENDPOINT_PATH = "realtime";
-
-    private static final RestServer restServer = new RestServer();
-
-    @BeforeClass
-    public static void setUp() {
-        restServer.start();
-    }
 
     @Test
     public void testGetFrameInfo() {
@@ -44,7 +34,7 @@ public class RealTimeControllerTest {
                 .scheme("http")
                 .path("v1")
                 .path("realtime")
-                .host("beta.agyletime.com")
+                .host("localhost")
                 .port(8085);
 
         WebTarget target = client.target(builder);
@@ -64,7 +54,7 @@ public class RealTimeControllerTest {
                 .scheme("http")
                 .path("v1")
                 .path("realtime")
-                .host("beta.agyletime.com")
+                .host("localhost")
                 .port(8085);
 
         WebTarget target = client.target(builder);
@@ -84,12 +74,5 @@ public class RealTimeControllerTest {
                 .post(Entity.json(frameInfo));
 
         Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
-    }
-
-    @AfterClass
-    public static void tearDown() {
-        if (restServer.isRunning()) {
-            restServer.stop();
-        }
     }
 }

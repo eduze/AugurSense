@@ -11,6 +11,7 @@
 
     <modules>
         <module>restapi</module>
+        <module>core</module>
     </modules>
 
     <dependencyManagement>
@@ -82,6 +83,12 @@
                 <version>${junit.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${apache.commons.io.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
@@ -92,6 +99,7 @@
         <log4j2.version>2.8.2</log4j2.version>
         <junit.version>4.12</junit.version>
         <jackson.jaxrs.json.version>2.4.0</jackson.jaxrs.json.version>
+        <apache.commons.io.version>2.5</apache.commons.io.version>
     </properties>
 
 </project>
