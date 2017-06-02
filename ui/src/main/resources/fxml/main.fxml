@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Accordion?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
 <AnchorPane prefHeight="500.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/8.0.112"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.eduze.fyp.ui.controllers.MainController">
 
@@ -13,6 +14,8 @@
 
             </panes>
         </Accordion>
+
+        <Button AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" text="Save Config" fx:id="saveConfigButton"/>
 
     </children>
 </AnchorPane>

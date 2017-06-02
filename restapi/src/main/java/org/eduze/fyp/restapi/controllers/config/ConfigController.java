@@ -4,6 +4,7 @@
 package org.eduze.fyp.restapi.controllers.config;
 
 import org.eduze.fyp.restapi.resources.CameraView;
+import org.eduze.fyp.restapi.resources.MapConfiguration;
 import org.eduze.fyp.restapi.services.config.ConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +26,8 @@ public class ConfigController {
     public Response getMap() {
         // TODO: 6/2/17 Should include coordinates as well for all the cameras
         try {
-            byte[] mapBytes = configService.getMap();
-            return Response.status(200).entity(mapBytes).build();
+            MapConfiguration mapConfiguration = configService.getMap();
+            return Response.status(200).entity(mapConfiguration).build();
         } catch (Exception e) {
             logger.error("Error occurred when obtaining map", e);
             return Response.status(404).build();

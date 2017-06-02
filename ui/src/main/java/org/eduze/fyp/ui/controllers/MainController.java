@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Group;
 import javafx.scene.control.Accordion;
+import javafx.scene.control.Button;
 import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -22,7 +23,9 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * Controller for the main window of the {@link org.eduze.fyp.ui.App}
@@ -40,6 +43,9 @@ public class MainController implements Initializable {
 
     @FXML
     private Accordion accordion;
+
+    @FXML
+    private Button saveConfigButton;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -81,6 +87,16 @@ public class MainController implements Initializable {
 
             TitledPane titledPane = new TitledPane("Camera-" + cameraId, new Group(gridPane));
             accordion.getPanes().addAll(titledPane);
+        });
+
+        saveConfigButton.setOnAction((e) -> {
+            long incompleteMappings = pointMappings.values().stream()
+                    .filter(pointMapping -> pointMapping.getWorldSpacePoints().size() != 4 || pointMapping.getScreenSpacePoints().size() != 4)
+                    .count();
+
+            if (incompleteMappings == 0) {
+                pointMappings.forEach(configManager::addPointMapping);
+            }
         });
     }
 

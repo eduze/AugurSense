@@ -3,8 +3,12 @@
  */
 package org.eduze.fyp.ui;
 
+import org.eduze.fyp.core.config.ConfigManager;
+import org.eduze.fyp.core.util.*;
+import org.eduze.fyp.core.util.Point;
 import org.eduze.fyp.restapi.resources.Camera;
 import org.eduze.fyp.restapi.resources.CameraView;
+import org.eduze.fyp.restapi.resources.MapConfiguration;
 import org.eduze.fyp.restapi.util.ImageUtils;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.Assert;
@@ -69,12 +73,26 @@ public class ConfigControllerTest extends AbstractTestCase {
                 .host("localhost")
                 .port(8085);
 
+        ConfigManager configManager = analyticsEngine.getConfigManager();
+        PointMapping mapping = new PointMapping();
 
-        byte[] imageBytes = client.target(builder)
+        mapping.addWorldSpacePoint(new Point(12.4, 45.5));
+        mapping.addWorldSpacePoint(new Point(125.4, 45.5));
+        mapping.addWorldSpacePoint(new Point(85.4, 145.5));
+        mapping.addWorldSpacePoint(new Point(456.4, 845.5));
+
+        mapping.addScreenSpacePoint(new Point(456.4, 845.5));
+        mapping.addScreenSpacePoint(new Point(452.2, 845.5));
+        mapping.addScreenSpacePoint(new Point(752.0, 845.5));
+        mapping.addScreenSpacePoint(new Point(165.2, 845.5));
+
+        configManager.addPointMapping(1, mapping);
+
+        MapConfiguration mapConfiguration = client.target(builder)
                 .request(MediaType.APPLICATION_JSON)
-                .get(byte[].class);
+                .get(MapConfiguration.class);
 
-        BufferedImage receivedMap = ImageUtils.byteArrayToBufferedImage(imageBytes);
+        BufferedImage receivedMap = ImageUtils.byteArrayToBufferedImage(mapConfiguration.getMapImage());
         BufferedImage mapImage = ImageIO.read(new FileInputStream(MAP_IMAGE_PATH));
 
         Assert.assertEquals(receivedMap.getHeight(), mapImage.getHeight());

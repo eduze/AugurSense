@@ -6,6 +6,7 @@ package org.eduze.fyp.restapi.services.config;
 import org.eduze.fyp.core.AnalyticsEngine;
 import org.eduze.fyp.core.config.ConfigManager;
 import org.eduze.fyp.restapi.resources.CameraView;
+import org.eduze.fyp.restapi.resources.MapConfiguration;
 import org.eduze.fyp.restapi.util.ImageUtils;
 
 import javax.ws.rs.NotFoundException;
@@ -34,9 +35,15 @@ public class ConfigService {
      *
      * @return byte array of the map image
      */
-    public byte[] getMap() throws IOException {
+    public MapConfiguration getMap() throws IOException {
         BufferedImage map = configManager.getMap();
-        return ImageUtils.bufferedImageToByteArray(map);
+        byte[] mapImageBytes = ImageUtils.bufferedImageToByteArray(map);
+
+        MapConfiguration mapConfiguration = new MapConfiguration();
+        mapConfiguration.setMapImage(mapImageBytes);
+        mapConfiguration.setMappings(configManager.getPointMappings());
+
+        return mapConfiguration;
     }
 
     public byte[] getCameraView(int cameraId) throws IOException {
