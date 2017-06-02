@@ -12,6 +12,7 @@
     <modules>
         <module>restapi</module>
         <module>core</module>
+        <module>ui</module>
     </modules>
 
     <dependencyManagement>
@@ -100,6 +101,9 @@
         <junit.version>4.12</junit.version>
         <jackson.jaxrs.json.version>2.4.0</jackson.jaxrs.json.version>
         <apache.commons.io.version>2.5</apache.commons.io.version>
+        <analytics-engine-version>1.0-SNAPSHOT</analytics-engine-version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
 </project>

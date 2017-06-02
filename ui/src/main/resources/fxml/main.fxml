@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Accordion?>
+<?import javafx.scene.layout.*?>
+<AnchorPane prefHeight="500.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/8.0.112"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.eduze.fyp.ui.controllers.MainController">
+
+    <children>
+
+        <Accordion AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0"
+                   AnchorPane.topAnchor="0.0" fx:id="accordion">
+            <panes>
+
+            </panes>
+        </Accordion>
+
+    </children>
+</AnchorPane>

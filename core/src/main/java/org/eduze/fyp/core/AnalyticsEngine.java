@@ -3,7 +3,7 @@
  */
 package org.eduze.fyp.core;
 
-import org.eduze.fyp.restapi.RestServer;
+import org.eduze.fyp.core.config.ConfigManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,36 +16,40 @@ public class AnalyticsEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(AnalyticsEngine.class);
 
-    private RestServer restServer;
+    private static AnalyticsEngine instance;
+
     private ConfigManager configManager;
 
-    public AnalyticsEngine() {
-        restServer = new RestServer();
+    private AnalyticsEngine() {
         configManager = new ConfigManager();
     }
 
     public void start() {
         logger.debug("Starting Analytics Engine");
-        restServer.start();
+        Runtime.getRuntime().addShutdownHook(new Thread(AnalyticsEngine.this::stop));
+
         logger.info("Analytics Engine started ...");
     }
 
     public void stop() {
         logger.debug("Stopping Analytics Engine");
-        if (restServer.isRunning()) {
-            logger.debug("Stopping Rest Server");
-            restServer.stop();
-            logger.info("Rest Server stopped ...");
-        }
 
         logger.info("Analytics Engine Stopped ...");
     }
 
-    public RestServer getRestServer() {
-        return restServer;
-    }
-
     public ConfigManager getConfigManager() {
         return configManager;
+    }
+
+    /**
+     * Getter for the {@link AnalyticsEngine} instance
+     *
+     * @return instance
+     */
+    public static AnalyticsEngine getInstance() {
+        if (instance == null) {
+            instance = new AnalyticsEngine();
+        }
+        return instance;
     }
 }

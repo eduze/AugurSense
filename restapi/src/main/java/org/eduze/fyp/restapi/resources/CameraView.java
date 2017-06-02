@@ -3,19 +3,14 @@
  */
 package org.eduze.fyp.restapi.resources;
 
-import javax.imageio.ImageIO;
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 @XmlRootElement
 public class CameraView {
 
     private Camera camera;
-    private byte[] view;
-    private BufferedImage image;
+    private byte[] viewBytes;
 
     public Camera getCamera() {
         return camera;
@@ -25,13 +20,15 @@ public class CameraView {
         this.camera = camera;
     }
 
-    public byte[] getView() {
-        return view;
+    public byte[] getViewBytes() {
+        return viewBytes;
     }
 
-    public void setView(byte[] bytes) throws IOException {
-//        byte[] bytes = DatatypeConverter.parseBase64Binary(base64Image);
-        this.image = ImageIO.read(new ByteArrayInputStream(bytes));
-        this.view = bytes;
+    public void setViewBytes(byte[] bytes) throws IOException {
+        this.viewBytes = bytes;
+    }
+
+    public String toString() {
+        return String.format("{ camera : %s, bytesLength : %d }", camera, viewBytes.length);
     }
 }

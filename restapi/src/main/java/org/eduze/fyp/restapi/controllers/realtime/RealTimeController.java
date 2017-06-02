@@ -1,4 +1,4 @@
-package org.eduze.fyp.restapi.controller.realtime;
+package org.eduze.fyp.restapi.controllers.realtime;
 
 import org.eduze.fyp.restapi.resources.FrameInfo;
 import org.slf4j.Logger;
