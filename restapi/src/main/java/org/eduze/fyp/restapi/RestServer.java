@@ -5,8 +5,8 @@ import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.xml.XmlConfiguration;
-import org.eduze.fyp.restapi.controller.config.ConfigController;
-import org.eduze.fyp.restapi.controller.realtime.RealTimeController;
+import org.eduze.fyp.restapi.controllers.config.ConfigController;
+import org.eduze.fyp.restapi.controllers.realtime.RealTimeController;
 import org.eduze.fyp.restapi.util.RequestLogger;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -28,9 +28,10 @@ public class RestServer {
     private static final String JETTY_CONFIG = "jetty.xml";
     private static final String CONTEXT_PATH = "/api/v1/*";
 
+    private static RestServer instance;
     private Server jettyServer;
 
-    public RestServer() {
+    private RestServer() {
         XmlConfiguration configuration;
         try {
             File configFile = new File(JETTY_CONFIG);
@@ -67,11 +68,7 @@ public class RestServer {
     public void start() {
         try {
             jettyServer.start();
-            Runtime.getRuntime().addShutdownHook(new Thread() {
-                public void run() {
-                    RestServer.this.stop();
-                }
-            });
+            Runtime.getRuntime().addShutdownHook(new Thread(RestServer.this::stop));
         } catch (Exception e) {
             logger.error("Error occurred when starting REST server due to : {}", e.getMessage());
             throw new IllegalStateException("Unable to start REST server", e);
@@ -100,18 +97,15 @@ public class RestServer {
         return jettyServer.isRunning();
     }
 
-    public static void main(String[] args) {
-        RestServer server = new RestServer();
-
-        logger.debug("Starting Reset server");
-        server.start();
-        logger.debug("Rest server started successfully ...");
-
-        while (server.isRunning()) {
-            try {
-                Thread.currentThread().join();
-            } catch (InterruptedException ignored) {
-            }
+    /**
+     * Get the REST Server instance.
+     *
+     * @return instance
+     */
+    public static RestServer getInstance() {
+        if (instance == null) {
+            instance = new RestServer();
         }
+        return instance;
     }
 }
