@@ -3,7 +3,7 @@
  */
 package org.eduze.fyp.restapi.resources;
 
-import org.eduze.fyp.core.util.PointMapping;
+import org.eduze.fyp.core.api.PointMapping;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Map;
@@ -13,6 +13,8 @@ public class MapConfiguration {
 
     private byte[] mapImage;
     private Map<Integer, PointMapping> mappings;
+    private int mapWidth;
+    private int mapHeight;
 
     public byte[] getMapImage() {
         return mapImage;
@@ -28,5 +30,21 @@ public class MapConfiguration {
 
     public void setMappings(Map<Integer, PointMapping> mappings) {
         this.mappings = mappings;
+    }
+
+    public int getMapWidth() {
+        return mapWidth;
+    }
+
+    public void setMapWidth(int mapWidth) {
+        this.mapWidth = mapWidth;
+    }
+
+    public int getMapHeight() {
+        return mapHeight;
+    }
+
+    public void setMapHeight(int mapHeight) {
+        this.mapHeight = mapHeight;
     }
 }

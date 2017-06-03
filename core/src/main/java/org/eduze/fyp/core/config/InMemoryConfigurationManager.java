@@ -3,8 +3,8 @@
  */
 package org.eduze.fyp.core.config;
 
-import org.eduze.fyp.core.AnalyticsEngine;
-import org.eduze.fyp.core.util.PointMapping;
+import org.eduze.fyp.core.api.ConfigurationManager;
+import org.eduze.fyp.core.api.PointMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,13 +21,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.eduze.fyp.core.Constants.Properties.FLOOR_MAP_IMAGE;
 
 /**
- * Class responsible for managing all the configurations of the {@link AnalyticsEngine}
+ * {@link ConfigurationManager} implementation which is doing all operations using in-memory data storage.
  *
  * @author Imesha Sudasingha
  */
-public class ConfigManager {
+public class InMemoryConfigurationManager implements ConfigurationManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(ConfigManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(InMemoryConfigurationManager.class);
 
     private static final String PROPERTIES_FILE = "analytics.properties";
 
@@ -36,7 +36,7 @@ public class ConfigManager {
     private Map<Integer, BufferedImage> cameraViews = new ConcurrentHashMap<>();
     private Map<Integer, PointMapping> pointMappings = new HashMap<>();
 
-    public ConfigManager() {
+    public InMemoryConfigurationManager() {
         try {
             loadProperties();
         } catch (IOException e) {
@@ -64,12 +64,6 @@ public class ConfigManager {
         cameraViews.put(cameraId, view);
     }
 
-    /**
-     * Adds the 2D to 3D point mappings corresponding to a given camera
-     *
-     * @param cameraId camera ID
-     * @param mappings list of mappings of 4 points from 2D space to 3D space
-     */
     public void addPointMapping(int cameraId, PointMapping mappings) {
         pointMappings.put(cameraId, mappings);
     }

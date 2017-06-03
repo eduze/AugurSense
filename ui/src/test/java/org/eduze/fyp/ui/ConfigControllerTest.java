@@ -3,9 +3,9 @@
  */
 package org.eduze.fyp.ui;
 
-import org.eduze.fyp.core.config.ConfigManager;
-import org.eduze.fyp.core.util.*;
-import org.eduze.fyp.core.util.Point;
+import org.eduze.fyp.core.api.ConfigurationManager;
+import org.eduze.fyp.core.api.Point;
+import org.eduze.fyp.core.api.PointMapping;
 import org.eduze.fyp.restapi.resources.Camera;
 import org.eduze.fyp.restapi.resources.CameraView;
 import org.eduze.fyp.restapi.resources.MapConfiguration;
@@ -56,7 +56,7 @@ public class ConfigControllerTest extends AbstractTestCase {
 
         Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
 
-        BufferedImage cameraViewImage = analyticsEngine.getConfigManager().getCameraView(CAMERA_ID);
+        BufferedImage cameraViewImage = ANALYTICS_ENGINE.getConfigurationManager().getCameraView(CAMERA_ID);
 
         Assert.assertEquals(cameraViewImage.getHeight(), mapImage.getHeight());
         Assert.assertEquals(cameraViewImage.getWidth(), mapImage.getWidth());
@@ -73,7 +73,7 @@ public class ConfigControllerTest extends AbstractTestCase {
                 .host("localhost")
                 .port(8085);
 
-        ConfigManager configManager = analyticsEngine.getConfigManager();
+        ConfigurationManager inMemoryConfigurationManager = ANALYTICS_ENGINE.getConfigurationManager();
         PointMapping mapping = new PointMapping();
 
         mapping.addWorldSpacePoint(new Point(12.4, 45.5));
@@ -86,7 +86,7 @@ public class ConfigControllerTest extends AbstractTestCase {
         mapping.addScreenSpacePoint(new Point(752.0, 845.5));
         mapping.addScreenSpacePoint(new Point(165.2, 845.5));
 
-        configManager.addPointMapping(1, mapping);
+        inMemoryConfigurationManager.addPointMapping(1, mapping);
 
         MapConfiguration mapConfiguration = client.target(builder)
                 .request(MediaType.APPLICATION_JSON)

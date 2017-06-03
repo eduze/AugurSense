@@ -4,14 +4,17 @@
 
 package org.eduze.fyp.restapi.resources;
 
+import org.eduze.fyp.core.api.Point;
+
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @XmlRootElement
 public class FrameInfo {
 
     private Camera camera;
     private long timestamp;
-    private float[][] coordinates;
+    private List<Point> coordinates;
 
     public Camera getCamera() {
         return camera;
@@ -29,11 +32,11 @@ public class FrameInfo {
         this.timestamp = timestamp;
     }
 
-    public float[][] getCoordinates() {
+    public List<Point> getCoordinates() {
         return coordinates;
     }
 
-    public void setCoordinates(float[][] coordinates) {
+    public void setCoordinates(List<Point> coordinates) {
         this.coordinates = coordinates;
     }
 

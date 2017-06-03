@@ -4,6 +4,7 @@
 
 package org.eduze.fyp.ui;
 
+import org.eduze.fyp.core.api.Point;
 import org.eduze.fyp.restapi.resources.Camera;
 import org.eduze.fyp.restapi.resources.FrameInfo;
 import org.glassfish.jersey.client.JerseyClientBuilder;
@@ -16,6 +17,8 @@ import javax.ws.rs.client.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RealTimeControllerTest extends AbstractTestCase {
 
@@ -54,9 +57,11 @@ public class RealTimeControllerTest extends AbstractTestCase {
 
         WebTarget target = client.target(builder);
 
-        float coordinates[][] = new float[5][2];
-        coordinates[1][0] = 12.55f;
-        coordinates[1][1] = 12.55f;
+        List<Point> coordinates = new ArrayList<>();
+        coordinates.add(new Point(15.3, 863.5));
+        coordinates.add(new Point(15.3, 863.5));
+        coordinates.add(new Point(15.3, 863.5));
+        coordinates.add(new Point(15.3, 863.5));
 
         Camera camera = new Camera(1);
         FrameInfo frameInfo = new FrameInfo();

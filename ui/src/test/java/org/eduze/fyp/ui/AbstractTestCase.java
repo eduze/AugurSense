@@ -3,7 +3,8 @@
  */
 package org.eduze.fyp.ui;
 
-import org.eduze.fyp.core.AnalyticsEngine;
+import org.eduze.fyp.core.AnalyticsEngineFactory;
+import org.eduze.fyp.core.api.AnalyticsEngine;
 import org.eduze.fyp.restapi.RestServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -12,8 +13,8 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractTestCase {
 
-    protected static final AnalyticsEngine analyticsEngine = AnalyticsEngine.getInstance();
-    protected static final RestServer restServer = RestServer.getInstance();
+    protected static final AnalyticsEngine ANALYTICS_ENGINE = AnalyticsEngineFactory.getAnalyticsEngine();
+    protected static final RestServer REST_SERVER = RestServer.getInstance();
 
     protected final Logger logger;
 
@@ -23,13 +24,13 @@ public abstract class AbstractTestCase {
 
     @BeforeClass
     public static void setUp() {
-        analyticsEngine.start();
-        restServer.start();
+        ANALYTICS_ENGINE.start();
+        REST_SERVER.start();
     }
 
     @AfterClass
     public static void tearDown() {
-        restServer.stop();
-        analyticsEngine.stop();
+        REST_SERVER.stop();
+        ANALYTICS_ENGINE.stop();
     }
 }

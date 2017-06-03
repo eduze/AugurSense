@@ -3,8 +3,8 @@
  */
 package org.eduze.fyp.restapi.services.config;
 
-import org.eduze.fyp.core.AnalyticsEngine;
-import org.eduze.fyp.core.config.ConfigManager;
+import org.eduze.fyp.core.AnalyticsEngineFactory;
+import org.eduze.fyp.core.api.ConfigurationManager;
 import org.eduze.fyp.restapi.resources.CameraView;
 import org.eduze.fyp.restapi.resources.MapConfiguration;
 import org.eduze.fyp.restapi.util.ImageUtils;
@@ -15,8 +15,8 @@ import java.io.IOException;
 
 public class ConfigService {
 
-    private static final AnalyticsEngine analyticsEngine = AnalyticsEngine.getInstance();
-    private static final ConfigManager configManager = AnalyticsEngine.getInstance().getConfigManager();
+    private static final ConfigurationManager IN_MEMORY_CONFIGURATION_MANAGER =
+            AnalyticsEngineFactory.getAnalyticsEngine().getConfigurationManager();
 
     /**
      * Adds a camera view to the configuration. The camera view submitted here will be used lataer for point
@@ -27,27 +27,29 @@ public class ConfigService {
      */
     public void configureCameraView(CameraView cameraView) throws IOException {
         BufferedImage view = ImageUtils.byteArrayToBufferedImage(cameraView.getViewBytes());
-        configManager.setCameraView(cameraView.getCamera().getId(), view);
+        IN_MEMORY_CONFIGURATION_MANAGER.setCameraView(cameraView.getCamera().getId(), view);
     }
 
     /**
-     * Get the floor plan or map of the enclosed are which the {@link AnalyticsEngine} is going to cover
+     * Get the floor plan or map of the enclosed are which the {@link org.eduze.fyp.core.api.AnalyticsEngine} is going to cover
      *
      * @return byte array of the map image
      */
     public MapConfiguration getMap() throws IOException {
-        BufferedImage map = configManager.getMap();
+        BufferedImage map = IN_MEMORY_CONFIGURATION_MANAGER.getMap();
         byte[] mapImageBytes = ImageUtils.bufferedImageToByteArray(map);
 
         MapConfiguration mapConfiguration = new MapConfiguration();
         mapConfiguration.setMapImage(mapImageBytes);
-        mapConfiguration.setMappings(configManager.getPointMappings());
+        mapConfiguration.setMappings(IN_MEMORY_CONFIGURATION_MANAGER.getPointMappings());
+        mapConfiguration.setMapHeight(map.getHeight());
+        mapConfiguration.setMapWidth(map.getWidth());
 
         return mapConfiguration;
     }
 
     public byte[] getCameraView(int cameraId) throws IOException {
-        BufferedImage cameraView = configManager.getCameraView(cameraId);
+        BufferedImage cameraView = IN_MEMORY_CONFIGURATION_MANAGER.getCameraView(cameraId);
         if (cameraView == null) {
             throw new NotFoundException("Camera view not found");
         }

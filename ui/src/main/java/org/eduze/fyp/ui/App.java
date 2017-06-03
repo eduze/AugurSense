@@ -8,7 +8,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.eduze.fyp.core.AnalyticsEngine;
+import org.eduze.fyp.core.AnalyticsEngineFactory;
+import org.eduze.fyp.core.api.AnalyticsEngine;
 import org.eduze.fyp.restapi.RestServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,7 @@ public class App extends Application {
 
     private static final String MAIN_FXML = "/fxml/main.fxml";
 
-    private final AnalyticsEngine analyticsEngine = AnalyticsEngine.getInstance();
+    private final AnalyticsEngine analyticsEngine = AnalyticsEngineFactory.getAnalyticsEngine();
     private final RestServer restServer = RestServer.getInstance();
 
     public static void main(String[] args) {

@@ -13,10 +13,10 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import org.eduze.fyp.core.AnalyticsEngine;
-import org.eduze.fyp.core.config.ConfigManager;
-import org.eduze.fyp.core.util.Point;
-import org.eduze.fyp.core.util.PointMapping;
+import org.eduze.fyp.core.AnalyticsEngineFactory;
+import org.eduze.fyp.core.api.ConfigurationManager;
+import org.eduze.fyp.core.api.Point;
+import org.eduze.fyp.core.api.PointMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,8 @@ public class MainController implements Initializable {
 
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
-    private final ConfigManager configManager = AnalyticsEngine.getInstance().getConfigManager();
+    private final ConfigurationManager inMemoryConfigurationManager =
+            AnalyticsEngineFactory.getAnalyticsEngine().getConfigurationManager();
 
     private Map<Integer, PointMapping> pointMappings = new HashMap<>();
     private Map<Integer, BufferedImage> mapsOnUI = new HashMap<>();
@@ -49,10 +50,10 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Map<Integer, BufferedImage> cameraViews = configManager.getCameraViews();
+        Map<Integer, BufferedImage> cameraViews = inMemoryConfigurationManager.getCameraViews();
 
         cameraViews.forEach((cameraId, viewImage) -> {
-            mapsOnUI.put(cameraId, configManager.getMap());
+            mapsOnUI.put(cameraId, inMemoryConfigurationManager.getMap());
             Image mapImage = SwingFXUtils.toFXImage(mapsOnUI.get(cameraId), null);
 
             Image cameraView = SwingFXUtils.toFXImage(viewImage, null);
@@ -95,7 +96,7 @@ public class MainController implements Initializable {
                     .count();
 
             if (incompleteMappings == 0) {
-                pointMappings.forEach(configManager::addPointMapping);
+                pointMappings.forEach(inMemoryConfigurationManager::addPointMapping);
             }
         });
     }

@@ -3,8 +3,8 @@
  */
 package org.eduze.fyp.ui;
 
-import org.eduze.fyp.core.AnalyticsEngine;
-import org.eduze.fyp.core.config.ConfigManager;
+import org.eduze.fyp.core.AnalyticsEngineFactory;
+import org.eduze.fyp.core.api.ConfigurationManager;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -17,12 +17,12 @@ public class AppTest {
     private static final String[] views = new String[]{"views/view1.png", "views/view2.jpg"};
 
     public static void main(String[] args) throws IOException {
-        ConfigManager configManager = AnalyticsEngine.getInstance().getConfigManager();
+        ConfigurationManager inMemoryConfigurationManager = AnalyticsEngineFactory.getAnalyticsEngine().getConfigurationManager();
 
         for (int i = 0; i < views.length; i++) {
             try (InputStream inputStream = new FileInputStream(views[i])) {
                 BufferedImage cameraView = ImageIO.read(inputStream);
-                configManager.setCameraView(i, cameraView);
+                inMemoryConfigurationManager.setCameraView(i, cameraView);
             }
         }
 

@@ -1,7 +1,7 @@
 /*
  * Copyright to Eduze@UoM 2017
  */
-package org.eduze.fyp.core.util;
+package org.eduze.fyp.core.api;
 
 public class Point {
 
