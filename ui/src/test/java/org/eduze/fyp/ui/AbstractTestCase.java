@@ -3,7 +3,7 @@
  */
 package org.eduze.fyp.ui;
 
-import org.eduze.fyp.core.AnalyticsEngineFactory;
+import org.eduze.fyp.core.api.AnalyticsEngineFactory;
 import org.eduze.fyp.core.api.AnalyticsEngine;
 import org.eduze.fyp.restapi.RestServer;
 import org.junit.AfterClass;

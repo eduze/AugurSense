@@ -1,9 +1,9 @@
 /*
  * Copyright to Eduze@UoM 2017
  */
-package org.eduze.fyp.core;
+package org.eduze.fyp.core.api;
 
-import org.eduze.fyp.core.api.AnalyticsEngine;
+import org.eduze.fyp.core.AnalyticsEngineImpl;
 
 public abstract class AnalyticsEngineFactory {
 

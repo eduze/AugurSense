@@ -1,8 +1,26 @@
 /*
- * Copyright to Eduze@UoM 2017
+ * Copyright 2017 Eduze
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this
+ * software and associated documentation files (the "Software"), to deal in the Software
+ * without restriction, including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to
+ * whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
-package org.eduze.fyp.core.config;
+package org.eduze.fyp.core;
 
+import org.eduze.fyp.core.api.listeners.ConfigurationListener;
 import org.eduze.fyp.core.api.ConfigurationManager;
 import org.eduze.fyp.core.api.PointMapping;
 import org.slf4j.Logger;
@@ -35,6 +53,7 @@ public class InMemoryConfigurationManager implements ConfigurationManager {
     private BufferedImage map;
     private Map<Integer, BufferedImage> cameraViews = new ConcurrentHashMap<>();
     private Map<Integer, PointMapping> pointMappings = new HashMap<>();
+    private Set<ConfigurationListener> configurationListeners = new HashSet<>();
 
     public InMemoryConfigurationManager() {
         try {
@@ -60,12 +79,14 @@ public class InMemoryConfigurationManager implements ConfigurationManager {
         properties.load(in);
     }
 
-    public void setCameraView(int cameraId, BufferedImage view) {
+    public synchronized void setCameraView(int cameraId, BufferedImage view) {
         cameraViews.put(cameraId, view);
+        notifyConfigurationChange();
     }
 
-    public void addPointMapping(int cameraId, PointMapping mappings) {
+    public synchronized void addPointMapping(int cameraId, PointMapping mappings) {
         pointMappings.put(cameraId, mappings);
+        notifyConfigurationChange();
     }
 
     public synchronized int getNextCameraId() {
@@ -92,5 +113,25 @@ public class InMemoryConfigurationManager implements ConfigurationManager {
 
     public Map<Integer, PointMapping> getPointMappings() {
         return pointMappings;
+    }
+
+    @Override
+    public int getNumberOfCameras() {
+        return cameraViews.entrySet().size();
+    }
+
+    @Override
+    public synchronized void addConfigurationListener(ConfigurationListener listener) {
+        configurationListeners.add(listener);
+    }
+
+    @Override
+    public synchronized void removeConfigurationListener(ConfigurationListener listener) {
+        configurationListeners.remove(listener);
+    }
+
+    private void notifyConfigurationChange() {
+        logger.debug("Notifying configuration change");
+        configurationListeners.forEach(listener -> listener.configurationChanged(this));
     }
 }

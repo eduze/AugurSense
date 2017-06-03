@@ -3,5 +3,16 @@
  */
 package org.eduze.fyp.core.api;
 
-public interface DataCollector {
+import org.eduze.fyp.core.api.listeners.ConfigurationListener;
+import org.eduze.fyp.core.api.listeners.DataListener;
+
+import java.util.List;
+
+public interface DataCollector extends ConfigurationListener {
+
+    void addDataListener(DataListener listener);
+
+    void removeDataListener(DataListener listener);
+
+    void addPoints(long timestamp, List<Point> coordinates);
 }

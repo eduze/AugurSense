@@ -10,12 +10,6 @@ package org.eduze.fyp.core.api;
  */
 public abstract class AnalyticsEngine {
 
-    private static AnalyticsEngine instance;
-
-    public AnalyticsEngine() {
-
-    }
-
     public void start() {
         doStart();
     }
@@ -29,4 +23,8 @@ public abstract class AnalyticsEngine {
     protected abstract void doStop();
 
     public abstract ConfigurationManager getConfigurationManager();
+
+    public abstract DataCollector getDataCollector();
+
+    public abstract DataProcessor getDataProcessor();
 }

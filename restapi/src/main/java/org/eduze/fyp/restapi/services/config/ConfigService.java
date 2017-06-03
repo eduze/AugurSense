@@ -3,7 +3,7 @@
  */
 package org.eduze.fyp.restapi.services.config;
 
-import org.eduze.fyp.core.AnalyticsEngineFactory;
+import org.eduze.fyp.core.api.AnalyticsEngineFactory;
 import org.eduze.fyp.core.api.ConfigurationManager;
 import org.eduze.fyp.restapi.resources.CameraView;
 import org.eduze.fyp.restapi.resources.MapConfiguration;
@@ -15,7 +15,7 @@ import java.io.IOException;
 
 public class ConfigService {
 
-    private static final ConfigurationManager IN_MEMORY_CONFIGURATION_MANAGER =
+    private final ConfigurationManager configurationManager =
             AnalyticsEngineFactory.getAnalyticsEngine().getConfigurationManager();
 
     /**
@@ -27,7 +27,7 @@ public class ConfigService {
      */
     public void configureCameraView(CameraView cameraView) throws IOException {
         BufferedImage view = ImageUtils.byteArrayToBufferedImage(cameraView.getViewBytes());
-        IN_MEMORY_CONFIGURATION_MANAGER.setCameraView(cameraView.getCamera().getId(), view);
+        configurationManager.setCameraView(cameraView.getCamera().getId(), view);
     }
 
     /**
@@ -36,12 +36,12 @@ public class ConfigService {
      * @return byte array of the map image
      */
     public MapConfiguration getMap() throws IOException {
-        BufferedImage map = IN_MEMORY_CONFIGURATION_MANAGER.getMap();
+        BufferedImage map = configurationManager.getMap();
         byte[] mapImageBytes = ImageUtils.bufferedImageToByteArray(map);
 
         MapConfiguration mapConfiguration = new MapConfiguration();
         mapConfiguration.setMapImage(mapImageBytes);
-        mapConfiguration.setMappings(IN_MEMORY_CONFIGURATION_MANAGER.getPointMappings());
+        mapConfiguration.setMappings(configurationManager.getPointMappings());
         mapConfiguration.setMapHeight(map.getHeight());
         mapConfiguration.setMapWidth(map.getWidth());
 
@@ -49,7 +49,7 @@ public class ConfigService {
     }
 
     public byte[] getCameraView(int cameraId) throws IOException {
-        BufferedImage cameraView = IN_MEMORY_CONFIGURATION_MANAGER.getCameraView(cameraId);
+        BufferedImage cameraView = configurationManager.getCameraView(cameraId);
         if (cameraView == null) {
             throw new NotFoundException("Camera view not found");
         }

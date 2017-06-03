@@ -8,7 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.eduze.fyp.core.AnalyticsEngineFactory;
+import org.eduze.fyp.core.api.AnalyticsEngineFactory;
 import org.eduze.fyp.core.api.AnalyticsEngine;
 import org.eduze.fyp.restapi.RestServer;
 import org.slf4j.Logger;

@@ -5,7 +5,8 @@ package org.eduze.fyp.core;
 
 import org.eduze.fyp.core.api.AnalyticsEngine;
 import org.eduze.fyp.core.api.ConfigurationManager;
-import org.eduze.fyp.core.config.InMemoryConfigurationManager;
+import org.eduze.fyp.core.api.DataCollector;
+import org.eduze.fyp.core.api.DataProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,11 +22,19 @@ public class AnalyticsEngineImpl extends AnalyticsEngine {
     private static AnalyticsEngineImpl instance;
 
     private ConfigurationManager configurationManager;
+    private DataCollector dataCollector;
+    private DataProcessor dataProcessor;
 
     private AnalyticsEngineImpl() {
         configurationManager = new InMemoryConfigurationManager();
+        dataCollector = new InMemoryDataCollector(configurationManager.getNumberOfCameras());
+        dataProcessor = new InMemoryDataProcessor();
+
+        configurationManager.addConfigurationListener(dataCollector);
+        dataCollector.addDataListener(dataProcessor);
     }
 
+    @Override
     public void doStart() {
         logger.debug("Starting Analytics Engine");
         Runtime.getRuntime().addShutdownHook(new Thread(AnalyticsEngineImpl.this::stop));
@@ -33,14 +42,26 @@ public class AnalyticsEngineImpl extends AnalyticsEngine {
         logger.info("Analytics Engine started ...");
     }
 
+    @Override
     public void doStop() {
         logger.debug("Stopping Analytics Engine");
 
         logger.info("Analytics Engine Stopped ...");
     }
 
+    @Override
     public ConfigurationManager getConfigurationManager() {
         return configurationManager;
+    }
+
+    @Override
+    public DataCollector getDataCollector() {
+        return dataCollector;
+    }
+
+    @Override
+    public DataProcessor getDataProcessor() {
+        return dataProcessor;
     }
 
     /**
@@ -48,7 +69,7 @@ public class AnalyticsEngineImpl extends AnalyticsEngine {
      *
      * @return instance
      */
-    static AnalyticsEngine getInstance() {
+    public static AnalyticsEngine getInstance() {
         if (instance == null) {
             instance = new AnalyticsEngineImpl();
         }

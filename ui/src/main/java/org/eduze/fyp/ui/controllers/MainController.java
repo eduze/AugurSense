@@ -3,6 +3,7 @@
  */
 package org.eduze.fyp.ui.controllers;
 
+import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -13,34 +14,38 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import org.eduze.fyp.core.AnalyticsEngineFactory;
-import org.eduze.fyp.core.api.ConfigurationManager;
+import org.eduze.fyp.core.api.*;
 import org.eduze.fyp.core.api.Point;
-import org.eduze.fyp.core.api.PointMapping;
+import org.eduze.fyp.core.api.listeners.ProcessedDataListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.List;
 
 /**
  * Controller for the main window of the {@link org.eduze.fyp.ui.App}
  *
  * @author Imesha Sudasingha
  */
-public class MainController implements Initializable {
+public class MainController implements Initializable, ProcessedDataListener {
 
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
-    private final ConfigurationManager inMemoryConfigurationManager =
+    private final DataProcessor dataProcessor =
+            AnalyticsEngineFactory.getAnalyticsEngine().getDataProcessor();
+
+    private final ConfigurationManager configurationManager =
             AnalyticsEngineFactory.getAnalyticsEngine().getConfigurationManager();
 
     private Map<Integer, PointMapping> pointMappings = new HashMap<>();
     private Map<Integer, BufferedImage> mapsOnUI = new HashMap<>();
+
+    private BufferedImage realtimeMap;
+    private ImageView realtimeMapImageView;
 
     @FXML
     private Accordion accordion;
@@ -50,10 +55,12 @@ public class MainController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Map<Integer, BufferedImage> cameraViews = inMemoryConfigurationManager.getCameraViews();
+        realtimeMap = configurationManager.getMap();
+
+        Map<Integer, BufferedImage> cameraViews = configurationManager.getCameraViews();
 
         cameraViews.forEach((cameraId, viewImage) -> {
-            mapsOnUI.put(cameraId, inMemoryConfigurationManager.getMap());
+            mapsOnUI.put(cameraId, configurationManager.getMap());
             Image mapImage = SwingFXUtils.toFXImage(mapsOnUI.get(cameraId), null);
 
             Image cameraView = SwingFXUtils.toFXImage(viewImage, null);
@@ -90,23 +97,51 @@ public class MainController implements Initializable {
             accordion.getPanes().addAll(titledPane);
         });
 
+
+        Image realTimeMap = SwingFXUtils.toFXImage(realtimeMap, null);
+        realtimeMapImageView = new ImageView(realTimeMap);
+
+        GridPane gridPane = new GridPane();
+        gridPane.add(realtimeMapImageView, 0, 0);
+
+        TitledPane titledPane = new TitledPane("RealTime Map", new Group(gridPane));
+        accordion.getPanes().addAll(titledPane);
+
         saveConfigButton.setOnAction((e) -> {
             long incompleteMappings = pointMappings.values().stream()
                     .filter(pointMapping -> pointMapping.getWorldSpacePoints().size() != 4 || pointMapping.getScreenSpacePoints().size() != 4)
                     .count();
 
-            if (incompleteMappings == 0) {
-                pointMappings.forEach(inMemoryConfigurationManager::addPointMapping);
+            if (incompleteMappings == 0 && pointMappings.entrySet().size() == configurationManager.getNumberOfCameras()) {
+                logger.debug("Adding 2D-3D mapping to configuration : {}", pointMappings);
+                pointMappings.forEach(configurationManager::addPointMapping);
+            } else {
+                logger.debug("Found {} incomplete mappings of {}. Not adding to configuration",
+                        incompleteMappings, configurationManager.getNumberOfCameras());
             }
         });
+
+        dataProcessor.addProcessedDataListener(this);
     }
 
     private void drawPoint(ImageView imageView, BufferedImage image, double x, double y) {
+        drawPoint(imageView, image, y, y, 10, 10, Color.red);
+    }
+
+    private void drawPoint(ImageView imageView, BufferedImage image, double x, double y, int pointWIdth, int pointHeight, Color color) {
         Graphics graphics = image.getGraphics();
-        graphics.setColor(Color.red);
-        graphics.fillOval((int) x, (int) y, 20, 20);
+        graphics.setColor(color);
+        graphics.fillOval((int) x, (int) y, pointWIdth, pointHeight);
 
         Image updatedImage = SwingFXUtils.toFXImage(image, null);
-        imageView.setImage(updatedImage);
+        Platform.runLater(() -> imageView.setImage(updatedImage));
+    }
+
+    @Override
+    public void dataProcessed(List<Point> points) {
+        if (realtimeMap == null) return;
+
+        logger.debug("Received {} points for real-time map", points.size());
+        points.forEach(point -> drawPoint(realtimeMapImageView, realtimeMap, point.getX(), point.getY(), 5, 5, Color.red));
     }
 }

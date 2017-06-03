@@ -59,7 +59,7 @@ public class RestServer {
         context.addServlet(servlet, CONTEXT_PATH);
         context.setSessionHandler(new SessionHandler());
         jettyServer.setHandler(context);
-        jettyServer.setRequestLog(new RequestLogger());
+//        jettyServer.setRequestLog(new RequestLogger());
     }
 
     /**

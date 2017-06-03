@@ -38,4 +38,15 @@ public class PointMapping {
     public List<Point> getWorldSpacePoints() {
         return worldSpacePoints;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Screen : ");
+        screenSpacePoints.forEach(point -> sb.append(point.toString()));
+        sb.append(" ");
+        sb.append("World : ");
+        worldSpacePoints.forEach(point -> sb.append(point.toString()));
+        return sb.toString();
+    }
 }

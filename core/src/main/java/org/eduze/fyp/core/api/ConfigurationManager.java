@@ -3,6 +3,8 @@
  */
 package org.eduze.fyp.core.api;
 
+import org.eduze.fyp.core.api.listeners.ConfigurationListener;
+
 import java.awt.image.BufferedImage;
 import java.util.Map;
 
@@ -32,4 +34,10 @@ public interface ConfigurationManager {
     BufferedImage getMap();
 
     Map<Integer, PointMapping> getPointMappings();
+
+    int getNumberOfCameras();
+
+    void addConfigurationListener(ConfigurationListener listener);
+
+    void removeConfigurationListener(ConfigurationListener listener);
 }
