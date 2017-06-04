@@ -5,6 +5,7 @@ package org.eduze.fyp.restapi.services.config;
 
 import org.eduze.fyp.core.api.AnalyticsEngineFactory;
 import org.eduze.fyp.core.api.ConfigurationManager;
+import org.eduze.fyp.restapi.resources.Camera;
 import org.eduze.fyp.restapi.resources.CameraView;
 import org.eduze.fyp.restapi.resources.MapConfiguration;
 import org.eduze.fyp.restapi.util.ImageUtils;
@@ -17,6 +18,16 @@ public class ConfigService {
 
     private final ConfigurationManager configurationManager =
             AnalyticsEngineFactory.getAnalyticsEngine().getConfigurationManager();
+
+    /**
+     * Obtain an ID for camera. This must be called and an ID should be obtained in order to call any other method
+     *
+     * @return camera ID
+     */
+    public Camera getCameraId() {
+        int cameraId = configurationManager.getNextCameraId();
+        return new Camera(cameraId);
+    }
 
     /**
      * Adds a camera view to the configuration. The camera view submitted here will be used lataer for point

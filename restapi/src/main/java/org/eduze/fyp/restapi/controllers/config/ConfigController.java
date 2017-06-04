@@ -3,6 +3,7 @@
  */
 package org.eduze.fyp.restapi.controllers.config;
 
+import org.eduze.fyp.restapi.resources.Camera;
 import org.eduze.fyp.restapi.resources.CameraView;
 import org.eduze.fyp.restapi.resources.MapConfiguration;
 import org.eduze.fyp.restapi.services.config.ConfigService;
@@ -23,8 +24,19 @@ public class ConfigController {
     private ConfigService configService = new ConfigService();
 
     @GET
+    @Path("/cameraId")
+    public Response getCameraId() {
+        try {
+            Camera camera = configService.getCameraId();
+            return Response.status(200).entity(camera).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining next camera ID", e);
+            return Response.status(500).build();
+        }
+    }
+
+    @GET
     public Response getMap() {
-        // TODO: 6/2/17 Should include coordinates as well for all the cameras
         try {
             MapConfiguration mapConfiguration = configService.getMap();
             return Response.status(200).entity(mapConfiguration).build();

@@ -25,11 +25,33 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class ConfigControllerTest extends AbstractTestCase {
 
     private static final int CAMERA_ID = 1;
     private static final String MAP_IMAGE_PATH = "map.jpg";
+
+    @Test
+    public void getCameraIdTest() {
+        Client client = JerseyClientBuilder.createClient();
+
+        UriBuilder builder = UriBuilder.fromPath("api")
+                .scheme("http")
+                .host("localhost")
+                .port(8085)
+                .path("v1")
+                .path("config")
+                .path("cameraId");
+
+
+        Camera camera = client.target(builder)
+                .request(MediaType.APPLICATION_JSON)
+                .get(Camera.class);
+
+        Assert.assertNotNull(camera);
+        Assert.assertTrue(camera.getId() > 0);
+    }
 
     @Test
     public void postCameraViewTest() throws IOException {
@@ -43,7 +65,10 @@ public class ConfigControllerTest extends AbstractTestCase {
                 .port(8085);
 
         Camera camera = new Camera(CAMERA_ID);
-        BufferedImage mapImage = ImageIO.read(new FileInputStream(MAP_IMAGE_PATH));
+        BufferedImage mapImage = null;
+        try (InputStream stream = new FileInputStream(MAP_IMAGE_PATH)) {
+            mapImage = ImageIO.read(stream);
+        }
         byte[] bytes = ImageUtils.bufferedImageToByteArray(mapImage, "jpg");
 
         CameraView cameraView = new CameraView();
@@ -73,7 +98,7 @@ public class ConfigControllerTest extends AbstractTestCase {
                 .host("localhost")
                 .port(8085);
 
-        ConfigurationManager inMemoryConfigurationManager = ANALYTICS_ENGINE.getConfigurationManager();
+        ConfigurationManager configurationManager = ANALYTICS_ENGINE.getConfigurationManager();
         PointMapping mapping = new PointMapping();
 
         mapping.addWorldSpacePoint(new Point(12.4, 45.5));
@@ -86,14 +111,17 @@ public class ConfigControllerTest extends AbstractTestCase {
         mapping.addScreenSpacePoint(new Point(752.0, 845.5));
         mapping.addScreenSpacePoint(new Point(165.2, 845.5));
 
-        inMemoryConfigurationManager.addPointMapping(1, mapping);
+        configurationManager.addPointMapping(1, mapping);
 
         MapConfiguration mapConfiguration = client.target(builder)
                 .request(MediaType.APPLICATION_JSON)
                 .get(MapConfiguration.class);
 
         BufferedImage receivedMap = ImageUtils.byteArrayToBufferedImage(mapConfiguration.getMapImage());
-        BufferedImage mapImage = ImageIO.read(new FileInputStream(MAP_IMAGE_PATH));
+        BufferedImage mapImage = null;
+        try (InputStream stream = new FileInputStream(MAP_IMAGE_PATH)) {
+            mapImage = ImageIO.read(stream);
+        }
 
         Assert.assertEquals(receivedMap.getHeight(), mapImage.getHeight());
         Assert.assertEquals(receivedMap.getWidth(), mapImage.getWidth());

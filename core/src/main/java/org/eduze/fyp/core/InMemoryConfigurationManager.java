@@ -51,6 +51,7 @@ public class InMemoryConfigurationManager implements ConfigurationManager {
 
     private Properties properties;
     private BufferedImage map;
+    private Set<Integer> cameraIds = new HashSet<>();
     private Map<Integer, BufferedImage> cameraViews = new ConcurrentHashMap<>();
     private Map<Integer, PointMapping> pointMappings = new HashMap<>();
     private Set<ConfigurationListener> configurationListeners = new HashSet<>();
@@ -90,8 +91,14 @@ public class InMemoryConfigurationManager implements ConfigurationManager {
     }
 
     public synchronized int getNextCameraId() {
-        Optional<Integer> max = cameraViews.keySet().stream().max(Comparator.naturalOrder());
-        return max.map(integer -> integer + 1).orElse(1);
+        OptionalInt max = cameraIds.stream().mapToInt(Integer::intValue).max();
+        int nextInt = 1;
+        if (max.isPresent()) {
+            nextInt = max.getAsInt() + 1;
+        }
+
+        cameraIds.add(nextInt);
+        return nextInt;
     }
 
     public BufferedImage getCameraView(int cameraId) {
@@ -113,6 +120,11 @@ public class InMemoryConfigurationManager implements ConfigurationManager {
 
     public Map<Integer, PointMapping> getPointMappings() {
         return pointMappings;
+    }
+
+    @Override
+    public Set<Integer> getCameraIds() {
+        return cameraIds;
     }
 
     @Override

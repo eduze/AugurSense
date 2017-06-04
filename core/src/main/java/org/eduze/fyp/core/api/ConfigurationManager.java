@@ -7,6 +7,7 @@ import org.eduze.fyp.core.api.listeners.ConfigurationListener;
 
 import java.awt.image.BufferedImage;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Interface for {@link AnalyticsEngine}'s Configuration Manager
@@ -34,6 +35,8 @@ public interface ConfigurationManager {
     BufferedImage getMap();
 
     Map<Integer, PointMapping> getPointMappings();
+
+    Set<Integer> getCameraIds();
 
     int getNumberOfCameras();
 
