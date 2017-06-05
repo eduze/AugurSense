@@ -44,15 +44,20 @@ public class ConfigService {
     /**
      * Get the floor plan or map of the enclosed are which the {@link org.eduze.fyp.core.api.AnalyticsEngine} is going to cover
      *
+     * @param cameraId camera ID
      * @return byte array of the map image
      */
-    public MapConfiguration getMap() throws IOException {
+    public MapConfiguration getMap(int cameraId) throws IOException {
+        if (!configurationManager.isConfigured()) {
+            return null;
+        }
+
         BufferedImage map = configurationManager.getMap();
         byte[] mapImageBytes = ImageUtils.bufferedImageToByteArray(map);
 
         MapConfiguration mapConfiguration = new MapConfiguration();
         mapConfiguration.setMapImage(mapImageBytes);
-        mapConfiguration.setMappings(configurationManager.getPointMappings());
+        mapConfiguration.setMapping(configurationManager.getPointMapping(cameraId));
         mapConfiguration.setMapHeight(map.getHeight());
         mapConfiguration.setMapWidth(map.getWidth());
 

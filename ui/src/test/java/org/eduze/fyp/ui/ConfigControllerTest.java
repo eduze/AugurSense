@@ -59,10 +59,11 @@ public class ConfigControllerTest extends AbstractTestCase {
 
         UriBuilder builder = UriBuilder.fromPath("api")
                 .scheme("http")
+                .host("localhost")
+                .port(8085)
                 .path("v1")
                 .path("config")
-                .host("localhost")
-                .port(8085);
+                .path("cameraView");
 
         Camera camera = new Camera(CAMERA_ID);
         BufferedImage mapImage = null;
@@ -96,6 +97,7 @@ public class ConfigControllerTest extends AbstractTestCase {
                 .path("v1")
                 .path("config")
                 .host("localhost")
+                .path("1")
                 .port(8085);
 
         ConfigurationManager configurationManager = ANALYTICS_ENGINE.getConfigurationManager();

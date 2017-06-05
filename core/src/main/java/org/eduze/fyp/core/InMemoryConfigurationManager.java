@@ -105,6 +105,7 @@ public class InMemoryConfigurationManager implements ConfigurationManager {
         return cameraViews.get(cameraId);
     }
 
+    @Override
     public Map<Integer, BufferedImage> getCameraViews() {
         Map<Integer, BufferedImage> copyOfCameraViews = new HashMap<>();
         copyOfCameraViews.putAll(cameraViews);
@@ -118,8 +119,14 @@ public class InMemoryConfigurationManager implements ConfigurationManager {
         return new BufferedImage(cm, raster, isAlphaPreMultiplied, null);
     }
 
+    @Override
     public Map<Integer, PointMapping> getPointMappings() {
         return pointMappings;
+    }
+
+    @Override
+    public PointMapping getPointMapping(int cameraId) {
+        return pointMappings.get(cameraId);
     }
 
     @Override
@@ -140,6 +147,11 @@ public class InMemoryConfigurationManager implements ConfigurationManager {
     @Override
     public synchronized void removeConfigurationListener(ConfigurationListener listener) {
         configurationListeners.remove(listener);
+    }
+
+    @Override
+    public boolean isConfigured() {
+        return cameraIds.size() == pointMappings.keySet().size();
     }
 
     private void notifyConfigurationChange() {

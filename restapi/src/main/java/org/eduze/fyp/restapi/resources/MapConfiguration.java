@@ -6,15 +6,18 @@ package org.eduze.fyp.restapi.resources;
 import org.eduze.fyp.core.api.PointMapping;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Map;
 
 @XmlRootElement
-public class MapConfiguration {
+public class MapConfiguration extends Status {
 
     private byte[] mapImage;
-    private Map<Integer, PointMapping> mappings;
+    private PointMapping mapping;
     private int mapWidth;
     private int mapHeight;
+
+    public MapConfiguration() {
+        super(true);
+    }
 
     public byte[] getMapImage() {
         return mapImage;
@@ -24,12 +27,12 @@ public class MapConfiguration {
         this.mapImage = mapImage;
     }
 
-    public Map<Integer, PointMapping> getMappings() {
-        return mappings;
+    public PointMapping getMapping() {
+        return mapping;
     }
 
-    public void setMappings(Map<Integer, PointMapping> mappings) {
-        this.mappings = mappings;
+    public void setMapping(PointMapping mapping) {
+        this.mapping = mapping;
     }
 
     public int getMapWidth() {

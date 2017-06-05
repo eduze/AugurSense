@@ -36,6 +36,8 @@ public interface ConfigurationManager {
 
     Map<Integer, PointMapping> getPointMappings();
 
+    PointMapping getPointMapping(int cameraId);
+
     Set<Integer> getCameraIds();
 
     int getNumberOfCameras();
@@ -43,4 +45,6 @@ public interface ConfigurationManager {
     void addConfigurationListener(ConfigurationListener listener);
 
     void removeConfigurationListener(ConfigurationListener listener);
+
+    boolean isConfigured();
 }

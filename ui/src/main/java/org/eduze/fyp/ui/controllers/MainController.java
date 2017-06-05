@@ -16,6 +16,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import org.eduze.fyp.core.api.*;
 import org.eduze.fyp.core.api.Point;
+import org.eduze.fyp.core.api.listeners.ConfigurationListener;
 import org.eduze.fyp.core.api.listeners.ProcessedDataListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,21 +26,19 @@ import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Controller for the main window of the {@link org.eduze.fyp.ui.App}
  *
  * @author Imesha Sudasingha
  */
-public class MainController implements Initializable, ProcessedDataListener {
+public class MainController implements Initializable, ProcessedDataListener, ConfigurationListener {
 
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
-    private final DataProcessor dataProcessor =
-            AnalyticsEngineFactory.getAnalyticsEngine().getDataProcessor();
-
-    private final ConfigurationManager configurationManager =
-            AnalyticsEngineFactory.getAnalyticsEngine().getConfigurationManager();
+    private final DataProcessor dataProcessor = AnalyticsEngineFactory.getAnalyticsEngine().getDataProcessor();
+    private final ConfigurationManager configurationManager = AnalyticsEngineFactory.getAnalyticsEngine().getConfigurationManager();
 
     private Map<Integer, PointMapping> pointMappings = new HashMap<>();
     private Map<Integer, BufferedImage> mapsOnUI = new HashMap<>();
@@ -55,55 +54,19 @@ public class MainController implements Initializable, ProcessedDataListener {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        configurationManager.addConfigurationListener(this);
+
         realtimeMap = configurationManager.getMap();
 
         Map<Integer, BufferedImage> cameraViews = configurationManager.getCameraViews();
 
-        cameraViews.forEach((cameraId, viewImage) -> {
-            mapsOnUI.put(cameraId, configurationManager.getMap());
-            Image mapImage = SwingFXUtils.toFXImage(mapsOnUI.get(cameraId), null);
-
-            Image cameraView = SwingFXUtils.toFXImage(viewImage, null);
-            ImageView cameraImageView = new ImageView(cameraView);
-            ImageView mapImageView = new ImageView(mapImage);
-
-            cameraImageView.setOnMouseClicked((event) -> {
-                logger.debug("CameraView-{} clicked at x : {}, y : {}", cameraId, event.getX(), event.getY());
-
-                PointMapping mapping = pointMappings.computeIfAbsent(cameraId, (k) -> new PointMapping());
-                if (mapping.getScreenSpacePoints().size() < 4) {
-                    mapping.addScreenSpacePoint(new Point(event.getX(), event.getY()));
-
-                    drawPoint(cameraImageView, viewImage, event.getX(), event.getY());
-                }
-            });
-
-            mapImageView.setOnMouseClicked((event) -> {
-                logger.debug("Map-{} clicked at x : {}, y : {}", cameraId, event.getX(), event.getY());
-
-                PointMapping mapping = pointMappings.computeIfAbsent(cameraId, (k) -> new PointMapping());
-                if (mapping.getWorldSpacePoints().size() < 4) {
-                    mapping.addWorldSpacePoint(new Point(event.getX(), event.getY()));
-
-                    drawPoint(mapImageView, mapsOnUI.get(cameraId), event.getX(), event.getY());
-                }
-            });
-
-            GridPane gridPane = new GridPane();
-            gridPane.add(cameraImageView, 0, 0);
-            gridPane.add(mapImageView, 1, 0);
-
-            TitledPane titledPane = new TitledPane("Camera-" + cameraId, new Group(gridPane));
-            accordion.getPanes().addAll(titledPane);
-        });
-
+        cameraViews.forEach(this::checkAndAddCameraToAccordion);
 
         Image realTimeMap = SwingFXUtils.toFXImage(realtimeMap, null);
         realtimeMapImageView = new ImageView(realTimeMap);
 
         GridPane gridPane = new GridPane();
         gridPane.add(realtimeMapImageView, 0, 0);
-
         TitledPane titledPane = new TitledPane("RealTime Map", new Group(gridPane));
         accordion.getPanes().addAll(titledPane);
 
@@ -124,8 +87,51 @@ public class MainController implements Initializable, ProcessedDataListener {
         dataProcessor.addProcessedDataListener(this);
     }
 
+    private synchronized void checkAndAddCameraToAccordion(int cameraId, BufferedImage viewImage) {
+        if (mapsOnUI.containsKey(cameraId)) {
+            logger.warn("Camera with id: {} already shown in the UI. Ignoring", cameraId);
+            return;
+        }
+
+        mapsOnUI.put(cameraId, configurationManager.getMap());
+        Image mapImage = SwingFXUtils.toFXImage(mapsOnUI.get(cameraId), null);
+
+        Image cameraView = SwingFXUtils.toFXImage(viewImage, null);
+        ImageView cameraImageView = new ImageView(cameraView);
+        ImageView mapImageView = new ImageView(mapImage);
+
+        cameraImageView.setOnMouseClicked((event) -> {
+            logger.debug("CameraView-{} clicked at x : {}, y : {}", cameraId, event.getX(), event.getY());
+
+            PointMapping mapping = pointMappings.computeIfAbsent(cameraId, (k) -> new PointMapping());
+            if (mapping.getScreenSpacePoints().size() < 4) {
+                mapping.addScreenSpacePoint(new Point(event.getX(), event.getY()));
+
+                drawPoint(cameraImageView, viewImage, event.getX(), event.getY());
+            }
+        });
+
+        mapImageView.setOnMouseClicked((event) -> {
+            logger.debug("Map-{} clicked at x : {}, y : {}", cameraId, event.getX(), event.getY());
+
+            PointMapping mapping = pointMappings.computeIfAbsent(cameraId, (k) -> new PointMapping());
+            if (mapping.getWorldSpacePoints().size() < 4) {
+                mapping.addWorldSpacePoint(new Point(event.getX(), event.getY()));
+
+                drawPoint(mapImageView, mapsOnUI.get(cameraId), event.getX(), event.getY());
+            }
+        });
+
+        GridPane gridPane = new GridPane();
+        gridPane.add(cameraImageView, 0, 0);
+        gridPane.add(mapImageView, 1, 0);
+
+        TitledPane titledPane = new TitledPane("Camera-" + cameraId, new Group(gridPane));
+        accordion.getPanes().addAll(titledPane);
+    }
+
     private void drawPoint(ImageView imageView, BufferedImage image, double x, double y) {
-        drawPoint(imageView, image, y, y, 10, 10, Color.red);
+        drawPoint(imageView, image, x, y, 10, 10, Color.red);
     }
 
     private void drawPoint(ImageView imageView, BufferedImage image, double x, double y, int pointWIdth, int pointHeight, Color color) {
@@ -143,5 +149,11 @@ public class MainController implements Initializable, ProcessedDataListener {
 
         logger.debug("Received {} points for real-time map", points.size());
         points.forEach(point -> drawPoint(realtimeMapImageView, realtimeMap, point.getX(), point.getY(), 5, 5, Color.red));
+    }
+
+    @Override
+    public synchronized void configurationChanged(ConfigurationManager configurationManager) {
+        logger.debug("Configuration change detected. Updating UI");
+        Platform.runLater(() -> configurationManager.getCameraViews().forEach(this::checkAndAddCameraToAccordion));
     }
 }

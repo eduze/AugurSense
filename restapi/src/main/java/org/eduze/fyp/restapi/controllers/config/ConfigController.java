@@ -6,6 +6,7 @@ package org.eduze.fyp.restapi.controllers.config;
 import org.eduze.fyp.restapi.resources.Camera;
 import org.eduze.fyp.restapi.resources.CameraView;
 import org.eduze.fyp.restapi.resources.MapConfiguration;
+import org.eduze.fyp.restapi.resources.Status;
 import org.eduze.fyp.restapi.services.config.ConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,17 +37,25 @@ public class ConfigController {
     }
 
     @GET
-    public Response getMap() {
+    @Path("/{cameraId}")
+    public Response getMap(@PathParam("cameraId") int cameraId) {
+        MapConfiguration mapConfiguration;
         try {
-            MapConfiguration mapConfiguration = configService.getMap();
-            return Response.status(200).entity(mapConfiguration).build();
+            mapConfiguration = configService.getMap(cameraId);
         } catch (Exception e) {
             logger.error("Error occurred when obtaining map", e);
-            return Response.status(404).build();
+            return Response.status(500).build();
         }
+
+        if (mapConfiguration == null) {
+            return Response.status(200).entity(new Status(false)).build();
+        }
+
+        return Response.status(200).entity(mapConfiguration).build();
     }
 
     @POST
+    @Path("/cameraView")
     public Response postCameraView(CameraView cameraView) {
         try {
             configService.configureCameraView(cameraView);
