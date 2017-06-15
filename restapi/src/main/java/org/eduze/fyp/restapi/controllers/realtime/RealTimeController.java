@@ -21,7 +21,7 @@ public class RealTimeController {
 
     private static final Logger logger = LoggerFactory.getLogger(RealTimeController.class);
 
-    private RealtimeService realtimeService = new RealtimeService();
+    private RealtimeService realtimeService;
 
     @POST
     public Response postFrameInfo(FrameInfo frameInfo) {
@@ -39,5 +39,9 @@ public class RealTimeController {
     public Response getFrameInfo() {
         logger.debug("Received frame info GET request");
         return Response.status(200).build();
+    }
+
+    public void setRealtimeService(RealtimeService realtimeService) {
+        this.realtimeService = realtimeService;
     }
 }

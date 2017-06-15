@@ -18,11 +18,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.eduze.fyp.core.api.listeners;
 
-import org.eduze.fyp.core.api.resources.GlobalMap;
+package org.eduze.fyp.ui.resources;
 
-public interface ProcessedDataListener {
+import java.util.*;
 
-    void dataProcessed(GlobalMap map);
+public class AppResources extends ResourceBundle {
+
+    private Map<String, Object> resources = new HashMap<>();
+
+    public void addResource(String key, Object value) {
+        resources.put(key, value);
+    }
+
+    @Override
+    protected Object handleGetObject(String key) {
+        return resources.get(key);
+    }
+
+    @Override
+    public Enumeration<String> getKeys() {
+        return Collections.enumeration(resources.keySet());
+    }
 }

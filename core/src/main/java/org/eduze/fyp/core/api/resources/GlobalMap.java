@@ -18,13 +18,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.eduze.fyp.core.api.listeners;
 
-import org.eduze.fyp.core.api.Point;
+package org.eduze.fyp.core.api.resources;
 
 import java.util.List;
 
-public interface DataListener {
+public class GlobalMap {
 
-    void dataReceived(List<Point> points);
+    private List<Point> points;
+
+    public List<Point> getPoints() {
+        return points;
+    }
+
+    public void setPoints(List<Point> points) {
+        this.points = points;
+    }
 }

@@ -18,39 +18,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.eduze.fyp.core;
+package org.eduze.fyp.core.api.resources;
 
-import org.eduze.fyp.core.api.DataProcessor;
-import org.eduze.fyp.core.api.Point;
-import org.eduze.fyp.core.api.listeners.ProcessedDataListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+public class Point {
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+    private double x;
+    private double y;
 
-public class InMemoryDataProcessor implements DataProcessor {
+    public Point() {
+    }
 
-    private static final Logger logger = LoggerFactory.getLogger(InMemoryDataProcessor.class);
+    public Point(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
 
-    private Set<ProcessedDataListener> processedDataListeners = Collections.synchronizedSet(new HashSet<>());
+    public double getX() {
+        return x;
+    }
 
-    @Override
-    public void dataReceived(List<Point> points) {
-        logger.debug("Received {} points for processing", points.size());
+    public void setX(double x) {
+        this.x = x;
+    }
 
-        processedDataListeners.forEach(listener -> listener.dataProcessed(points));
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
     }
 
     @Override
-    public void addProcessedDataListener(ProcessedDataListener listener) {
-        processedDataListeners.add(listener);
-    }
-
-    @Override
-    public void removeProcessedDataListener(ProcessedDataListener listener) {
-        processedDataListeners.remove(listener);
+    public String toString() {
+        return String.format("[%f,%f]", x, y);
     }
 }

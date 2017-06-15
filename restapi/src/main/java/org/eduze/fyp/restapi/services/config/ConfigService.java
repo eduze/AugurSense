@@ -3,12 +3,12 @@
  */
 package org.eduze.fyp.restapi.services.config;
 
-import org.eduze.fyp.core.api.AnalyticsEngineFactory;
 import org.eduze.fyp.core.api.ConfigurationManager;
 import org.eduze.fyp.restapi.resources.Camera;
 import org.eduze.fyp.restapi.resources.CameraView;
 import org.eduze.fyp.restapi.resources.MapConfiguration;
 import org.eduze.fyp.restapi.util.ImageUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.NotFoundException;
 import java.awt.image.BufferedImage;
@@ -16,8 +16,8 @@ import java.io.IOException;
 
 public class ConfigService {
 
-    private final ConfigurationManager configurationManager =
-            AnalyticsEngineFactory.getAnalyticsEngine().getConfigurationManager();
+    @Autowired
+    private ConfigurationManager configurationManager;
 
     /**
      * Obtain an ID for camera. This must be called and an ID should be obtained in order to call any other method
@@ -71,5 +71,9 @@ public class ConfigService {
         }
 
         return ImageUtils.bufferedImageToByteArray(cameraView);
+    }
+
+    public void setConfigurationManager(ConfigurationManager configurationManager) {
+        this.configurationManager = configurationManager;
     }
 }

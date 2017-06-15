@@ -18,11 +18,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.eduze.fyp.core.api.listeners;
+package org.eduze.fyp.core.api.annotations;
 
-import org.eduze.fyp.core.api.resources.GlobalMap;
+import java.lang.annotation.*;
 
-public interface ProcessedDataListener {
-
-    void dataProcessed(GlobalMap map);
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface AutoStart {
+    int startOrder() default 0;
 }

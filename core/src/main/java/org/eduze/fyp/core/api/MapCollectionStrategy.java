@@ -18,11 +18,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.eduze.fyp.core.api.listeners;
+package org.eduze.fyp.core.api;
 
-import org.eduze.fyp.core.api.resources.GlobalMap;
+import org.eduze.fyp.core.api.config.Startable;
+import org.eduze.fyp.core.api.resources.LocalMap;
 
-public interface ProcessedDataListener {
+public interface MapCollectionStrategy extends Startable {
 
-    void dataProcessed(GlobalMap map);
+    void submit(LocalMap map);
 }

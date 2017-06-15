@@ -4,7 +4,7 @@
 
 package org.eduze.fyp.restapi.resources;
 
-import org.eduze.fyp.core.api.Point;
+import org.eduze.fyp.core.api.resources.Point;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;

@@ -18,14 +18,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.eduze.fyp.core.api;
+package org.eduze.fyp.core.api.config;
 
-import org.eduze.fyp.core.api.listeners.DataListener;
-import org.eduze.fyp.core.api.listeners.ProcessedDataListener;
+public interface Startable {
 
-public interface DataProcessor extends DataListener {
+    void start();
 
-    void addProcessedDataListener(ProcessedDataListener listener);
-
-    void removeProcessedDataListener(ProcessedDataListener listener);
+    void stop();
 }

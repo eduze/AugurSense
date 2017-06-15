@@ -3,34 +3,39 @@
  */
 package org.eduze.fyp.ui;
 
-import org.eduze.fyp.core.api.AnalyticsEngineFactory;
 import org.eduze.fyp.core.api.AnalyticsEngine;
 import org.eduze.fyp.restapi.RestServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 public abstract class AbstractTestCase {
 
-    protected static final AnalyticsEngine ANALYTICS_ENGINE = AnalyticsEngineFactory.getAnalyticsEngine();
-    protected static final RestServer REST_SERVER = RestServer.getInstance();
+    private static CHASS chass;
+
+    protected final AnalyticsEngine ANALYTICS_ENGINE;
+    protected final RestServer REST_SERVER;
 
     protected final Logger logger;
+    private ApplicationContext applicationContext;
 
     public AbstractTestCase() {
         logger = LoggerFactory.getLogger(getClass());
+
+        ANALYTICS_ENGINE = chass.getApplicationContext().getBean(AnalyticsEngine.class);
+        REST_SERVER = chass.getApplicationContext().getBean(RestServer.class);
     }
 
     @BeforeClass
     public static void setUp() {
-        ANALYTICS_ENGINE.start();
-        REST_SERVER.start();
+        chass = new CHASS();
+        chass.start();
     }
 
     @AfterClass
     public static void tearDown() {
-        REST_SERVER.stop();
-        ANALYTICS_ENGINE.stop();
+        chass.stop();
     }
 }

@@ -22,7 +22,7 @@ public class ConfigController {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigController.class);
 
-    private ConfigService configService = new ConfigService();
+    private ConfigService configService;
 
     @GET
     @Path("/cameraId")
@@ -64,5 +64,9 @@ public class ConfigController {
             return Response.status(500).build();
         }
         return Response.status(200).build();
+    }
+
+    public void setConfigService(ConfigService configService) {
+        this.configService = configService;
     }
 }

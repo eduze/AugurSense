@@ -20,9 +20,10 @@
  */
 package org.eduze.fyp.restapi.services.realtime;
 
-import org.eduze.fyp.core.api.AnalyticsEngineFactory;
-import org.eduze.fyp.core.api.DataCollector;
+import org.eduze.fyp.core.api.MapCollector;
+import org.eduze.fyp.core.api.resources.LocalMap;
 import org.eduze.fyp.restapi.resources.FrameInfo;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Service class which is handling the real time data transfers
@@ -31,10 +32,14 @@ import org.eduze.fyp.restapi.resources.FrameInfo;
  */
 public class RealtimeService {
 
-    private final DataCollector dataCollector = AnalyticsEngineFactory.getAnalyticsEngine().getDataCollector();
-
+    @Autowired
+    private MapCollector mapCollector;
 
     public void addFrameInfo(FrameInfo frameInfo) {
-        dataCollector.addPoints(frameInfo.getTimestamp(), frameInfo.getCoordinates());
+        LocalMap localMap = new LocalMap();
+        localMap.setCameraId(frameInfo.getCamera().getId());
+        localMap.setTimestamp(frameInfo.getTimestamp());
+        localMap.setPoints(frameInfo.getCoordinates());
+        mapCollector.addPoints(localMap);
     }
 }

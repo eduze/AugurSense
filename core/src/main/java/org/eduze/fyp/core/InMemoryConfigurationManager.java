@@ -20,9 +20,10 @@
  */
 package org.eduze.fyp.core;
 
+import org.eduze.fyp.core.api.annotations.AutoStart;
 import org.eduze.fyp.core.api.listeners.ConfigurationListener;
 import org.eduze.fyp.core.api.ConfigurationManager;
-import org.eduze.fyp.core.api.PointMapping;
+import org.eduze.fyp.core.api.resources.PointMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,12 +44,12 @@ import static org.eduze.fyp.core.Constants.Properties.FLOOR_MAP_IMAGE;
  *
  * @author Imesha Sudasingha
  */
+@AutoStart(startOrder = 1)
 public class InMemoryConfigurationManager implements ConfigurationManager {
 
     private static final Logger logger = LoggerFactory.getLogger(InMemoryConfigurationManager.class);
 
-    private static final String PROPERTIES_FILE = "analytics.properties";
-
+    private String propertiesFile;
     private Properties properties;
     private BufferedImage map;
     private Set<Integer> cameraIds = new HashSet<>();
@@ -57,27 +58,13 @@ public class InMemoryConfigurationManager implements ConfigurationManager {
     private Set<ConfigurationListener> configurationListeners = new HashSet<>();
 
     public InMemoryConfigurationManager() {
-        try {
-            loadProperties();
-        } catch (IOException e) {
-            logger.error("Error occurred when loading configuration", e);
-            throw new IllegalArgumentException("Unable to load properties", e);
-        }
-
-        String mapPath = properties.getProperty(FLOOR_MAP_IMAGE);
-        logger.debug("Using map image : {}", mapPath);
-        try {
-            map = ImageIO.read(new FileInputStream(mapPath));
-        } catch (IOException e) {
-            logger.error("Unable to load the map image : {}", mapPath, e);
-            throw new IllegalArgumentException("Unable to load the map image");
-        }
     }
 
     private void loadProperties() throws IOException {
         properties = new Properties();
-        InputStream in = new FileInputStream(PROPERTIES_FILE);
-        properties.load(in);
+        try (InputStream propertiesFile = getClass().getClassLoader().getResourceAsStream(this.propertiesFile);) {
+            properties.load(propertiesFile);
+        }
     }
 
     public synchronized void setCameraView(int cameraId, BufferedImage view) {
@@ -157,5 +144,41 @@ public class InMemoryConfigurationManager implements ConfigurationManager {
     private void notifyConfigurationChange() {
         logger.debug("Notifying configuration change");
         configurationListeners.forEach(listener -> listener.configurationChanged(this));
+    }
+
+    public void setPropertiesFile(String propertiesFile) {
+        this.propertiesFile = propertiesFile;
+    }
+
+    @Override
+    public void start() {
+        if (propertiesFile == null) {
+            throw new IllegalArgumentException("No properties file is given");
+        }
+
+        try {
+            loadProperties();
+        } catch (IOException e) {
+            logger.error("Error occurred when loading configuration", e);
+            throw new IllegalArgumentException("Unable to load properties", e);
+        }
+
+        String mapPath = properties.getProperty(FLOOR_MAP_IMAGE);
+        logger.debug("Using map image : {}", mapPath);
+        try (InputStream in = getClass().getClassLoader().getResourceAsStream(mapPath)) {
+            map = ImageIO.read(in);
+        } catch (IOException e) {
+            logger.error("Unable to load the map image : {}", mapPath, e);
+            throw new IllegalArgumentException("Unable to load the map image");
+        }
+    }
+
+    @Override
+    public void stop() {
+        logger.info("Stopping Configuration Manager ...");
+    }
+
+    public void setConfigurationListeners(Set<ConfigurationListener> configurationListeners) {
+        this.configurationListeners = configurationListeners;
     }
 }

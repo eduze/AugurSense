@@ -1,11 +1,28 @@
 /*
- * Copyright to Eduze@UoM 2017
+ * Copyright 2017 Eduze
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this
+ * software and associated documentation files (the "Software"), to deal in the Software
+ * without restriction, including without limitation the rights to use, copy, modify, merge,
+ * publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to
+ * whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or
+ * substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
+
 package org.eduze.fyp.ui;
 
-import org.eduze.fyp.core.api.AnalyticsEngineFactory;
 import org.eduze.fyp.core.api.ConfigurationManager;
-import org.eduze.fyp.core.api.Point;
+import org.eduze.fyp.core.api.resources.Point;
 import org.eduze.fyp.restapi.resources.Camera;
 import org.eduze.fyp.restapi.resources.FrameInfo;
 import org.glassfish.jersey.client.JerseyClientBuilder;
@@ -36,22 +53,37 @@ public class AppTest {
 
     private static final String[] views = new String[]{"views/view1.png", "views/view2.jpg"};
 
-    public static void main(String[] args) throws IOException {
-        ConfigurationManager configurationManager = AnalyticsEngineFactory.getAnalyticsEngine().getConfigurationManager();
-        ExecutorService executorService = Executors.newFixedThreadPool(views.length);
+    public static void main(String[] args) throws IOException, InterruptedException {
+        new Thread(() -> App.main(args)).start();
 
+        while (App.getInstance() == null) {
+            logger.debug("Waiting ...");
+            Thread.sleep(1000);
+        }
+
+        ConfigurationManager configurationManager = App.getInstance()
+                .getChass()
+                .getApplicationContext()
+                .getBean(ConfigurationManager.class);
+
+        ExecutorService executorService = Executors.newFixedThreadPool(views.length);
         for (int i = 0; i < views.length; i++) {
             try (InputStream inputStream = new FileInputStream(views[i])) {
                 BufferedImage cameraView = ImageIO.read(inputStream);
                 configurationManager.setCameraView(i + 1, cameraView);
             }
+
             executorService.submit(new CameraSimulator(i + 1,
                     configurationManager.getMap().getWidth(),
                     configurationManager.getMap().getHeight()));
         }
 
-        App.main(new String[0]);
-        executorService.shutdownNow();
+        Runtime.getRuntime().addShutdownHook(new Thread(executorService::shutdownNow));
+
+        try {
+            Thread.currentThread().join();
+        } catch (InterruptedException ignored) {
+        }
     }
 
     private static class CameraSimulator implements Runnable {

@@ -3,12 +3,14 @@
  */
 package org.eduze.fyp.core.api;
 
+import org.eduze.fyp.core.api.config.Startable;
+
 /**
  * Interface for Analytics Engine core
  *
  * @author Imesha Sudasingha
  */
-public abstract class AnalyticsEngine {
+public abstract class AnalyticsEngine implements Startable{
 
     public void start() {
         doStart();
@@ -24,7 +26,7 @@ public abstract class AnalyticsEngine {
 
     public abstract ConfigurationManager getConfigurationManager();
 
-    public abstract DataCollector getDataCollector();
+    public abstract MapCollector getMapCollector();
 
-    public abstract DataProcessor getDataProcessor();
+    public abstract MapProcessor getMapProcessor();
 }

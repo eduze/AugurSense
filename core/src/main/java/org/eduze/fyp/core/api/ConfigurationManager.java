@@ -3,7 +3,9 @@
  */
 package org.eduze.fyp.core.api;
 
+import org.eduze.fyp.core.api.config.Startable;
 import org.eduze.fyp.core.api.listeners.ConfigurationListener;
+import org.eduze.fyp.core.api.resources.PointMapping;
 
 import java.awt.image.BufferedImage;
 import java.util.Map;
@@ -14,7 +16,7 @@ import java.util.Set;
  *
  * @author Imesha Sudasingha
  */
-public interface ConfigurationManager {
+public interface ConfigurationManager extends Startable{
 
     void setCameraView(int cameraId, BufferedImage view);
 

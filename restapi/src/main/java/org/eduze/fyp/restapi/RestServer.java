@@ -5,6 +5,8 @@ import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.xml.XmlConfiguration;
+import org.eduze.fyp.core.api.annotations.AutoStart;
+import org.eduze.fyp.core.api.config.Startable;
 import org.eduze.fyp.restapi.controllers.config.ConfigController;
 import org.eduze.fyp.restapi.controllers.realtime.RealTimeController;
 import org.eduze.fyp.restapi.util.RequestLogger;
@@ -14,6 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Main class of the <pre>restapi</pre> package. This class is using <pre>Jetty</pre> server to initialize the
@@ -21,35 +26,42 @@ import java.io.File;
  *
  * @author Imesha Sudasingha
  */
-public class RestServer {
+@AutoStart(startOrder = 2)
+public class RestServer implements Startable {
 
     private static final Logger logger = LoggerFactory.getLogger(RestServer.class);
 
     private static final String JETTY_CONFIG = "jetty.xml";
     private static final String CONTEXT_PATH = "/api/v1/*";
 
-    private static RestServer instance;
+    private Set<Object> controllers = new HashSet<>();
     private Server jettyServer;
 
     private RestServer() {
+    }
+
+    /**
+     * Starts the jetty server. This will also add a shutdown hook to make sure the server will go down properly.
+     */
+    @Override
+    public void start() {
         XmlConfiguration configuration;
         try {
-            File configFile = new File(JETTY_CONFIG);
-            if (!configFile.exists()) {
+            URL configFile = getClass().getClassLoader().getResource(JETTY_CONFIG);
+            if (configFile == null) {
                 logger.error("Config file '{}' is null", JETTY_CONFIG);
                 throw new IllegalArgumentException("Jetty configuration could not be found");
             }
 
-            configuration = new XmlConfiguration(configFile.toURI().toURL());
+            configuration = new XmlConfiguration(configFile);
             this.jettyServer = (Server) configuration.configure();
         } catch (Exception e) {
-            logger.error("Unable to configure server from configuration file : {}", JETTY_CONFIG);
+            logger.error("Unable to configure server from configuration file : {}", JETTY_CONFIG, e);
             throw new IllegalStateException("Unable to configure server", e);
         }
 
         ResourceConfig config = new ResourceConfig();
-        config.register(RealTimeController.class);
-        config.register(ConfigController.class);
+        controllers.forEach(config::register);
         // TODO: 5/30/17 Add controllers
 
         final ServletContainer servletContainer = new ServletContainer(config);
@@ -59,13 +71,8 @@ public class RestServer {
         context.addServlet(servlet, CONTEXT_PATH);
         context.setSessionHandler(new SessionHandler());
         jettyServer.setHandler(context);
-//        jettyServer.setRequestLog(new RequestLogger());
-    }
 
-    /**
-     * Starts the jetty server. This will also add a shutdown hook to make sure the server will go down properly.
-     */
-    public void start() {
+        logger.debug("Starting REST server");
         try {
             jettyServer.start();
             Runtime.getRuntime().addShutdownHook(new Thread(RestServer.this::stop));
@@ -73,13 +80,16 @@ public class RestServer {
             logger.error("Error occurred when starting REST server due to : {}", e.getMessage());
             throw new IllegalStateException("Unable to start REST server", e);
         }
+        logger.info("REST Server started successfully ...");
     }
 
     /**
      * Stops the jetty server
      */
+    @Override
     public void stop() {
-        if (jettyServer.isStarted()) {
+        if (jettyServer != null && jettyServer.isStarted()) {
+            logger.info("Stopping REST Server ...");
             try {
                 jettyServer.stop();
             } catch (Exception e) {
@@ -97,15 +107,11 @@ public class RestServer {
         return jettyServer.isRunning();
     }
 
-    /**
-     * Get the REST Server instance.
-     *
-     * @return instance
-     */
-    public static RestServer getInstance() {
-        if (instance == null) {
-            instance = new RestServer();
-        }
-        return instance;
+    public Set<Object> getControllers() {
+        return controllers;
+    }
+
+    public void setControllers(Set<Object> controllers) {
+        this.controllers = controllers;
     }
 }

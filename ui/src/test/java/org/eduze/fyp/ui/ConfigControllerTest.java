@@ -4,8 +4,8 @@
 package org.eduze.fyp.ui;
 
 import org.eduze.fyp.core.api.ConfigurationManager;
-import org.eduze.fyp.core.api.Point;
-import org.eduze.fyp.core.api.PointMapping;
+import org.eduze.fyp.core.api.resources.Point;
+import org.eduze.fyp.core.api.resources.PointMapping;
 import org.eduze.fyp.restapi.resources.Camera;
 import org.eduze.fyp.restapi.resources.CameraView;
 import org.eduze.fyp.restapi.resources.MapConfiguration;
@@ -43,7 +43,6 @@ public class ConfigControllerTest extends AbstractTestCase {
                 .path("v1")
                 .path("config")
                 .path("cameraId");
-
 
         Camera camera = client.target(builder)
                 .request(MediaType.APPLICATION_JSON)

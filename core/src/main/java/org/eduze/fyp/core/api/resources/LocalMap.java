@@ -18,11 +18,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.eduze.fyp.core.api.listeners;
+package org.eduze.fyp.core.api.resources;
 
-import org.eduze.fyp.core.api.resources.GlobalMap;
+import java.util.List;
 
-public interface ProcessedDataListener {
+public class LocalMap {
 
-    void dataProcessed(GlobalMap map);
+    private int cameraId;
+    private long timestamp;
+    private List<Point> points;
+
+    public int getCameraId() {
+        return cameraId;
+    }
+
+    public void setCameraId(int cameraId) {
+        this.cameraId = cameraId;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public List<Point> getPoints() {
+        return points;
+    }
+
+    public void setPoints(List<Point> points) {
+        this.points = points;
+    }
 }

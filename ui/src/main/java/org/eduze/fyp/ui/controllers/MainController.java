@@ -15,18 +15,20 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import org.eduze.fyp.core.api.*;
-import org.eduze.fyp.core.api.Point;
+import org.eduze.fyp.core.api.resources.GlobalMap;
+import org.eduze.fyp.core.api.resources.Point;
 import org.eduze.fyp.core.api.listeners.ConfigurationListener;
 import org.eduze.fyp.core.api.listeners.ProcessedDataListener;
+import org.eduze.fyp.core.api.resources.PointMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Controller for the main window of the {@link org.eduze.fyp.ui.App}
@@ -37,8 +39,8 @@ public class MainController implements Initializable, ProcessedDataListener, Con
 
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
-    private final DataProcessor dataProcessor = AnalyticsEngineFactory.getAnalyticsEngine().getDataProcessor();
-    private final ConfigurationManager configurationManager = AnalyticsEngineFactory.getAnalyticsEngine().getConfigurationManager();
+    private MapProcessor dataProcessor;
+    private ConfigurationManager configurationManager;
 
     private Map<Integer, PointMapping> pointMappings = new HashMap<>();
     private Map<Integer, BufferedImage> mapsOnUI = new HashMap<>();
@@ -54,6 +56,10 @@ public class MainController implements Initializable, ProcessedDataListener, Con
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        AnalyticsEngine analyticsEngine = (AnalyticsEngine) resources.getObject("analyticsEngine");
+        configurationManager = analyticsEngine.getConfigurationManager();
+        dataProcessor = analyticsEngine.getMapProcessor();
+
         configurationManager.addConfigurationListener(this);
 
         realtimeMap = configurationManager.getMap();
@@ -144,11 +150,12 @@ public class MainController implements Initializable, ProcessedDataListener, Con
     }
 
     @Override
-    public void dataProcessed(List<Point> points) {
+    public void dataProcessed(GlobalMap globalMap) {
         if (realtimeMap == null) return;
 
-        logger.debug("Received {} points for real-time map", points.size());
-        points.forEach(point -> drawPoint(realtimeMapImageView, realtimeMap, point.getX(), point.getY(), 5, 5, Color.red));
+        logger.debug("Received {} points for real-time map", globalMap.getPoints().size());
+        globalMap.getPoints()
+                .forEach(point -> drawPoint(realtimeMapImageView, realtimeMap, point.getX(), point.getY(), 5, 5, Color.red));
     }
 
     @Override
