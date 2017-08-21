@@ -19,11 +19,11 @@
  * THE SOFTWARE.
  */
 
-package org.eduze.fyp.core.data;
+package org.eduze.fyp.data;
 
-import org.eduze.fyp.core.api.MapCollectionStrategy;
-import org.eduze.fyp.core.api.MapCollector;
-import org.eduze.fyp.core.api.resources.LocalMap;
+import org.eduze.fyp.api.MapCollectionStrategy;
+import org.eduze.fyp.api.MapCollector;
+import org.eduze.fyp.api.resources.LocalMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

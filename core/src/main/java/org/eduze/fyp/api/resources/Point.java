@@ -18,37 +18,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.eduze.fyp.core.api.resources;
+package org.eduze.fyp.api.resources;
 
-import java.util.List;
+public class Point {
 
-public class LocalMap {
+    private double x;
+    private double y;
 
-    private int cameraId;
-    private long timestamp;
-    private List<Point> points;
-
-    public int getCameraId() {
-        return cameraId;
+    public Point() {
     }
 
-    public void setCameraId(int cameraId) {
-        this.cameraId = cameraId;
+    public Point(double x, double y) {
+        this.x = x;
+        this.y = y;
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    public double getX() {
+        return x;
     }
 
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
+    public void setX(double x) {
+        this.x = x;
     }
 
-    public List<Point> getPoints() {
-        return points;
+    public double getY() {
+        return y;
     }
 
-    public void setPoints(List<Point> points) {
-        this.points = points;
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[%f,%f]", x, y);
     }
 }

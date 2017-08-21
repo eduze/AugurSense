@@ -21,11 +21,11 @@
 
 package org.eduze.fyp.core;
 
-import org.eduze.fyp.core.api.AnalyticsEngine;
-import org.eduze.fyp.core.api.ConfigurationManager;
-import org.eduze.fyp.core.api.MapCollector;
-import org.eduze.fyp.core.api.MapProcessor;
-import org.eduze.fyp.core.api.annotations.AutoStart;
+import org.eduze.fyp.api.AnalyticsEngine;
+import org.eduze.fyp.api.ConfigurationManager;
+import org.eduze.fyp.api.MapCollector;
+import org.eduze.fyp.api.MapProcessor;
+import org.eduze.fyp.api.annotations.AutoStart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

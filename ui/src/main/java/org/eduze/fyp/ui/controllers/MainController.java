@@ -14,21 +14,21 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import org.eduze.fyp.core.api.*;
-import org.eduze.fyp.core.api.resources.GlobalMap;
-import org.eduze.fyp.core.api.resources.Point;
-import org.eduze.fyp.core.api.listeners.ConfigurationListener;
-import org.eduze.fyp.core.api.listeners.ProcessedDataListener;
-import org.eduze.fyp.core.api.resources.PointMapping;
+import org.eduze.fyp.api.AnalyticsEngine;
+import org.eduze.fyp.api.ConfigurationManager;
+import org.eduze.fyp.api.MapProcessor;
+import org.eduze.fyp.api.resources.GlobalMap;
+import org.eduze.fyp.api.resources.Point;
+import org.eduze.fyp.api.listeners.ConfigurationListener;
+import org.eduze.fyp.api.listeners.ProcessedDataListener;
+import org.eduze.fyp.api.resources.PointMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.*;
-import java.util.List;
 
 /**
  * Controller for the main window of the {@link org.eduze.fyp.ui.App}

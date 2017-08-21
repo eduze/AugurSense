@@ -21,7 +21,7 @@
 
 package org.eduze.fyp.ui;
 
-import org.eduze.fyp.core.api.annotations.AnnotationUtils;
+import org.eduze.fyp.api.annotations.AnnotationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;

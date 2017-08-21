@@ -3,7 +3,8 @@
  */
 package org.eduze.fyp.restapi.services.config;
 
-import org.eduze.fyp.core.api.ConfigurationManager;
+import org.eduze.fyp.api.AnalyticsEngine;
+import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.restapi.resources.Camera;
 import org.eduze.fyp.restapi.resources.CameraView;
 import org.eduze.fyp.restapi.resources.MapConfiguration;
@@ -42,7 +43,7 @@ public class ConfigService {
     }
 
     /**
-     * Get the floor plan or map of the enclosed are which the {@link org.eduze.fyp.core.api.AnalyticsEngine} is going to cover
+     * Get the floor plan or map of the enclosed are which the {@link AnalyticsEngine} is going to cover
      *
      * @param cameraId camera ID
      * @return byte array of the map image

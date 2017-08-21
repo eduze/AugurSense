@@ -18,10 +18,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.eduze.fyp.core.api;
+package org.eduze.fyp.api;
 
-import org.eduze.fyp.core.api.config.Startable;
-import org.eduze.fyp.core.api.resources.LocalMap;
+import org.eduze.fyp.api.config.Startable;
+import org.eduze.fyp.api.resources.LocalMap;
 
 public interface MapCollectionStrategy extends Startable {
 

@@ -21,11 +21,11 @@
 
 package org.eduze.fyp.core;
 
-import org.eduze.fyp.core.api.MapProcessor;
-import org.eduze.fyp.core.api.annotations.AutoStart;
-import org.eduze.fyp.core.api.listeners.ProcessedDataListener;
-import org.eduze.fyp.core.api.resources.GlobalMap;
-import org.eduze.fyp.core.api.resources.LocalMap;
+import org.eduze.fyp.api.MapProcessor;
+import org.eduze.fyp.api.annotations.AutoStart;
+import org.eduze.fyp.api.listeners.ProcessedDataListener;
+import org.eduze.fyp.api.resources.GlobalMap;
+import org.eduze.fyp.api.resources.LocalMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +44,7 @@ public class InMemoryMapProcessor implements MapProcessor {
     public void dataReceived(Set<LocalMap> maps) {
         logger.debug("Received {} points for processing", maps.size());
 
+        // TODO: 8/21/17 Process the points and generate global map
         GlobalMap map = new GlobalMap();
         maps.forEach(localMap -> map.getPoints().addAll(localMap.getPoints()));
 

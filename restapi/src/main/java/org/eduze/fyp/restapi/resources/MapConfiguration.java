@@ -3,7 +3,7 @@
  */
 package org.eduze.fyp.restapi.resources;
 
-import org.eduze.fyp.core.api.resources.PointMapping;
+import org.eduze.fyp.api.resources.PointMapping;
 
 import javax.xml.bind.annotation.XmlRootElement;
 

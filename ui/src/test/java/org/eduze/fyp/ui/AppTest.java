@@ -21,8 +21,8 @@
 
 package org.eduze.fyp.ui;
 
-import org.eduze.fyp.core.api.ConfigurationManager;
-import org.eduze.fyp.core.api.resources.Point;
+import org.eduze.fyp.api.ConfigurationManager;
+import org.eduze.fyp.api.resources.Point;
 import org.eduze.fyp.restapi.resources.Camera;
 import org.eduze.fyp.restapi.resources.FrameInfo;
 import org.glassfish.jersey.client.JerseyClientBuilder;

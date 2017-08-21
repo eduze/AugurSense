@@ -18,20 +18,32 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+package org.eduze.fyp.api;
 
-package org.eduze.fyp.core.api.resources;
+import org.eduze.fyp.api.config.Startable;
 
-import java.util.List;
+/**
+ * Interface for Analytics Engine core
+ *
+ * @author Imesha Sudasingha
+ */
+public abstract class AnalyticsEngine implements Startable {
 
-public class GlobalMap {
-
-    private List<Point> points;
-
-    public List<Point> getPoints() {
-        return points;
+    public void start() {
+        doStart();
     }
 
-    public void setPoints(List<Point> points) {
-        this.points = points;
+    public void stop() {
+        doStop();
     }
+
+    protected abstract void doStart();
+
+    protected abstract void doStop();
+
+    public abstract ConfigurationManager getConfigurationManager();
+
+    public abstract MapCollector getMapCollector();
+
+    public abstract MapProcessor getMapProcessor();
 }

@@ -18,7 +18,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.eduze.fyp.core.api.resources;
+package org.eduze.fyp.api.resources;
 
 import java.util.ArrayList;
 import java.util.List;

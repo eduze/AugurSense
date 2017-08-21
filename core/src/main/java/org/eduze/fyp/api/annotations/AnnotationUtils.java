@@ -18,9 +18,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.eduze.fyp.core.api.annotations;
+package org.eduze.fyp.api.annotations;
 
-import org.eduze.fyp.core.api.config.Startable;
+import org.eduze.fyp.api.config.Startable;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Comparator;

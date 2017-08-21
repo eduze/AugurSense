@@ -56,7 +56,7 @@
         </property>
     </bean>
 
-    <bean id="map-collection-strategy" class="org.eduze.fyp.core.data.TimeWindowMapCollectionStrategy">
+    <bean id="map-collection-strategy" class="org.eduze.fyp.data.TimeWindowMapCollectionStrategy">
         <constructor-arg ref="map-collector"/>
         <property name="timeWindowMs" value="1000"/>
     </bean>

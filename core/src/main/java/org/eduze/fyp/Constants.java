@@ -18,15 +18,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.eduze.fyp.core.api;
+package org.eduze.fyp;
 
-import org.eduze.fyp.core.api.config.Startable;
-import org.eduze.fyp.core.api.listeners.MapListener;
-import org.eduze.fyp.core.api.listeners.ProcessedDataListener;
+public class Constants {
 
-public interface MapProcessor extends MapListener, Startable {
+    private Constants() {
+    }
 
-    void addProcessedDataListener(ProcessedDataListener listener);
-
-    void removeProcessedDataListener(ProcessedDataListener listener);
+    public static class Properties {
+        public static final String FLOOR_MAP_IMAGE = "org.eduze.fyp.config.map";
+    }
 }

@@ -20,10 +20,11 @@
  */
 package org.eduze.fyp.core;
 
-import org.eduze.fyp.core.api.annotations.AutoStart;
-import org.eduze.fyp.core.api.listeners.ConfigurationListener;
-import org.eduze.fyp.core.api.ConfigurationManager;
-import org.eduze.fyp.core.api.resources.PointMapping;
+import org.eduze.fyp.Constants;
+import org.eduze.fyp.api.ConfigurationManager;
+import org.eduze.fyp.api.listeners.ConfigurationListener;
+import org.eduze.fyp.api.resources.PointMapping;
+import org.eduze.fyp.api.annotations.AutoStart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,13 +32,10 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-
-import static org.eduze.fyp.core.Constants.Properties.FLOOR_MAP_IMAGE;
 
 /**
  * {@link ConfigurationManager} implementation which is doing all operations using in-memory data storage.
@@ -163,7 +161,7 @@ public class InMemoryConfigurationManager implements ConfigurationManager {
             throw new IllegalArgumentException("Unable to load properties", e);
         }
 
-        String mapPath = properties.getProperty(FLOOR_MAP_IMAGE);
+        String mapPath = properties.getProperty(Constants.Properties.FLOOR_MAP_IMAGE);
         logger.debug("Using map image : {}", mapPath);
         try (InputStream in = getClass().getClassLoader().getResourceAsStream(mapPath)) {
             map = ImageIO.read(in);

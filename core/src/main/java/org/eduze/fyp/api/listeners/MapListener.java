@@ -18,9 +18,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.eduze.fyp.core.api.listeners;
+package org.eduze.fyp.api.listeners;
 
-import org.eduze.fyp.core.api.resources.LocalMap;
+import org.eduze.fyp.api.resources.LocalMap;
 
 import java.util.Set;
 

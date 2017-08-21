@@ -18,28 +18,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.eduze.fyp.restapi.services.realtime;
+package org.eduze.fyp.api.resources;
 
-import org.eduze.fyp.api.MapCollector;
-import org.eduze.fyp.api.resources.LocalMap;
-import org.eduze.fyp.restapi.resources.FrameInfo;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
 
-/**
- * Service class which is handling the real time data transfers
- *
- * @author Imesha Sudasingha
- */
-public class RealtimeService {
+public class LocalMap {
 
-    @Autowired
-    private MapCollector mapCollector;
+    private int cameraId;
+    private long timestamp;
+    private List<Point> points;
 
-    public void addFrameInfo(FrameInfo frameInfo) {
-        LocalMap localMap = new LocalMap();
-        localMap.setCameraId(frameInfo.getCamera().getId());
-        localMap.setTimestamp(frameInfo.getTimestamp());
-        localMap.setPoints(frameInfo.getCoordinates());
-        mapCollector.addPoints(localMap);
+    public int getCameraId() {
+        return cameraId;
+    }
+
+    public void setCameraId(int cameraId) {
+        this.cameraId = cameraId;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public List<Point> getPoints() {
+        return points;
+    }
+
+    public void setPoints(List<Point> points) {
+        this.points = points;
     }
 }

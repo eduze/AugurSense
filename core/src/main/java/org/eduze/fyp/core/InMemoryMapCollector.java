@@ -21,12 +21,12 @@
 
 package org.eduze.fyp.core;
 
-import org.eduze.fyp.core.api.ConfigurationManager;
-import org.eduze.fyp.core.api.MapCollectionStrategy;
-import org.eduze.fyp.core.api.MapCollector;
-import org.eduze.fyp.core.api.annotations.AutoStart;
-import org.eduze.fyp.core.api.listeners.MapListener;
-import org.eduze.fyp.core.api.resources.LocalMap;
+import org.eduze.fyp.api.ConfigurationManager;
+import org.eduze.fyp.api.MapCollectionStrategy;
+import org.eduze.fyp.api.MapCollector;
+import org.eduze.fyp.api.annotations.AutoStart;
+import org.eduze.fyp.api.listeners.MapListener;
+import org.eduze.fyp.api.resources.LocalMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -18,39 +18,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.eduze.fyp.core.api.resources;
+package org.eduze.fyp.api.config;
 
-public class Point {
+public interface Startable {
 
-    private double x;
-    private double y;
+    void start();
 
-    public Point() {
-    }
-
-    public Point(double x, double y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("[%f,%f]", x, y);
-    }
+    void stop();
 }
