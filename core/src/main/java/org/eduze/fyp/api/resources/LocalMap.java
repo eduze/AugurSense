@@ -20,13 +20,14 @@
  */
 package org.eduze.fyp.api.resources;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LocalMap {
 
     private int cameraId;
     private long timestamp;
-    private List<Point> points;
+    private List<Point> points = new ArrayList<>();
 
     public int getCameraId() {
         return cameraId;
@@ -50,5 +51,10 @@ public class LocalMap {
 
     public void setPoints(List<Point> points) {
         this.points = points;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("{camera: %s, timestamp: %s}", cameraId, timestamp);
     }
 }

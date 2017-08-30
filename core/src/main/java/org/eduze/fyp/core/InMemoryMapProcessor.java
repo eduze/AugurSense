@@ -46,19 +46,23 @@ public class InMemoryMapProcessor implements MapProcessor {
 
         // TODO: 8/21/17 Process the points and generate global map
         GlobalMap map = new GlobalMap();
-        maps.forEach(localMap -> map.getPoints().addAll(localMap.getPoints()));
+        maps.stream().filter(localMap -> localMap.getPoints().size() > 0)
+                .forEach(localMap -> map.getPoints().addAll(localMap.getPoints()));
 
+        logger.debug("Notifying {} listeners about global map", processedDataListeners.size());
         processedDataListeners.forEach(listener -> listener.dataProcessed(map));
     }
 
     @Override
     public void addProcessedDataListener(ProcessedDataListener listener) {
         processedDataListeners.add(listener);
+        logger.info("Added global map listener (Total map listeners: {})", processedDataListeners.size());
     }
 
     @Override
     public void removeProcessedDataListener(ProcessedDataListener listener) {
         processedDataListeners.remove(listener);
+        logger.info("Removed global map listener (Total map listeners: {})", processedDataListeners.size());
     }
 
     @Override

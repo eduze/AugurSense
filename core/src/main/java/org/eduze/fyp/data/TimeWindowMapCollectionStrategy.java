@@ -23,6 +23,7 @@ package org.eduze.fyp.data;
 
 import org.eduze.fyp.api.MapCollectionStrategy;
 import org.eduze.fyp.api.MapCollector;
+import org.eduze.fyp.api.annotations.AutoStart;
 import org.eduze.fyp.api.resources.LocalMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @author Imesha Sudasingha
  */
+@AutoStart(startOrder = 2)
 public class TimeWindowMapCollectionStrategy implements MapCollectionStrategy {
 
     private static final Logger logger = LoggerFactory.getLogger(TimeWindowMapCollectionStrategy.class);
@@ -50,7 +52,7 @@ public class TimeWindowMapCollectionStrategy implements MapCollectionStrategy {
     private Map<Integer, LocalMap> currentWindow = new HashMap<>();
 
     private MapCollector mapCollector;
-    private int timeWindowMs = 1000;
+    private int timeWindowMs = 5000;
 
     public TimeWindowMapCollectionStrategy(MapCollector mapCollector) {
         this.mapCollector = mapCollector;
@@ -60,6 +62,7 @@ public class TimeWindowMapCollectionStrategy implements MapCollectionStrategy {
     public void submit(LocalMap map) {
         if (executorService.isShutdown()) {
             logger.warn("Map collection has stopped. Ignoring received frames");
+            return;
         }
 
         logger.debug("Received a local map for camera : {}", map.getCameraId(), map.getTimestamp());
@@ -67,6 +70,7 @@ public class TimeWindowMapCollectionStrategy implements MapCollectionStrategy {
         try {
             LocalMap localMap = currentWindow.get(map.getCameraId());
             if (localMap == null || localMap.getTimestamp() < map.getTimestamp()) {
+                logger.debug("Adding local map-{} to time window", map);
                 currentWindow.put(map.getCameraId(), map);
             }
         } finally {
@@ -90,10 +94,10 @@ public class TimeWindowMapCollectionStrategy implements MapCollectionStrategy {
                 break;
             }
 
-            logger.debug("Time window reached");
             Set<LocalMap> localMaps;
             lock.lock();
             try {
+                logger.debug("Publishing time window (Total maps for window: {})", currentWindow.size());
                 localMaps = new HashSet<>(currentWindow.values());
                 currentWindow.clear();
             } finally {

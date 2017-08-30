@@ -21,11 +21,12 @@
 
 package org.eduze.fyp.api.resources;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GlobalMap {
 
-    private List<Point> points;
+    private List<Point> points = new ArrayList<>();
 
     public List<Point> getPoints() {
         return points;

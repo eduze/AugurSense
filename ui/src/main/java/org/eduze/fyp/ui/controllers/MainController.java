@@ -17,10 +17,10 @@ import javafx.scene.layout.GridPane;
 import org.eduze.fyp.api.AnalyticsEngine;
 import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.api.MapProcessor;
-import org.eduze.fyp.api.resources.GlobalMap;
-import org.eduze.fyp.api.resources.Point;
 import org.eduze.fyp.api.listeners.ConfigurationListener;
 import org.eduze.fyp.api.listeners.ProcessedDataListener;
+import org.eduze.fyp.api.resources.GlobalMap;
+import org.eduze.fyp.api.resources.Point;
 import org.eduze.fyp.api.resources.PointMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +28,9 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * Controller for the main window of the {@link org.eduze.fyp.ui.App}
@@ -154,8 +156,8 @@ public class MainController implements Initializable, ProcessedDataListener, Con
         if (realtimeMap == null) return;
 
         logger.debug("Received {} points for real-time map", globalMap.getPoints().size());
-        globalMap.getPoints()
-                .forEach(point -> drawPoint(realtimeMapImageView, realtimeMap, point.getX(), point.getY(), 5, 5, Color.red));
+        globalMap.getPoints().forEach(point -> drawPoint(realtimeMapImageView, realtimeMap,
+                point.getX(), point.getY(), 5, 5, Color.red));
     }
 
     @Override

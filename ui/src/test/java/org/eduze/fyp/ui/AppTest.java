@@ -54,7 +54,8 @@ public class AppTest {
     private static final String[] views = new String[]{"views/view1.png", "views/view2.jpg"};
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        new Thread(() -> App.main(args)).start();
+        Thread mainThread = new Thread(() -> App.main(args));
+        mainThread.start();
 
         while (App.getInstance() == null) {
             logger.debug("Waiting ...");
@@ -78,12 +79,11 @@ public class AppTest {
                     configurationManager.getMap().getHeight()));
         }
 
-        Runtime.getRuntime().addShutdownHook(new Thread(executorService::shutdownNow));
-
         try {
-            Thread.currentThread().join();
+            mainThread.join();
         } catch (InterruptedException ignored) {
         }
+        executorService.shutdownNow();
     }
 
     private static class CameraSimulator implements Runnable {
@@ -142,7 +142,7 @@ public class AppTest {
 
                     response.close();
 
-                    Thread.sleep(1000);
+                    Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     logger.error("Interrupted. Exiting");
                     break;

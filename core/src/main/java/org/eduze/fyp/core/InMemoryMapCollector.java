@@ -66,11 +66,13 @@ public class InMemoryMapCollector implements MapCollector {
     @Override
     public synchronized void addMapListener(MapListener listener) {
         mapListeners.add(listener);
+        logger.info("Added map listener (Total map listeners: {})", mapListeners.size());
     }
 
     @Override
     public synchronized void removeMapListener(MapListener listener) {
         mapListeners.remove(listener);
+        logger.info("Removed map listener (Total map listeners: {})", mapListeners.size());
     }
 
     public MapCollectionStrategy getMapCollectionStrategy() {
@@ -84,18 +86,19 @@ public class InMemoryMapCollector implements MapCollector {
     @Override
     public void start() {
         logger.debug("Starting map collector");
-        mapCollectionStrategy.start();
+
         logger.info("Map collector started");
     }
 
     @Override
     public void stop() {
         logger.debug("Stopping map collector");
-        mapCollectionStrategy.stop();
+
         logger.info("Map collector stopped");
     }
 
     public void setMapListeners(Set<MapListener> mapListeners) {
+        logger.info("Setting map listeners (Total : {})", mapListeners.size());
         this.mapListeners = mapListeners;
     }
 }
