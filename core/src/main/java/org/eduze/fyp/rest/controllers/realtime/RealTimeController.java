@@ -1,7 +1,7 @@
-package org.eduze.fyp.restapi.controllers.realtime;
+package org.eduze.fyp.rest.controllers.realtime;
 
-import org.eduze.fyp.restapi.resources.FrameInfo;
-import org.eduze.fyp.restapi.services.realtime.RealtimeService;
+import org.eduze.fyp.rest.resources.FrameInfo;
+import org.eduze.fyp.rest.services.realtime.RealTimeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,13 +21,13 @@ public class RealTimeController {
 
     private static final Logger logger = LoggerFactory.getLogger(RealTimeController.class);
 
-    private RealtimeService realtimeService;
+    private RealTimeService realTimeService;
 
     @POST
     public Response postFrameInfo(FrameInfo frameInfo) {
         logger.debug("Received a FrameInfo request : {}", frameInfo);
         try {
-            realtimeService.addFrameInfo(frameInfo);
+            realTimeService.addFrameInfo(frameInfo);
         } catch (Exception e) {
             return Response.status(500).build();
         }
@@ -41,7 +41,7 @@ public class RealTimeController {
         return Response.status(200).build();
     }
 
-    public void setRealtimeService(RealtimeService realtimeService) {
-        this.realtimeService = realtimeService;
+    public void setRealTimeService(RealTimeService realTimeService) {
+        this.realTimeService = realTimeService;
     }
 }

@@ -2,7 +2,7 @@
  * Copyright to Eduze@UoM 2017
  */
 
-package org.eduze.fyp.restapi.resources;
+package org.eduze.fyp.rest.resources;
 
 import org.eduze.fyp.api.resources.Point;
 

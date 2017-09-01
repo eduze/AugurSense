@@ -16,9 +16,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import org.eduze.fyp.api.AnalyticsEngine;
 import org.eduze.fyp.api.ConfigurationManager;
-import org.eduze.fyp.api.MapProcessor;
 import org.eduze.fyp.api.listeners.ConfigurationListener;
-import org.eduze.fyp.api.listeners.ProcessedDataListener;
+import org.eduze.fyp.api.listeners.ProcessedMapListener;
 import org.eduze.fyp.api.resources.GlobalMap;
 import org.eduze.fyp.api.resources.Point;
 import org.eduze.fyp.api.resources.PointMapping;
@@ -37,12 +36,11 @@ import java.util.ResourceBundle;
  *
  * @author Imesha Sudasingha
  */
-public class MainController implements Initializable, ProcessedDataListener, ConfigurationListener {
+public class MainController implements Initializable, ProcessedMapListener, ConfigurationListener {
 
     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
-    private MapProcessor dataProcessor;
-    private ConfigurationManager configurationManager;
+    private AnalyticsEngine analyticsEngine;
 
     private Map<Integer, PointMapping> pointMappings = new HashMap<>();
     private Map<Integer, BufferedImage> mapsOnUI = new HashMap<>();
@@ -58,12 +56,10 @@ public class MainController implements Initializable, ProcessedDataListener, Con
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        AnalyticsEngine analyticsEngine = (AnalyticsEngine) resources.getObject("analyticsEngine");
-        configurationManager = analyticsEngine.getConfigurationManager();
-        dataProcessor = analyticsEngine.getMapProcessor();
+        analyticsEngine = (AnalyticsEngine) resources.getObject("analyticsEngine");
 
+        ConfigurationManager configurationManager = analyticsEngine.getConfigurationManager();
         configurationManager.addConfigurationListener(this);
-
         realtimeMap = configurationManager.getMap();
 
         Map<Integer, BufferedImage> cameraViews = configurationManager.getCameraViews();
@@ -92,7 +88,7 @@ public class MainController implements Initializable, ProcessedDataListener, Con
             }
         });
 
-        dataProcessor.addProcessedDataListener(this);
+        analyticsEngine.getMapProcessor().addProcessedMapListener(this);
     }
 
     private synchronized void checkAndAddCameraToAccordion(int cameraId, BufferedImage viewImage) {
@@ -101,7 +97,7 @@ public class MainController implements Initializable, ProcessedDataListener, Con
             return;
         }
 
-        mapsOnUI.put(cameraId, configurationManager.getMap());
+        mapsOnUI.put(cameraId, analyticsEngine.getConfigurationManager().getMap());
         Image mapImage = SwingFXUtils.toFXImage(mapsOnUI.get(cameraId), null);
 
         Image cameraView = SwingFXUtils.toFXImage(viewImage, null);
@@ -152,7 +148,7 @@ public class MainController implements Initializable, ProcessedDataListener, Con
     }
 
     @Override
-    public void dataProcessed(GlobalMap globalMap) {
+    public void mapProcessed(GlobalMap globalMap) {
         if (realtimeMap == null) return;
 
         logger.debug("Received {} points for real-time map", globalMap.getPoints().size());

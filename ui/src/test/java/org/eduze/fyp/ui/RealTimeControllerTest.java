@@ -5,8 +5,8 @@
 package org.eduze.fyp.ui;
 
 import org.eduze.fyp.api.resources.Point;
-import org.eduze.fyp.restapi.resources.Camera;
-import org.eduze.fyp.restapi.resources.FrameInfo;
+import org.eduze.fyp.rest.resources.Camera;
+import org.eduze.fyp.rest.resources.FrameInfo;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.Assert;
 import org.junit.Test;

@@ -29,7 +29,6 @@
 
     <bean id="analytics-engine" class="org.eduze.fyp.core.AnalyticsEngineImpl">
         <property name="configurationManager" ref="configuration-manager"/>
-        <property name="mapCollector" ref="map-collector"/>
         <property name="mapProcessor" ref="map-processor"/>
     </bean>
 
@@ -38,35 +37,16 @@
     <!--<property name="analyticsEngine" ref="analytics-engine"/>-->
     <!--</bean>-->
 
-    <bean id="configuration-manager" class="org.eduze.fyp.core.InMemoryConfigurationManager">
+    <bean id="configuration-manager" class="org.eduze.fyp.core.ConfigurationManagerImpl">
         <property name="propertiesFile" value="analytics.properties"/>
-        <property name="configurationListeners">
-            <set>
-                <ref bean="map-collector"/>
-            </set>
-        </property>
     </bean>
 
-    <bean id="map-collector" class="org.eduze.fyp.core.InMemoryMapCollector">
-        <property name="mapCollectionStrategy" ref="map-collection-strategy"/>
-        <property name="mapListeners">
-            <set>
-                <ref bean="map-processor"/>
-            </set>
-        </property>
-    </bean>
-
-    <bean id="map-collection-strategy" class="org.eduze.fyp.data.TimeWindowMapCollectionStrategy">
-        <constructor-arg ref="map-collector"/>
-        <property name="timeWindowMs" value="1000"/>
-    </bean>
-
-    <bean id="map-processor" class="org.eduze.fyp.core.InMemoryMapProcessor"/>
+    <bean id="map-processor" class="org.eduze.fyp.core.MapProcessorImpl"/>
 
     <!-- ============================================================================ -->
     <!--                    REST Server related configuration                         -->
     <!-- ============================================================================ -->
-    <bean id="rest-server" class="org.eduze.fyp.restapi.RestServer">
+    <bean id="rest-server" class="org.eduze.fyp.rest.RestServer">
         <property name="controllers">
             <set>
                 <ref bean="realtime-controller"/>
@@ -75,15 +55,15 @@
         </property>
     </bean>
 
-    <bean id="config-controller" class="org.eduze.fyp.restapi.controllers.config.ConfigController">
+    <bean id="config-controller" class="org.eduze.fyp.rest.controllers.config.ConfigController">
         <property name="configService">
-            <bean class="org.eduze.fyp.restapi.services.config.ConfigService"/>
+            <bean class="org.eduze.fyp.rest.services.config.ConfigService"/>
         </property>
     </bean>
 
-    <bean id="realtime-controller" class="org.eduze.fyp.restapi.controllers.realtime.RealTimeController">
-        <property name="realtimeService">
-            <bean class="org.eduze.fyp.restapi.services.realtime.RealtimeService"/>
+    <bean id="realtime-controller" class="org.eduze.fyp.rest.controllers.realtime.RealTimeController">
+        <property name="realTimeService">
+            <bean class="org.eduze.fyp.rest.services.realtime.RealTimeService"/>
         </property>
     </bean>
 

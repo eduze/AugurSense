@@ -20,11 +20,9 @@
  */
 package org.eduze.fyp.api.listeners;
 
-import org.eduze.fyp.api.resources.LocalMap;
+import org.eduze.fyp.api.resources.GlobalMap;
 
-import java.util.Set;
+public interface ProcessedMapListener {
 
-public interface MapListener {
-
-    void dataReceived(Set<LocalMap> maps);
+    void mapProcessed(GlobalMap map);
 }

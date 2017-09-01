@@ -1,13 +1,13 @@
 /*
  * Copyright to Eduze@UoM 2017
  */
-package org.eduze.fyp.restapi.controllers.config;
+package org.eduze.fyp.rest.controllers.config;
 
-import org.eduze.fyp.restapi.resources.Camera;
-import org.eduze.fyp.restapi.resources.CameraView;
-import org.eduze.fyp.restapi.resources.MapConfiguration;
-import org.eduze.fyp.restapi.resources.Status;
-import org.eduze.fyp.restapi.services.config.ConfigService;
+import org.eduze.fyp.rest.resources.Camera;
+import org.eduze.fyp.rest.resources.CameraView;
+import org.eduze.fyp.rest.resources.MapConfiguration;
+import org.eduze.fyp.rest.resources.Status;
+import org.eduze.fyp.rest.services.config.ConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

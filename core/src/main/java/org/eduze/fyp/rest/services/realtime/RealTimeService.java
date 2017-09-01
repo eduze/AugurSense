@@ -18,11 +18,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.eduze.fyp.api.listeners;
+package org.eduze.fyp.rest.services.realtime;
 
-import org.eduze.fyp.api.resources.GlobalMap;
+import org.eduze.fyp.api.MapProcessor;
+import org.eduze.fyp.api.resources.LocalMap;
+import org.eduze.fyp.rest.resources.FrameInfo;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public interface ProcessedDataListener {
+/**
+ * Service class which is handling the real time data transfers
+ *
+ * @author Imesha Sudasingha
+ */
+public class RealTimeService {
 
-    void dataProcessed(GlobalMap map);
+    @Autowired
+    private MapProcessor mapProcessor;
+
+    public void addFrameInfo(FrameInfo frameInfo) {
+        LocalMap localMap = new LocalMap();
+        localMap.setCameraId(frameInfo.getCamera().getId());
+        localMap.setTimestamp(frameInfo.getTimestamp());
+        localMap.setPoints(frameInfo.getCoordinates());
+        mapProcessor.addLocalMap(localMap);
+    }
 }

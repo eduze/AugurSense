@@ -1,4 +1,4 @@
-package org.eduze.fyp.restapi;
+package org.eduze.fyp.rest;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.session.SessionHandler;
@@ -17,7 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Main class of the <pre>restapi</pre> package. This class is using <pre>Jetty</pre> server to initialize the
+ * Main class of the <pre>rest</pre> package. This class is using <pre>Jetty</pre> server to initialize the
  * REST server.
  *
  * @author Imesha Sudasingha

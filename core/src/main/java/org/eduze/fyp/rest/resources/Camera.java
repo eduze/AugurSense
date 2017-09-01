@@ -1,4 +1,4 @@
-package org.eduze.fyp.restapi.resources;
+package org.eduze.fyp.rest.resources;
 
 public class Camera {
 

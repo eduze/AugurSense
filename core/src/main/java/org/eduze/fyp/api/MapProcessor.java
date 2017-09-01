@@ -21,12 +21,14 @@
 package org.eduze.fyp.api;
 
 import org.eduze.fyp.api.config.Startable;
-import org.eduze.fyp.api.listeners.MapListener;
-import org.eduze.fyp.api.listeners.ProcessedDataListener;
+import org.eduze.fyp.api.listeners.ProcessedMapListener;
+import org.eduze.fyp.api.resources.LocalMap;
 
-public interface MapProcessor extends MapListener, Startable {
+public interface MapProcessor extends Startable {
 
-    void addProcessedDataListener(ProcessedDataListener listener);
+    void addLocalMap(LocalMap map);
 
-    void removeProcessedDataListener(ProcessedDataListener listener);
+    void addProcessedMapListener(ProcessedMapListener listener);
+
+    void removeProcessedMapListener(ProcessedMapListener listener);
 }

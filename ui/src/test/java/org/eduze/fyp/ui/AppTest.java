@@ -23,8 +23,8 @@ package org.eduze.fyp.ui;
 
 import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.api.resources.Point;
-import org.eduze.fyp.restapi.resources.Camera;
-import org.eduze.fyp.restapi.resources.FrameInfo;
+import org.eduze.fyp.rest.resources.Camera;
+import org.eduze.fyp.rest.resources.FrameInfo;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,9 @@ public class AppTest {
 
     private static final Logger logger = LoggerFactory.getLogger(AppTest.class);
 
-    private static final String[] views = new String[]{"views/view1.png", "views/view2.jpg"};
+    private static final String[] views = new String[]{
+            "src/test/resources/views/view1.png",
+            "src/test/resources/views/view2.jpg"};
 
     public static void main(String[] args) throws IOException, InterruptedException {
         Thread mainThread = new Thread(() -> App.main(args));

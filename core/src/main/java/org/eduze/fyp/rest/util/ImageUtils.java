@@ -1,7 +1,7 @@
 /*
  * Copyright to Eduze@UoM 2017
  */
-package org.eduze.fyp.restapi.util;
+package org.eduze.fyp.rest.util;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

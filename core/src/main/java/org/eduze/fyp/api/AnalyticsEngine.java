@@ -43,7 +43,5 @@ public abstract class AnalyticsEngine implements Startable {
 
     public abstract ConfigurationManager getConfigurationManager();
 
-    public abstract MapCollector getMapCollector();
-
     public abstract MapProcessor getMapProcessor();
 }

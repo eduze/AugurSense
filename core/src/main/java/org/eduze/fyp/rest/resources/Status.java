@@ -18,12 +18,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.eduze.fyp.api;
+package org.eduze.fyp.rest.resources;
 
-import org.eduze.fyp.api.config.Startable;
-import org.eduze.fyp.api.resources.LocalMap;
+public class Status {
 
-public interface MapCollectionStrategy extends Startable {
+    private boolean status;
 
-    void submit(LocalMap map);
+    public Status() {
+
+    }
+
+    public Status(boolean status) {
+        this.status = status;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
+    }
 }

@@ -2,7 +2,7 @@
  * Copyright to Eduze@UoM 2017
  */
 
-package org.eduze.fyp.restapi.util;
+package org.eduze.fyp.rest.util;
 
 import org.eclipse.jetty.server.AbstractNCSARequestLog;
 import org.slf4j.Logger;

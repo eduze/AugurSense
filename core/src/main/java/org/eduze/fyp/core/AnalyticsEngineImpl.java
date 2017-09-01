@@ -23,14 +23,14 @@ package org.eduze.fyp.core;
 
 import org.eduze.fyp.api.AnalyticsEngine;
 import org.eduze.fyp.api.ConfigurationManager;
-import org.eduze.fyp.api.MapCollector;
 import org.eduze.fyp.api.MapProcessor;
 import org.eduze.fyp.api.annotations.AutoStart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Main class of the analytics engine. This will start all the other required components for the analytics engine to run.
+ * Main class of the analytics engine. This will start all the other required components for the analytics engine to
+ * run.
  *
  * @author Imesha Sudasingha
  */
@@ -39,10 +39,7 @@ public class AnalyticsEngineImpl extends AnalyticsEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(AnalyticsEngineImpl.class);
 
-    private static AnalyticsEngineImpl instance;
-
     private ConfigurationManager configurationManager;
-    private MapCollector mapCollector;
     private MapProcessor mapProcessor;
 
     private AnalyticsEngineImpl() {
@@ -68,21 +65,12 @@ public class AnalyticsEngineImpl extends AnalyticsEngine {
     }
 
     @Override
-    public MapCollector getMapCollector() {
-        return mapCollector;
-    }
-
-    @Override
     public MapProcessor getMapProcessor() {
         return mapProcessor;
     }
 
     public void setConfigurationManager(ConfigurationManager configurationManager) {
         this.configurationManager = configurationManager;
-    }
-
-    public void setMapCollector(MapCollector mapCollector) {
-        this.mapCollector = mapCollector;
     }
 
     public void setMapProcessor(MapProcessor mapProcessor) {

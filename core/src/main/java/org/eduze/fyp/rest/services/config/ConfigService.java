@@ -1,14 +1,14 @@
 /*
  * Copyright to Eduze@UoM 2017
  */
-package org.eduze.fyp.restapi.services.config;
+package org.eduze.fyp.rest.services.config;
 
 import org.eduze.fyp.api.AnalyticsEngine;
 import org.eduze.fyp.api.ConfigurationManager;
-import org.eduze.fyp.restapi.resources.Camera;
-import org.eduze.fyp.restapi.resources.CameraView;
-import org.eduze.fyp.restapi.resources.MapConfiguration;
-import org.eduze.fyp.restapi.util.ImageUtils;
+import org.eduze.fyp.rest.resources.Camera;
+import org.eduze.fyp.rest.resources.CameraView;
+import org.eduze.fyp.rest.resources.MapConfiguration;
+import org.eduze.fyp.rest.util.ImageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.NotFoundException;
