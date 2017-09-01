@@ -27,7 +27,7 @@ public class LocalMap {
 
     private int cameraId;
     private long timestamp;
-    private List<Point> points = new ArrayList<>();
+    private List<PersonCoordinate> personCoordinates = new ArrayList<>();
 
     public int getCameraId() {
         return cameraId;
@@ -45,12 +45,12 @@ public class LocalMap {
         this.timestamp = timestamp;
     }
 
-    public List<Point> getPoints() {
-        return points;
+    public List<PersonCoordinate> getPersonCoordinates() {
+        return personCoordinates;
     }
 
-    public void setPoints(List<Point> points) {
-        this.points = points;
+    public void setPersonCoordinates(List<PersonCoordinate> personCoordinates) {
+        this.personCoordinates = personCoordinates;
     }
 
     @Override

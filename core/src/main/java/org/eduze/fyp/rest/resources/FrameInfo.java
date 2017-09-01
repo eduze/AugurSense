@@ -4,7 +4,7 @@
 
 package org.eduze.fyp.rest.resources;
 
-import org.eduze.fyp.api.resources.Point;
+import org.eduze.fyp.api.resources.PersonCoordinate;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
@@ -14,7 +14,7 @@ public class FrameInfo {
 
     private Camera camera;
     private long timestamp;
-    private List<Point> coordinates;
+    private List<PersonCoordinate> personCoordinates;
 
     public Camera getCamera() {
         return camera;
@@ -32,12 +32,12 @@ public class FrameInfo {
         this.timestamp = timestamp;
     }
 
-    public List<Point> getCoordinates() {
-        return coordinates;
+    public List<PersonCoordinate> getPersonCoordinates() {
+        return personCoordinates;
     }
 
-    public void setCoordinates(List<Point> coordinates) {
-        this.coordinates = coordinates;
+    public void setPersonCoordinates(List<PersonCoordinate> personCoordinates) {
+        this.personCoordinates = personCoordinates;
     }
 
     public String toString() {

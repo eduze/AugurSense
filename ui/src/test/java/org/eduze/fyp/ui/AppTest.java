@@ -22,7 +22,7 @@
 package org.eduze.fyp.ui;
 
 import org.eduze.fyp.api.ConfigurationManager;
-import org.eduze.fyp.api.resources.Point;
+import org.eduze.fyp.api.resources.PersonCoordinate;
 import org.eduze.fyp.rest.resources.Camera;
 import org.eduze.fyp.rest.resources.FrameInfo;
 import org.glassfish.jersey.client.JerseyClientBuilder;
@@ -94,7 +94,7 @@ public class AppTest {
         private int mapWidth;
         private int mapHeight;
         private WebTarget target;
-        private List<Point> coordinates = new ArrayList<>();
+        private List<PersonCoordinate> coordinates = new ArrayList<>();
         private Random random = new Random();
 
 
@@ -114,10 +114,11 @@ public class AppTest {
             target = client.target(builder);
 
             int pointCount = random.nextInt(5) + 1;
+            long timestamp = System.currentTimeMillis();
             for (int i = 0; i < pointCount; i++) {
                 double x = random.nextInt(mapWidth);
                 double y = random.nextInt(mapHeight);
-                coordinates.add(new Point(x, y));
+                coordinates.add(new PersonCoordinate(x, y, timestamp, null));
             }
         }
 
@@ -136,7 +137,7 @@ public class AppTest {
                 FrameInfo frameInfo = new FrameInfo();
                 frameInfo.setCamera(camera);
                 frameInfo.setTimestamp(System.currentTimeMillis());
-                frameInfo.setCoordinates(coordinates);
+                frameInfo.setPersonCoordinates(coordinates);
 
                 try {
                     Response response = target.request(MediaType.APPLICATION_JSON)

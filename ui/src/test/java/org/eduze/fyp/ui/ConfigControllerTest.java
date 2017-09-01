@@ -30,7 +30,7 @@ import java.io.InputStream;
 public class ConfigControllerTest extends AbstractTestCase {
 
     private static final int CAMERA_ID = 1;
-    private static final String MAP_IMAGE_PATH = "map.jpg";
+    private static final String MAP_IMAGE_PATH = "src/test/resources/map.jpg";
 
     @Test
     public void getCameraIdTest() {

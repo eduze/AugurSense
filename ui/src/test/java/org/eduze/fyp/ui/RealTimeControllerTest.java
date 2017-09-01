@@ -4,25 +4,35 @@
 
 package org.eduze.fyp.ui;
 
-import org.eduze.fyp.api.resources.Point;
+import org.eduze.fyp.api.resources.PersonCoordinate;
 import org.eduze.fyp.rest.resources.Camera;
 import org.eduze.fyp.rest.resources.FrameInfo;
+import org.eduze.fyp.rest.util.ImageUtils;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.client.*;
+import javax.imageio.ImageIO;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RealTimeControllerTest extends AbstractTestCase {
 
     private static final Logger logger = LoggerFactory.getLogger(RealTimeControllerTest.class);
+
+    private static final String PERSON_IMAGE = "src/test/resources/person.png";
 
     @Test
     public void testGetFrameInfo() {
@@ -45,7 +55,7 @@ public class RealTimeControllerTest extends AbstractTestCase {
     }
 
     @Test
-    public void testPostFrameInfo() {
+    public void testPostFrameInfo() throws IOException {
         Client client = JerseyClientBuilder.createClient();
 
         UriBuilder builder = UriBuilder.fromPath("api")
@@ -57,17 +67,24 @@ public class RealTimeControllerTest extends AbstractTestCase {
 
         WebTarget target = client.target(builder);
 
-        List<Point> coordinates = new ArrayList<>();
-        coordinates.add(new Point(15.3, 863.5));
-        coordinates.add(new Point(15.3, 863.5));
-        coordinates.add(new Point(15.3, 863.5));
-        coordinates.add(new Point(15.3, 863.5));
+        long timestamp = System.currentTimeMillis();
+        BufferedImage personImage = null;
+        try (InputStream stream = new FileInputStream(PERSON_IMAGE)) {
+            personImage = ImageIO.read(stream);
+        }
+        byte[] bytes = ImageUtils.bufferedImageToByteArray(personImage, "jpg");
+
+        List<PersonCoordinate> coordinates = new ArrayList<>();
+        coordinates.add(new PersonCoordinate(15.3, 863.5, timestamp, bytes));
+        coordinates.add(new PersonCoordinate(15.3, 863.5, timestamp, bytes));
+        coordinates.add(new PersonCoordinate(15.3, 863.5, timestamp, bytes));
+        coordinates.add(new PersonCoordinate(15.3, 863.5, timestamp, bytes));
 
         Camera camera = new Camera(1);
         FrameInfo frameInfo = new FrameInfo();
         frameInfo.setCamera(camera);
         frameInfo.setTimestamp(System.currentTimeMillis());
-        frameInfo.setCoordinates(coordinates);
+        frameInfo.setPersonCoordinates(coordinates);
 
         logger.debug("Sending request");
         Response response = target.request(MediaType.APPLICATION_JSON)

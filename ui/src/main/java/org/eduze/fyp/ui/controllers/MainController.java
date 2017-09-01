@@ -151,8 +151,8 @@ public class MainController implements Initializable, ProcessedMapListener, Conf
     public void mapProcessed(GlobalMap globalMap) {
         if (realtimeMap == null) return;
 
-        logger.debug("Received {} points for real-time map", globalMap.getPoints().size());
-        globalMap.getPoints().forEach(point -> drawPoint(realtimeMapImageView, realtimeMap,
+        logger.debug("Received {} points for real-time map", globalMap.getSnapshot().size());
+        globalMap.getSnapshot().forEach(point -> drawPoint(realtimeMapImageView, realtimeMap,
                 point.getX(), point.getY(), 5, 5, Color.red));
     }
 

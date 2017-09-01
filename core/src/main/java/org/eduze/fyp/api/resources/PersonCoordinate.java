@@ -19,21 +19,33 @@
 
 package org.eduze.fyp.api.resources;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import javax.xml.bind.annotation.XmlRootElement;
 
-public class GlobalMap {
+@XmlRootElement
+public class PersonCoordinate extends Coordinate {
+    private byte[] image;
 
-    private List<PersonLocation> personLocations = new ArrayList<>();
-    private Set<Coordinate> snapshot = new HashSet<>();
-
-    public List<Coordinate> getSnapshot() {
-        return new ArrayList<>(snapshot);
+    public PersonCoordinate() {
     }
 
-    public void update(LocalMap localMap) {
+    public PersonCoordinate(byte[] image) {
+        this.image = image;
+    }
 
+    public PersonCoordinate(double x, double y, long timestamp, byte[] image) {
+        super(x, y, timestamp);
+        this.image = image;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+
+    public Coordinate toCoordinate() {
+        return new Coordinate(getX(), getY(), getTimestamp());
     }
 }
