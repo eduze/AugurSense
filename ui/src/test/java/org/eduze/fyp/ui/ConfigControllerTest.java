@@ -7,7 +7,7 @@ import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.api.resources.Point;
 import org.eduze.fyp.api.resources.PointMapping;
 import org.eduze.fyp.rest.resources.Camera;
-import org.eduze.fyp.rest.resources.CameraView;
+import org.eduze.fyp.rest.resources.CameraConfig;
 import org.eduze.fyp.rest.resources.MapConfiguration;
 import org.eduze.fyp.rest.util.ImageUtils;
 import org.glassfish.jersey.client.JerseyClientBuilder;
@@ -62,7 +62,7 @@ public class ConfigControllerTest extends AbstractTestCase {
                 .port(8085)
                 .path("v1")
                 .path("config")
-                .path("cameraView");
+                .path("cameraConfig");
 
         Camera camera = new Camera(CAMERA_ID);
         BufferedImage mapImage = null;
@@ -71,13 +71,14 @@ public class ConfigControllerTest extends AbstractTestCase {
         }
         byte[] bytes = ImageUtils.bufferedImageToByteArray(mapImage, "jpg");
 
-        CameraView cameraView = new CameraView();
-        cameraView.setCamera(camera);
-        cameraView.setViewBytes(bytes);
+        CameraConfig cameraConfig = new CameraConfig();
+        cameraConfig.setCamera(camera);
+        cameraConfig.setViewBytes(bytes);
+        cameraConfig.setIpAndPort("localhost:80");
 
         Response response = client.target(builder)
                 .request(MediaType.APPLICATION_JSON)
-                .post(Entity.json(cameraView));
+                .post(Entity.json(cameraConfig));
 
         Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
 

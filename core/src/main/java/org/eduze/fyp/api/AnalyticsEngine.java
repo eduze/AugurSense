@@ -21,6 +21,7 @@
 package org.eduze.fyp.api;
 
 import org.eduze.fyp.api.config.Startable;
+import org.eduze.fyp.api.util.Args;
 
 /**
  * Interface for Analytics Engine core
@@ -29,7 +30,14 @@ import org.eduze.fyp.api.config.Startable;
  */
 public abstract class AnalyticsEngine implements Startable {
 
+    private ConfigurationManager configurationManager;
+    private MapProcessor mapProcessor;
+    private CameraCoordinator cameraCoordinator;
+
     public void start() {
+        Args.notNull(configurationManager, "configurationManager");
+        Args.notNull(mapProcessor, "mapProcessor");
+        Args.notNull(cameraCoordinator, "cameraCoordinator");
         doStart();
     }
 
@@ -41,7 +49,27 @@ public abstract class AnalyticsEngine implements Startable {
 
     protected abstract void doStop();
 
-    public abstract ConfigurationManager getConfigurationManager();
+    public ConfigurationManager getConfigurationManager() {
+        return configurationManager;
+    }
 
-    public abstract MapProcessor getMapProcessor();
+    public MapProcessor getMapProcessor() {
+        return mapProcessor;
+    }
+
+    public CameraCoordinator getCameraCoordinator() {
+        return cameraCoordinator;
+    }
+
+    public void setConfigurationManager(ConfigurationManager configurationManager) {
+        this.configurationManager = configurationManager;
+    }
+
+    public void setMapProcessor(MapProcessor mapProcessor) {
+        this.mapProcessor = mapProcessor;
+    }
+
+    public void setCameraCoordinator(CameraCoordinator cameraCoordinator) {
+        this.cameraCoordinator = cameraCoordinator;
+    }
 }

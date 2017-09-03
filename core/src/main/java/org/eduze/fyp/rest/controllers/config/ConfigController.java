@@ -4,7 +4,7 @@
 package org.eduze.fyp.rest.controllers.config;
 
 import org.eduze.fyp.rest.resources.Camera;
-import org.eduze.fyp.rest.resources.CameraView;
+import org.eduze.fyp.rest.resources.CameraConfig;
 import org.eduze.fyp.rest.resources.MapConfiguration;
 import org.eduze.fyp.rest.resources.Status;
 import org.eduze.fyp.rest.services.config.ConfigService;
@@ -55,12 +55,12 @@ public class ConfigController {
     }
 
     @POST
-    @Path("/cameraView")
-    public Response postCameraView(CameraView cameraView) {
+    @Path("/cameraConfig")
+    public Response postCameraView(CameraConfig cameraConfig) {
         try {
-            configService.configureCameraView(cameraView);
+            configService.configureCameraView(cameraConfig);
         } catch (Exception e) {
-            logger.error("Error occurred when configuring camera view : {}", cameraView, e);
+            logger.error("Error occurred when configuring camera view : {}", cameraConfig, e);
             return Response.status(500).build();
         }
         return Response.status(200).build();

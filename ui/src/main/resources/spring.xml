@@ -27,9 +27,10 @@
 
     <context:annotation-config/>
 
-    <bean id="analytics-engine" class="org.eduze.fyp.core.AnalyticsEngineImpl">
+    <bean id="analytics-engine" class="org.eduze.fyp.impl.AnalyticsEngineImpl">
         <property name="configurationManager" ref="configuration-manager"/>
         <property name="mapProcessor" ref="map-processor"/>
+        <property name="cameraCoordinator" ref="camera-coordinator"/>
     </bean>
 
     <!-- Analytics Engine UI -->
@@ -37,11 +38,17 @@
     <!--<property name="analyticsEngine" ref="analytics-engine"/>-->
     <!--</bean>-->
 
-    <bean id="configuration-manager" class="org.eduze.fyp.core.ConfigurationManagerImpl">
+    <bean id="configuration-manager" class="org.eduze.fyp.impl.ConfigurationManagerImpl">
         <property name="propertiesFile" value="analytics.properties"/>
     </bean>
 
-    <bean id="map-processor" class="org.eduze.fyp.core.MapProcessorImpl"/>
+    <bean id="map-processor" class="org.eduze.fyp.impl.MapProcessorImpl">
+        <property name="cameraCoordinator" ref="camera-coordinator"/>
+    </bean>
+
+    <bean id="camera-coordinator" class="org.eduze.fyp.impl.CentralizedCameraCoordinator">
+        <constructor-arg ref="configuration-manager"/>
+    </bean>
 
     <!-- ============================================================================ -->
     <!--                    REST Server related configuration                         -->

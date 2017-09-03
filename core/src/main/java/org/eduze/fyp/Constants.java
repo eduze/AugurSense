@@ -22,8 +22,19 @@ package org.eduze.fyp;
 
 public class Constants {
 
-    private Constants() {
-    }
+    private Constants() { }
+
+    /** Interval in which we ask from cameras to process a new frame */
+    public static final long FRAME_PROCESSING_INTERVAL = 2000;
+    /** The suffix in the URL to which we notify to start processing a new frame */
+    public static final String CAMERA_COORDINATION_PATH = "/process";
+
+    /** Threshold to be used to determine whether two points are the same */
+    public static final double DISTANCE_THRESHOLD = 50;
+
+    /** Global map refresh interval */
+    public static final long MAP_REFRESH_INTERVAL = 5;
+    public static final long MAP_REFRESH_THRESHOLD = 3;
 
     public static class Properties {
         public static final String FLOOR_MAP_IMAGE = "org.eduze.fyp.config.map";

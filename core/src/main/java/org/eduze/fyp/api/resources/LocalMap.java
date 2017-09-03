@@ -50,7 +50,9 @@ public class LocalMap {
     }
 
     public void setPersonCoordinates(List<PersonCoordinate> personCoordinates) {
-        this.personCoordinates = personCoordinates;
+        if (personCoordinates != null) {
+            this.personCoordinates = personCoordinates;
+        }
     }
 
     @Override

@@ -17,38 +17,24 @@
  * IN THE SOFTWARE.
  */
 
-package org.eduze.fyp.rest.resources;
+package org.eduze.fyp.api.util;
 
 /**
- * Represents a camera. A camera only has a unique ID.
- * <pre>
- *  {
- *    id: 1
- *  }
- * </pre>
+ * A utility class to be used for variable validations like not null checks ant etc.
  *
  * @author Imesha Sudasingha
  */
-public class Camera {
+public class Args {
 
-    private int id;
+    private Args() {}
 
-    public Camera() {
+    public static void notNull(Object o) {
+        notNull(o, "object");
     }
 
-    public Camera(int id) {
-        this.id = id;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String toString() {
-        return String.valueOf(id);
+    public static void notNull(Object o, String name) {
+        if (o == null) {
+            throw new IllegalArgumentException(String.format("Argument %s cannot be null", name));
+        }
     }
 }

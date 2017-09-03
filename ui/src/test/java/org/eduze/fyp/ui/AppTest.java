@@ -21,10 +21,19 @@
 
 package org.eduze.fyp.ui;
 
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
+import org.apache.commons.io.IOUtils;
+import org.eduze.fyp.Constants;
 import org.eduze.fyp.api.ConfigurationManager;
+import org.eduze.fyp.api.State;
 import org.eduze.fyp.api.resources.PersonCoordinate;
+import org.eduze.fyp.api.resources.PointMapping;
 import org.eduze.fyp.rest.resources.Camera;
+import org.eduze.fyp.rest.resources.CameraConfig;
 import org.eduze.fyp.rest.resources.FrameInfo;
+import org.eduze.fyp.rest.util.ImageUtils;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,15 +46,19 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Set;
 
 public class AppTest {
 
@@ -64,32 +77,87 @@ public class AppTest {
             Thread.sleep(1000);
         }
 
-        ConfigurationManager configurationManager = App.getInstance()
-                .getChass()
-                .getApplicationContext()
-                .getBean(ConfigurationManager.class);
+        App.getInstance().getChass().getStateManager().waitFor(State.STARTED);
+        ConfigurationManager configurationManager = App.getInstance().getChass()
+                .getApplicationContext().getBean(ConfigurationManager.class);
 
-        ExecutorService executorService = Executors.newFixedThreadPool(views.length);
+        Set<CameraSimulator> simulators = new HashSet<>();
         for (int i = 0; i < views.length; i++) {
-            try (InputStream inputStream = new FileInputStream(views[i])) {
-                BufferedImage cameraView = ImageIO.read(inputStream);
-                configurationManager.setCameraView(i + 1, cameraView);
-            }
 
-            executorService.submit(new CameraSimulator(i + 1,
-                    configurationManager.getMap().getWidth(),
-                    configurationManager.getMap().getHeight()));
+            Camera camera = setupCamera();
+            int port = (8000 + camera.getId());
+
+            Dimension dimension = setupCameraConfig(camera.getId(), views[i],
+                    "localhost:" + port);
+
+            configurationManager.addPointMapping(camera.getId(), new PointMapping());
+            logger.debug("Camera-{} configured", camera.getId());
+
+            CameraSimulator simulator = new CameraSimulator(camera.getId(), (int) dimension.getWidth(),
+                    (int) dimension.getHeight(), port);
+            simulator.start();
+            simulators.add(simulator);
         }
 
         try {
             mainThread.join();
         } catch (InterruptedException ignored) {
         }
-        executorService.shutdownNow();
+
+        simulators.forEach(CameraSimulator::stop);
     }
 
-    private static class CameraSimulator implements Runnable {
+    private static Camera setupCamera() {
+        Client client = JerseyClientBuilder.createClient();
 
+        UriBuilder builder = UriBuilder.fromPath("api")
+                .scheme("http")
+                .host("localhost")
+                .port(8085)
+                .path("v1")
+                .path("config")
+                .path("cameraId");
+
+        return client.target(builder)
+                .request(MediaType.APPLICATION_JSON)
+                .get(Camera.class);
+    }
+
+    private static Dimension setupCameraConfig(int cameraId, String viewImgPath, String address) throws IOException {
+        Client client = JerseyClientBuilder.createClient();
+
+        UriBuilder builder = UriBuilder.fromPath("api")
+                .scheme("http")
+                .host("localhost")
+                .port(8085)
+                .path("v1")
+                .path("config")
+                .path("cameraConfig");
+
+        Camera camera = new Camera(cameraId);
+        BufferedImage viewImage = null;
+        try (InputStream stream = new FileInputStream(viewImgPath)) {
+            viewImage = ImageIO.read(stream);
+        }
+        byte[] bytes = ImageUtils.bufferedImageToByteArray(viewImage);
+
+        CameraConfig cameraConfig = new CameraConfig();
+        cameraConfig.setCamera(camera);
+        cameraConfig.setViewBytes(bytes);
+        cameraConfig.setIpAndPort(address);
+
+        Response response = client.target(builder)
+                .request(MediaType.APPLICATION_JSON)
+                .post(Entity.json(cameraConfig));
+
+        if (response.getStatus() != Response.Status.OK.getStatusCode()) {
+            throw new IllegalStateException("Unable to post camera view");
+        }
+
+        return new Dimension(viewImage.getWidth(), viewImage.getHeight());
+    }
+
+    private static class CameraSimulator implements HttpHandler {
         private int cameraId;
         private int mapWidth;
         private int mapHeight;
@@ -97,8 +165,9 @@ public class AppTest {
         private List<PersonCoordinate> coordinates = new ArrayList<>();
         private Random random = new Random();
 
+        private HttpServer server;
 
-        private CameraSimulator(int cameraId, int mapWidth, int mapHeight) {
+        private CameraSimulator(int cameraId, int mapWidth, int mapHeight, int serverPort) throws IOException {
             this.cameraId = cameraId;
             this.mapWidth = mapWidth;
             this.mapHeight = mapHeight;
@@ -120,42 +189,65 @@ public class AppTest {
                 double y = random.nextInt(mapHeight);
                 coordinates.add(new PersonCoordinate(x, y, timestamp, null));
             }
+
+            server = HttpServer.create(new InetSocketAddress(serverPort), 0);
+            server.createContext(Constants.CAMERA_COORDINATION_PATH, this);
         }
 
-        @Override
-        public void run() {
-            while (true) {
-                coordinates.forEach(point -> {
-                    double x = point.getX() + (random.nextBoolean() ? 1 : -1) * random.nextInt(10);
-                    double y = point.getY() + (random.nextBoolean() ? 1 : -1) * random.nextInt(10);
-                    point.setX(x < mapWidth ? x : 0);
-                    point.setY(y < mapHeight ? y : 0);
-                });
+        public void start() {
+            server.start();
+        }
 
-                Camera camera = new Camera(cameraId);
+        public void stop() {
+            server.stop(0);
+        }
 
-                FrameInfo frameInfo = new FrameInfo();
-                frameInfo.setCamera(camera);
-                frameInfo.setTimestamp(System.currentTimeMillis());
-                frameInfo.setPersonCoordinates(coordinates);
 
-                try {
-                    Response response = target.request(MediaType.APPLICATION_JSON)
-                            .post(Entity.json(frameInfo));
+        public void sendNextFrame(long timestamp) {
+            coordinates.forEach(coordinate -> {
+                double x = coordinate.getX() + (random.nextBoolean() ? 1 : -1) * random.nextInt(50);
+                double y = coordinate.getY() + (random.nextBoolean() ? 1 : -1) * random.nextInt(50);
 
-                    response.close();
+                x = x < 0 ? 0 : x;
+                x = x > mapWidth ? mapHeight : x;
 
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    logger.error("Interrupted. Exiting");
-                    break;
-                } catch (ProcessingException ignored) {
-                }
+                y = y < 0 ? 0 : y;
+                y = y > mapHeight ? mapHeight : y;
+
+                coordinate.setX(x);
+                coordinate.setY(y);
+                coordinate.setTimestamp(timestamp);
+            });
+
+            Camera camera = new Camera(cameraId);
+
+            FrameInfo frameInfo = new FrameInfo();
+            frameInfo.setCamera(camera);
+            frameInfo.setTimestamp(timestamp);
+            frameInfo.setPersonCoordinates(coordinates);
+
+            try {
+                Response response = target.request(MediaType.APPLICATION_JSON)
+                        .post(Entity.json(frameInfo));
+
+                response.close();
+            } catch (ProcessingException ignored) {
             }
         }
 
         public int getCameraId() {
             return cameraId;
+        }
+
+        @Override
+        public void handle(HttpExchange httpExchange) throws IOException {
+            long timestamp = Long.parseLong(IOUtils.toString(httpExchange.getRequestBody(), Charset.defaultCharset()));
+            String response = "This is the response";
+            httpExchange.sendResponseHeaders(200, response.length());
+            OutputStream os = httpExchange.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+            sendNextFrame(timestamp);
         }
     }
 }

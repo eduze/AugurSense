@@ -18,9 +18,10 @@ import org.eduze.fyp.api.AnalyticsEngine;
 import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.api.listeners.ConfigurationListener;
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
-import org.eduze.fyp.api.resources.GlobalMap;
+import org.eduze.fyp.api.resources.Coordinate;
 import org.eduze.fyp.api.resources.Point;
 import org.eduze.fyp.api.resources.PointMapping;
+import org.eduze.fyp.ui.controllers.util.ImageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +31,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 /**
  * Controller for the main window of the {@link org.eduze.fyp.ui.App}
@@ -46,6 +48,7 @@ public class MainController implements Initializable, ProcessedMapListener, Conf
     private Map<Integer, BufferedImage> mapsOnUI = new HashMap<>();
 
     private BufferedImage realtimeMap;
+    private BufferedImage originalMap;
     private ImageView realtimeMapImageView;
 
     @FXML
@@ -60,7 +63,8 @@ public class MainController implements Initializable, ProcessedMapListener, Conf
 
         ConfigurationManager configurationManager = analyticsEngine.getConfigurationManager();
         configurationManager.addConfigurationListener(this);
-        realtimeMap = configurationManager.getMap();
+        realtimeMap = ImageUtils.copyImage(configurationManager.getMap());
+        originalMap = ImageUtils.copyImage(configurationManager.getMap());
 
         Map<Integer, BufferedImage> cameraViews = configurationManager.getCameraViews();
 
@@ -105,7 +109,7 @@ public class MainController implements Initializable, ProcessedMapListener, Conf
         ImageView mapImageView = new ImageView(mapImage);
 
         cameraImageView.setOnMouseClicked((event) -> {
-            logger.debug("CameraView-{} clicked at x : {}, y : {}", cameraId, event.getX(), event.getY());
+            logger.debug("CameraConfig-{} clicked at x : {}, y : {}", cameraId, event.getX(), event.getY());
 
             PointMapping mapping = pointMappings.computeIfAbsent(cameraId, (k) -> new PointMapping());
             if (mapping.getScreenSpacePoints().size() < 4) {
@@ -138,22 +142,23 @@ public class MainController implements Initializable, ProcessedMapListener, Conf
         drawPoint(imageView, image, x, y, 10, 10, Color.red);
     }
 
-    private void drawPoint(ImageView imageView, BufferedImage image, double x, double y, int pointWIdth, int pointHeight, Color color) {
+    private void drawPoint(ImageView imageView, BufferedImage image, double x, double y, int pointWidth, int pointHeight, Color color) {
         Graphics graphics = image.getGraphics();
         graphics.setColor(color);
-        graphics.fillOval((int) x, (int) y, pointWIdth, pointHeight);
+        graphics.fillOval((int) x, (int) y, pointWidth, pointHeight);
 
         Image updatedImage = SwingFXUtils.toFXImage(image, null);
         Platform.runLater(() -> imageView.setImage(updatedImage));
     }
 
     @Override
-    public void mapProcessed(GlobalMap globalMap) {
+    public void mapProcessed(Set<Coordinate> snapshots) {
         if (realtimeMap == null) return;
 
-        logger.debug("Received {} points for real-time map", globalMap.getSnapshot().size());
-        globalMap.getSnapshot().forEach(point -> drawPoint(realtimeMapImageView, realtimeMap,
-                point.getX(), point.getY(), 5, 5, Color.red));
+        BufferedImage map = ImageUtils.copyImage(originalMap);
+        logger.debug("Received {} points for real-time map", snapshots.size());
+        snapshots.forEach(point -> drawPoint(realtimeMapImageView, map,
+                point.getX(), point.getY(), 10, 10, Color.red));
     }
 
     @Override

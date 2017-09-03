@@ -19,34 +19,51 @@
  * THE SOFTWARE.
  */
 
-package org.eduze.fyp.core;
+package org.eduze.fyp.impl;
 
+import org.eduze.fyp.api.CameraCoordinator;
 import org.eduze.fyp.api.MapProcessor;
 import org.eduze.fyp.api.State;
 import org.eduze.fyp.api.StateManager;
 import org.eduze.fyp.api.annotations.AutoStart;
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
+import org.eduze.fyp.api.resources.Coordinate;
+import org.eduze.fyp.api.resources.GlobalMap;
 import org.eduze.fyp.api.resources.LocalMap;
+import org.eduze.fyp.api.util.Args;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static org.eduze.fyp.Constants.MAP_REFRESH_INTERVAL;
+import static org.eduze.fyp.Constants.MAP_REFRESH_THRESHOLD;
 
 @AutoStart(startOrder = 1)
 public class MapProcessorImpl implements MapProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(MapProcessorImpl.class);
 
+    private final GlobalMap globalMap = new GlobalMap();
+    private final StateManager stateManager = new StateManager(State.STOPPED);
+    private final Queue<LocalMap> localMapQueue = new LinkedList<>();
+    private CameraCoordinator cameraCoordinator;
     private Set<ProcessedMapListener> mapListeners = new HashSet<>();
-    private StateManager stateManager = new StateManager(State.STOPPED);
+    private ExecutorService processor;
 
     @Override
-    public synchronized void addLocalMap(LocalMap map) {
+    public void addLocalMap(LocalMap map) {
         stateManager.checkState(State.STARTED);
-
         logger.debug("Adding a local map for camera : {}", map.getCameraId());
-        // TODO: 9/1/17 Process this map
+
+        synchronized (this) {
+            localMapQueue.add(map);
+        }
     }
 
     @Override
@@ -61,16 +78,56 @@ public class MapProcessorImpl implements MapProcessor {
 
     @Override
     public void start() {
+        Args.notNull(cameraCoordinator, "cameraCoordinator");
+
         stateManager.checkState(State.STOPPED);
         logger.debug("Starting map collector");
-        logger.info("Map collector started");
+
+        processor = Executors.newSingleThreadExecutor();
+        processor.submit((Runnable) () -> {
+            try {
+                stateManager.waitFor(State.STARTED);
+            } catch (InterruptedException e) {
+                logger.error("Map processing thread interrupted while waiting for start", e);
+            }
+            logger.debug("Starting map processing");
+
+            // TODO: 9/3/17 Optimize to use a thread pool of 2 atleast to focus more on processing
+            for (; ; ) {
+                if (!stateManager.isState(State.STARTED)) {
+                    break;
+                }
+
+                LocalMap nextMap;
+                synchronized (this) {
+                    nextMap = localMapQueue.poll();
+                }
+
+                if (nextMap == null) continue;
+
+                globalMap.update(nextMap);
+
+                if (cameraCoordinator.getCurrentTimestamp() % MAP_REFRESH_INTERVAL == 0) {
+                    long minTimestamp = cameraCoordinator.getCurrentTimestamp() - MAP_REFRESH_THRESHOLD;
+                    globalMap.refresh(minTimestamp);
+                }
+
+                Set<Coordinate> snapshots = globalMap.getSnapshot();
+                mapListeners.forEach(listener -> listener.mapProcessed(snapshots));
+            }
+        });
+
         stateManager.setState(State.STARTED);
+        logger.info("Map collector started");
     }
 
     @Override
     public void stop() {
         stateManager.checkState(State.STARTED);
         logger.debug("Stopping map collector");
+
+        processor.shutdownNow();
+
         logger.info("Map collector stopped");
         stateManager.setState(State.STOPPED);
     }
@@ -79,5 +136,9 @@ public class MapProcessorImpl implements MapProcessor {
         if (listeners != null) {
             mapListeners.addAll(listeners);
         }
+    }
+
+    public void setCameraCoordinator(CameraCoordinator cameraCoordinator) {
+        this.cameraCoordinator = cameraCoordinator;
     }
 }

@@ -17,38 +17,17 @@
  * IN THE SOFTWARE.
  */
 
-package org.eduze.fyp.rest.resources;
+package org.eduze.fyp.api;
+
+import org.eduze.fyp.api.config.Startable;
 
 /**
- * Represents a camera. A camera only has a unique ID.
- * <pre>
- *  {
- *    id: 1
- *  }
- * </pre>
+ * The interface which should be implemented by a class which is supposed to do coordination among multiple cameras.
+ * This can be done through either logical timestamps or other mechanism.
  *
  * @author Imesha Sudasingha
  */
-public class Camera {
+public interface CameraCoordinator extends Startable {
 
-    private int id;
-
-    public Camera() {
-    }
-
-    public Camera(int id) {
-        this.id = id;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String toString() {
-        return String.valueOf(id);
-    }
+    long getCurrentTimestamp();
 }

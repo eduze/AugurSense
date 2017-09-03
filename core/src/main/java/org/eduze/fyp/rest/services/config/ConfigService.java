@@ -6,7 +6,7 @@ package org.eduze.fyp.rest.services.config;
 import org.eduze.fyp.api.AnalyticsEngine;
 import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.rest.resources.Camera;
-import org.eduze.fyp.rest.resources.CameraView;
+import org.eduze.fyp.rest.resources.CameraConfig;
 import org.eduze.fyp.rest.resources.MapConfiguration;
 import org.eduze.fyp.rest.util.ImageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +34,13 @@ public class ConfigService {
      * Adds a camera view to the configuration. The camera view submitted here will be used lataer for point
      * configuration
      *
-     * @param cameraView {@link CameraView} instance to be configured
+     * @param cameraConfig {@link CameraConfig} instance to be configured
      * @throws IOException
      */
-    public void configureCameraView(CameraView cameraView) throws IOException {
-        BufferedImage view = ImageUtils.byteArrayToBufferedImage(cameraView.getViewBytes());
-        configurationManager.setCameraView(cameraView.getCamera().getId(), view);
+    public void configureCameraView(CameraConfig cameraConfig) throws IOException {
+        BufferedImage view = ImageUtils.byteArrayToBufferedImage(cameraConfig.getViewBytes());
+        configurationManager.setCameraView(cameraConfig.getCamera().getId(), view);
+        configurationManager.setCameraIpAndPort(cameraConfig.getCamera().getId(), cameraConfig.getIpAndPort());
     }
 
     /**

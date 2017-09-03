@@ -4,6 +4,11 @@
 
 package org.eduze.fyp.api.resources;
 
+/**
+ * Represents an <pre>(x,y)</pre> coordinate pair.
+ *
+ * @author Imesha Sudasingha
+ */
 public class Point {
     private double x;
     private double y;

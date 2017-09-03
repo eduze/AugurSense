@@ -58,7 +58,6 @@ public class RestServer implements Startable {
 
         ResourceConfig config = new ResourceConfig();
         controllers.forEach(config::register);
-        // TODO: 5/30/17 Add controllers
 
         final ServletContainer servletContainer = new ServletContainer(config);
         ServletHolder servlet = new ServletHolder(servletContainer);

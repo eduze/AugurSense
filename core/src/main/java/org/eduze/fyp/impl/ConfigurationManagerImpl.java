@@ -18,7 +18,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.eduze.fyp.core;
+package org.eduze.fyp.impl;
 
 import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.api.State;
@@ -35,6 +35,8 @@ import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -58,17 +60,18 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 
     private String propertiesFile;
     private BufferedImage map;
+
     private Set<Integer> cameraIds = new HashSet<>();
     private Map<Integer, BufferedImage> cameraViews = new ConcurrentHashMap<>();
     private Map<Integer, PointMapping> pointMappings = new HashMap<>();
+    private Map<Integer, InetSocketAddress> cameraIpAndPorts = new HashMap<>();
+
     private Set<ConfigurationListener> configurationListeners = new HashSet<>();
 
-
-    public ConfigurationManagerImpl() {
-    }
+    public ConfigurationManagerImpl() { }
 
     private void loadProperties() throws IOException {
-        try (InputStream propertiesFile = getClass().getClassLoader().getResourceAsStream(this.propertiesFile);) {
+        try (InputStream propertiesFile = getClass().getClassLoader().getResourceAsStream(this.propertiesFile)) {
             System.getProperties().load(propertiesFile);
         }
     }
@@ -76,6 +79,13 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     public synchronized void setCameraView(int cameraId, BufferedImage view) {
         stateManager.checkState(State.STARTED);
         cameraViews.put(cameraId, view);
+        notifyConfigurationChange();
+    }
+
+    public synchronized void setCameraIpAndPort(int cameraId, String ipAndPort) throws UnknownHostException {
+        stateManager.checkState(State.STARTED);
+        String[] parts = ipAndPort.split(":");
+        cameraIpAndPorts.put(cameraId, InetSocketAddress.createUnresolved(parts[0], Integer.parseInt(parts[1])));
         notifyConfigurationChange();
     }
 
@@ -132,6 +142,11 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     }
 
     @Override
+    public Set<InetSocketAddress> getCameraIpAndPorts() {
+        return new HashSet<>(cameraIpAndPorts.values());
+    }
+
+    @Override
     public int getNumberOfCameras() {
         return cameraViews.entrySet().size();
     }
@@ -148,7 +163,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 
     @Override
     public boolean isConfigured() {
-        return cameraIds.size() == pointMappings.keySet().size();
+        return cameraIds.size() > 0 && cameraIds.size() == pointMappings.keySet().size();
     }
 
     private void notifyConfigurationChange() {

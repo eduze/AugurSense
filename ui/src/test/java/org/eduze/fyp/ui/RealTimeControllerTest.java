@@ -48,8 +48,7 @@ public class RealTimeControllerTest extends AbstractTestCase {
         WebTarget target = client.target(builder);
 
         logger.debug("Sending request");
-        Response response = target.request(MediaType.APPLICATION_JSON)
-                .get();
+        Response response = target.request(MediaType.APPLICATION_JSON).get();
 
         Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
     }

@@ -19,11 +19,9 @@
  * THE SOFTWARE.
  */
 
-package org.eduze.fyp.core;
+package org.eduze.fyp.impl;
 
 import org.eduze.fyp.api.AnalyticsEngine;
-import org.eduze.fyp.api.ConfigurationManager;
-import org.eduze.fyp.api.MapProcessor;
 import org.eduze.fyp.api.annotations.AutoStart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,11 +37,7 @@ public class AnalyticsEngineImpl extends AnalyticsEngine {
 
     private static final Logger logger = LoggerFactory.getLogger(AnalyticsEngineImpl.class);
 
-    private ConfigurationManager configurationManager;
-    private MapProcessor mapProcessor;
-
-    private AnalyticsEngineImpl() {
-    }
+    private AnalyticsEngineImpl() { }
 
     @Override
     public void doStart() {
@@ -57,23 +51,5 @@ public class AnalyticsEngineImpl extends AnalyticsEngine {
         logger.debug("Stopping Analytics Engine");
 
         logger.info("Analytics Engine Stopped ...");
-    }
-
-    @Override
-    public ConfigurationManager getConfigurationManager() {
-        return configurationManager;
-    }
-
-    @Override
-    public MapProcessor getMapProcessor() {
-        return mapProcessor;
-    }
-
-    public void setConfigurationManager(ConfigurationManager configurationManager) {
-        this.configurationManager = configurationManager;
-    }
-
-    public void setMapProcessor(MapProcessor mapProcessor) {
-        this.mapProcessor = mapProcessor;
     }
 }

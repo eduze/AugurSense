@@ -17,38 +17,20 @@
  * IN THE SOFTWARE.
  */
 
-package org.eduze.fyp.rest.resources;
+package org.eduze.fyp.ui.controllers.util;
 
-/**
- * Represents a camera. A camera only has a unique ID.
- * <pre>
- *  {
- *    id: 1
- *  }
- * </pre>
- *
- * @author Imesha Sudasingha
- */
-public class Camera {
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 
-    private int id;
+public class ImageUtils {
 
-    public Camera() {
-    }
+    private ImageUtils() {}
 
-    public Camera(int id) {
-        this.id = id;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String toString() {
-        return String.valueOf(id);
+    public static BufferedImage copyImage(BufferedImage original){
+        ColorModel cm = original.getColorModel();
+        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+        WritableRaster raster = original.copyData(null);
+        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
     }
 }

@@ -23,6 +23,12 @@ package org.eduze.fyp.api.resources;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class to represent camera space to world space mappings of reference points (4 reference points usually). Points are
+ * kept as x and y coordinates.
+ *
+ * @author Imesha Sudasingha
+ */
 public class PointMapping {
 
     private List<Point> screenSpacePoints = new ArrayList<>(4);

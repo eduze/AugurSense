@@ -20,11 +20,13 @@
  */
 package org.eduze.fyp.api;
 
-import org.eduze.fyp.api.listeners.ConfigurationListener;
 import org.eduze.fyp.api.config.Startable;
+import org.eduze.fyp.api.listeners.ConfigurationListener;
 import org.eduze.fyp.api.resources.PointMapping;
 
 import java.awt.image.BufferedImage;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,9 +35,11 @@ import java.util.Set;
  *
  * @author Imesha Sudasingha
  */
-public interface ConfigurationManager extends Startable{
+public interface ConfigurationManager extends Startable {
 
     void setCameraView(int cameraId, BufferedImage view);
+
+    void setCameraIpAndPort(int cameraId, String ipAndPort) throws UnknownHostException;
 
     /**
      * Adds the 2D to 3D point mappings corresponding to a given camera
@@ -58,6 +62,8 @@ public interface ConfigurationManager extends Startable{
     PointMapping getPointMapping(int cameraId);
 
     Set<Integer> getCameraIds();
+
+    Set<InetSocketAddress> getCameraIpAndPorts();
 
     int getNumberOfCameras();
 

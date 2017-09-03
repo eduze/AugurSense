@@ -6,10 +6,24 @@ package org.eduze.fyp.rest.resources;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
 
+/**
+ * Configuration on a given camera's view.
+ * <pre>
+ *     {
+ *         camera: {
+ *             id: 1
+ *         },
+ *         ipAndPort: 192.168.1.1:8001,
+ *         viewBytes: [...]
+ *     }
+ * </pre>
+ *
+ * @author Imesha Sudasingha
+ */
 @XmlRootElement
-public class CameraView {
-
+public class CameraConfig {
     private Camera camera;
+    private String ipAndPort;
     private byte[] viewBytes;
 
     public Camera getCamera() {
@@ -26,6 +40,14 @@ public class CameraView {
 
     public void setViewBytes(byte[] bytes) throws IOException {
         this.viewBytes = bytes;
+    }
+
+    public String getIpAndPort() {
+        return ipAndPort;
+    }
+
+    public void setIpAndPort(String ipAndPort) {
+        this.ipAndPort = ipAndPort;
     }
 
     public String toString() {

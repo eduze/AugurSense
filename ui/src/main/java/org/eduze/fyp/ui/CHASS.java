@@ -21,6 +21,8 @@
 
 package org.eduze.fyp.ui;
 
+import org.eduze.fyp.api.State;
+import org.eduze.fyp.api.StateManager;
 import org.eduze.fyp.api.annotations.AnnotationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,12 +36,16 @@ public class CHASS {
     private static final String ROOT_CONFIG = "spring.xml";
 
     private ApplicationContext applicationContext;
+    private StateManager stateManager = new StateManager(State.STOPPED);
 
     public CHASS() {
         applicationContext = new ClassPathXmlApplicationContext(ROOT_CONFIG);
     }
 
     public void start() {
+        stateManager.checkState(State.STOPPED);
+        stateManager.setState(State.STARTING);
+
         logger.debug("Starting auto annotated beans");
         try {
             AnnotationUtils.startAnnotatedElements(applicationContext);
@@ -49,9 +55,13 @@ public class CHASS {
             logger.error("Error occurred when starting", e);
             stop();
         }
+        stateManager.setState(State.STARTED);
     }
 
     public void stop() {
+        stateManager.checkState(State.STARTED, State.STARTING);
+        stateManager.setState(State.STOPPING);
+
         logger.debug("Stopping auto annotated beans");
         try {
             AnnotationUtils.stopAnnotatedElements(applicationContext);
@@ -59,9 +69,14 @@ public class CHASS {
         } catch (Exception e) {
             logger.error("Error occurred when stopping application", e);
         }
+        stateManager.setState(State.STOPPED);
     }
 
     public ApplicationContext getApplicationContext() {
         return applicationContext;
+    }
+
+    public StateManager getStateManager() {
+        return stateManager;
     }
 }
