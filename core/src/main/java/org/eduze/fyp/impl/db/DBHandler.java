@@ -18,43 +18,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.eduze.fyp.api.resources;
 
-/**
- * Represents an <pre>(x,y)</pre> coordinate pair.
- *
- * @author Imesha Sudasingha
- */
-public class Point {
-    private double x;
-    private double y;
+package org.eduze.fyp.impl.db;
 
-    public Point() {
-    }
+import org.eduze.fyp.api.annotations.AutoStart;
+import org.eduze.fyp.api.listeners.ProcessedMapListener;
+import org.eduze.fyp.api.resources.Coordinate;
+import org.eduze.fyp.impl.db.model.Person;
+import org.springframework.context.annotation.Bean;
 
-    public Point(double x, double y) {
-        this.x = x;
-        this.y = y;
-    }
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Set;
 
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
+@AutoStart(startOrder = 2)
+public class DBHandler implements ProcessedMapListener {
 
     @Override
-    public String toString() {
-        return String.format("[%f,%f]", x, y);
+    public void mapProcessed(Set<Coordinate> map) {
+
+
+    }
+
+
+    public void savePerson(PersonRepository repository) {
+
+        // save a couple of customers
+        repository.save(new Person(1, 1L, 1, 1));
     }
 }
