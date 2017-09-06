@@ -48,6 +48,7 @@
 
     <bean id="camera-coordinator" class="org.eduze.fyp.impl.CentralizedCameraCoordinator">
         <constructor-arg ref="configuration-manager"/>
+        <property name="mapProcessor" ref="map-processor"/>
     </bean>
 
     <!-- ============================================================================ -->
@@ -56,21 +57,14 @@
     <bean id="rest-server" class="org.eduze.fyp.rest.RestServer">
         <property name="controllers">
             <set>
-                <ref bean="realtime-controller"/>
                 <ref bean="config-controller"/>
             </set>
         </property>
     </bean>
 
-    <bean id="config-controller" class="org.eduze.fyp.rest.controllers.config.ConfigController">
+    <bean id="config-controller" class="org.eduze.fyp.rest.controllers.ConfigController">
         <property name="configService">
-            <bean class="org.eduze.fyp.rest.services.config.ConfigService"/>
-        </property>
-    </bean>
-
-    <bean id="realtime-controller" class="org.eduze.fyp.rest.controllers.realtime.RealTimeController">
-        <property name="realTimeService">
-            <bean class="org.eduze.fyp.rest.services.realtime.RealTimeService"/>
+            <bean class="org.eduze.fyp.rest.services.ConfigService"/>
         </property>
     </bean>
 

@@ -22,18 +22,18 @@ package org.eduze.fyp.impl;
 import org.eduze.fyp.Constants;
 import org.eduze.fyp.api.CameraCoordinator;
 import org.eduze.fyp.api.ConfigurationManager;
+import org.eduze.fyp.api.MapProcessor;
 import org.eduze.fyp.api.State;
 import org.eduze.fyp.api.StateManager;
 import org.eduze.fyp.api.annotations.AutoStart;
 import org.eduze.fyp.api.listeners.ConfigurationListener;
+import org.eduze.fyp.api.resources.LocalMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.DataOutputStream;
-import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
-import java.net.URL;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 
@@ -43,10 +43,11 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
     private static final Logger logger = LoggerFactory.getLogger(CentralizedCameraCoordinator.class);
 
     private ConfigurationManager configurationManager;
-    private Set<InetSocketAddress> cameraIpAndPorts;
+    private Map<InetSocketAddress, CameraNotifier> cameraNotifiers = new HashMap<>();
     private ExecutorService executorService;
     private StateManager stateManager = new StateManager(State.STOPPED);
     private long currentTimestamp = 1;
+    private MapProcessor mapProcessor;
 
     public CentralizedCameraCoordinator(ConfigurationManager configurationManager) {
         this.configurationManager = configurationManager;
@@ -58,7 +59,9 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
         logger.debug("Starting camera coordinator");
         configurationManager.addConfigurationListener(this);
         synchronized (this) {
-            cameraIpAndPorts = configurationManager.getCameraIpAndPorts();
+            configurationManager.getCameraIpAndPorts()
+                    .forEach(address ->
+                            cameraNotifiers.putIfAbsent(address, new CameraNotifier(address, this)));
         }
 
         executorService = new ForkJoinPool();
@@ -74,6 +77,7 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
         stateManager.setState(State.STOPPING);
         logger.debug("Stopping camera coordinator");
 
+        clearNotifiers();
         executorService.shutdownNow();
 
         stateManager.setState(State.STOPPED);
@@ -84,8 +88,10 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
     public void configurationChanged(ConfigurationManager configurationManager) {
         if (stateManager.isState(State.STARTED)) {
             synchronized (this) {
-                cameraIpAndPorts.clear();
-                cameraIpAndPorts.addAll(configurationManager.getCameraIpAndPorts());
+                clearNotifiers();
+                configurationManager.getCameraIpAndPorts()
+                        .forEach(address ->
+                                cameraNotifiers.putIfAbsent(address, new CameraNotifier(address, this)));
             }
         }
     }
@@ -113,9 +119,9 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
             }
 
             logger.debug("Asking for processed frames for timestamp {}", currentTimestamp);
-            byte[] data = String.valueOf(currentTimestamp).getBytes();
             synchronized (this) {
-                cameraIpAndPorts.forEach(address -> executorService.submit(() -> notifyCamera(address, data)));
+                cameraNotifiers.values()
+                        .forEach(notifier -> executorService.submit(() -> notifier.notifyCamera(currentTimestamp)));
             }
 
             currentTimestamp++;
@@ -124,39 +130,27 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
         logger.warn("Stopping camera coordination");
     }
 
-    private void notifyCamera(InetSocketAddress address, byte[] timestamp) {
-        HttpURLConnection connection = null;
-        try {
-            URL url = new URL("http", address.getHostName(), address.getPort(),
-                    Constants.CAMERA_COORDINATION_PATH);
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Length", String.valueOf(timestamp.length));
-            connection.setDoOutput(true);
-
-            DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
-            outputStream.write(timestamp);
-            outputStream.close();
-
-            if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                logger.error("Unable to notify {}. Response code {}", address.toString(),
-                        connection.getResponseCode());
-            }
-        } catch (Exception e) {
-            if (logger.isDebugEnabled()) {
-                logger.error("Error occurred when notifying {}", address.toString(), e);
-            } else {
-                logger.error("Error occurred when notifying {} with error: {}", address.toString(), e);
-            }
-        } finally {
-            if (connection != null) {
-                connection.disconnect();
-            }
+    private void clearNotifiers() {
+        synchronized (this) {
+            cameraNotifiers.values().forEach(CameraNotifier::stop);
+            cameraNotifiers.clear();
         }
+    }
+
+    public void addLocalMap(LocalMap map) {
+        mapProcessor.addLocalMap(map);
     }
 
     @Override
     public long getCurrentTimestamp() {
         return currentTimestamp;
+    }
+
+    public MapProcessor getMapProcessor() {
+        return mapProcessor;
+    }
+
+    public void setMapProcessor(MapProcessor mapProcessor) {
+        this.mapProcessor = mapProcessor;
     }
 }
