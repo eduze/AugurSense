@@ -101,6 +101,16 @@
                 <artifactId>commons-math3</artifactId>
                 <version>${apache.commons.math3.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-jpa</artifactId>
+                <version>${spring-data-jpa-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-commons</artifactId>
+                <version>${spring-data-commons-version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -118,6 +128,8 @@
         <spring.version>4.3.9.RELEASE</spring.version>
         <javacv.version>1.3.3</javacv.version>
         <apache.commons.math3.version>3.6.1</apache.commons.math3.version>
+        <spring-data-commons-version>1.13.6.RELEASE</spring-data-commons-version>
+        <spring-data-jpa-version>1.11.6.RELEASE</spring-data-jpa-version>
     </properties>
 
 </project>

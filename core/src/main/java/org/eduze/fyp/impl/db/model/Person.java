@@ -18,43 +18,34 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.eduze.fyp.api.resources;
 
-/**
- * Represents an <pre>(x,y)</pre> coordinate pair.
- *
- * @author Imesha Sudasingha
- */
-public class Point {
+package org.eduze.fyp.impl.db.model;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
+public class Person {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+    private long timestamp;
     private double x;
     private double y;
 
-    public Point() {
+    protected Person() {
     }
 
-    public Point(double x, double y) {
+    public Person(int id, long timestamp, double x, double y) {
+        this.id = id;
+        this.timestamp = timestamp;
         this.x = x;
         this.y = y;
     }
 
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("[%f,%f]", x, y);
-    }
 }
+
+

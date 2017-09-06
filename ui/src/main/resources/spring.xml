@@ -44,11 +44,20 @@
 
     <bean id="map-processor" class="org.eduze.fyp.impl.MapProcessorImpl">
         <property name="cameraCoordinator" ref="camera-coordinator"/>
+        <property name="mapListeners">
+            <set>
+                <ref bean="db-handler"/>
+            </set>
+        </property>
     </bean>
 
     <bean id="camera-coordinator" class="org.eduze.fyp.impl.CentralizedCameraCoordinator">
         <constructor-arg ref="configuration-manager"/>
     </bean>
+
+    <bean id="db-handler" class="org.eduze.fyp.impl.db.DBHandler">
+    </bean>
+
 
     <!-- ============================================================================ -->
     <!--                    REST Server related configuration                         -->
