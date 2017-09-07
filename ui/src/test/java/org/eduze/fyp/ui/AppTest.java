@@ -21,25 +21,23 @@
 
 package org.eduze.fyp.ui;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import org.apache.commons.io.IOUtils;
-import org.eduze.fyp.Constants;
 import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.api.State;
+import org.eduze.fyp.api.resources.LocalMap;
 import org.eduze.fyp.api.resources.PersonCoordinate;
 import org.eduze.fyp.api.resources.PointMapping;
 import org.eduze.fyp.rest.resources.Camera;
 import org.eduze.fyp.rest.resources.CameraConfig;
-import org.eduze.fyp.rest.resources.FrameInfo;
 import org.eduze.fyp.rest.util.ImageUtils;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
-import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -53,12 +51,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+
+import static org.eduze.fyp.Constants.CAMERA_NOTIFICATION_PATH;
 
 public class AppTest {
 
@@ -164,6 +163,7 @@ public class AppTest {
         private WebTarget target;
         private List<PersonCoordinate> coordinates = new ArrayList<>();
         private Random random = new Random();
+        private ObjectMapper mapper = new ObjectMapper();
 
         private HttpServer server;
 
@@ -191,11 +191,12 @@ public class AppTest {
             }
 
             server = HttpServer.create(new InetSocketAddress(serverPort), 0);
-            server.createContext(Constants.CAMERA_COORDINATION_PATH, this);
+            server.createContext(CAMERA_NOTIFICATION_PATH, this);
         }
 
         public void start() {
             server.start();
+            logger.debug("Server {} started", this.server.getAddress().toString());
         }
 
         public void stop() {
@@ -203,7 +204,7 @@ public class AppTest {
         }
 
 
-        public void sendNextFrame(long timestamp) {
+        public LocalMap processNextMap(long timestamp) {
             coordinates.forEach(coordinate -> {
                 double x = coordinate.getX() + (random.nextBoolean() ? 1 : -1) * random.nextInt(50);
                 double y = coordinate.getY() + (random.nextBoolean() ? 1 : -1) * random.nextInt(50);
@@ -219,20 +220,11 @@ public class AppTest {
                 coordinate.setTimestamp(timestamp);
             });
 
-            Camera camera = new Camera(cameraId);
-
-            FrameInfo frameInfo = new FrameInfo();
-            frameInfo.setCamera(camera);
-            frameInfo.setTimestamp(timestamp);
-            frameInfo.setPersonCoordinates(coordinates);
-
-            try {
-                Response response = target.request(MediaType.APPLICATION_JSON)
-                        .post(Entity.json(frameInfo));
-
-                response.close();
-            } catch (ProcessingException ignored) {
-            }
+            LocalMap map = new LocalMap();
+            map.setCameraId(cameraId);
+            map.setTimestamp(timestamp);
+            map.setPersonCoordinates(coordinates);
+            return map;
         }
 
         public int getCameraId() {
@@ -241,13 +233,16 @@ public class AppTest {
 
         @Override
         public void handle(HttpExchange httpExchange) throws IOException {
-            long timestamp = Long.parseLong(IOUtils.toString(httpExchange.getRequestBody(), Charset.defaultCharset()));
-            String response = "This is the response";
+            logger.debug("Received notification {}", httpExchange.getRequestURI().getPath());
+            long timestamp = Long.parseLong(httpExchange.getRequestURI().getPath().split("/")[2]);
+            logger.debug("Generating local map for timestamp {}", timestamp);
+            LocalMap map = processNextMap(timestamp);
+            String response = mapper.writeValueAsString(map);
             httpExchange.sendResponseHeaders(200, response.length());
             OutputStream os = httpExchange.getResponseBody();
             os.write(response.getBytes());
+            os.flush();
             os.close();
-            sendNextFrame(timestamp);
         }
     }
 }
