@@ -82,7 +82,10 @@
             <artifactId>spring-web</artifactId>
             <version>4.0.3.RELEASE</version>
         </dependency>
-
+        <dependency>
+        <groupId>org.eclipse.persistence</groupId>
+        <artifactId>javax.persistence</artifactId>
+    </dependency>
     </dependencies>
 
 </project>

@@ -25,7 +25,12 @@ import org.eduze.fyp.api.annotations.AutoStart;
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
 import org.eduze.fyp.api.resources.Coordinate;
 import org.eduze.fyp.impl.db.model.Person;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -36,16 +41,31 @@ import java.util.Set;
 @AutoStart(startOrder = 2)
 public class DBHandler implements ProcessedMapListener {
 
+    private static final Logger logger = LoggerFactory.getLogger(DBHandler.class);
+
+    @Autowired
+    private PersonRepository repository;
+//    ApplicationContext context = new ClassPathXmlApplicationContext(
+//            "spring.xml");
+//
+//    PersonRepository repo = (PersonRepository) context.getBean("personRepo");
+
     @Override
     public void mapProcessed(Set<Coordinate> map) {
-
-
+        logger.info("Save");
+        savePerson(repository);
     }
 
 
     public void savePerson(PersonRepository repository) {
-
-        // save a couple of customers
         repository.save(new Person(1, 1L, 1, 1));
+    }
+
+    public PersonRepository getRepository() {
+        return repository;
+    }
+
+    public void setRepository(PersonRepository repository) {
+        this.repository = repository;
     }
 }
