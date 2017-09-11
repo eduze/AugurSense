@@ -30,7 +30,7 @@ public class PersonLocation {
 
     private final Set<Integer> ids = new HashSet<>();
     private Map<Integer, Coordinate> contributingCoordinates = new HashMap<>();
-    private Coordinate snapshot = new Coordinate();
+    private PersonSnapshot snapshot = new PersonSnapshot();
 
     public PersonLocation() {
     }
@@ -54,13 +54,13 @@ public class PersonLocation {
         long timestamp = snapshot.getTimestamp() < original.getTimestamp() ?
                 original.getTimestamp() : snapshot.getTimestamp();
 
-        Coordinate snapshot = contributingCoordinates.values().stream()
+        Coordinate coordinate = contributingCoordinates.values().stream()
                 .reduce(new Coordinate(0, 0, timestamp),
                         (p1, p2) -> new Coordinate(p1.getX() + p2.getX(), p1.getY() + p2.getY(), timestamp));
-        snapshot.setX(snapshot.getX() / contributingCoordinates.size());
-        snapshot.setY(snapshot.getY() / contributingCoordinates.size());
+        coordinate.setX(coordinate.getX() / contributingCoordinates.size());
+        coordinate.setY(coordinate.getY() / contributingCoordinates.size());
 
-        this.snapshot = snapshot;
+        this.snapshot = new PersonSnapshot(ids, coordinate);
     }
 
     public void addId(int id) {
@@ -75,7 +75,7 @@ public class PersonLocation {
         return contributingCoordinates;
     }
 
-    public Coordinate getSnapshot() {
+    public PersonSnapshot getSnapshot() {
         return snapshot;
     }
 }

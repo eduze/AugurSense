@@ -20,11 +20,11 @@
  */
 package org.eduze.fyp.api.listeners;
 
-import org.eduze.fyp.api.resources.Coordinate;
+import org.eduze.fyp.api.resources.PersonSnapshot;
 
 import java.util.Set;
 
 public interface ProcessedMapListener {
 
-    void mapProcessed(Set<Coordinate> map);
+    void mapProcessed(Set<PersonSnapshot> snapshots);
 }

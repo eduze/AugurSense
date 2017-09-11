@@ -27,14 +27,17 @@ import org.eduze.fyp.api.State;
 import org.eduze.fyp.api.StateManager;
 import org.eduze.fyp.api.annotations.AutoStart;
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
-import org.eduze.fyp.api.resources.Coordinate;
 import org.eduze.fyp.api.resources.GlobalMap;
 import org.eduze.fyp.api.resources.LocalMap;
+import org.eduze.fyp.api.resources.PersonSnapshot;
 import org.eduze.fyp.api.util.Args;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -109,7 +112,7 @@ public class MapProcessorImpl implements MapProcessor {
                     globalMap.refresh(minTimestamp);
                 }
 
-                Set<Coordinate> snapshots = globalMap.getSnapshot();
+                Set<PersonSnapshot> snapshots = globalMap.getSnapshot();
                 mapListeners.forEach(listener -> listener.mapProcessed(snapshots));
             }
         });

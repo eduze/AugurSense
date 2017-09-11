@@ -9,6 +9,9 @@
         <Logger name="org.eclipse.jetty" level="ERROR">
             <AppenderRef ref="Console"/>
         </Logger>
+        <Logger name="org.hibernate" level="INFO">
+            <AppenderRef ref="Console"/>
+        </Logger>
         <Root level="DEBUG">
             <AppenderRef ref="Console"/>
         </Root>

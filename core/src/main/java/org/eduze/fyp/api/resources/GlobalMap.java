@@ -43,7 +43,7 @@ public class GlobalMap {
 
     private List<PersonLocation> personLocations = new ArrayList<>();
 
-    public synchronized Set<Coordinate> getSnapshot() {
+    public synchronized Set<PersonSnapshot> getSnapshot() {
         return personLocations.stream()
                 .map(PersonLocation::getSnapshot)
                 .collect(Collectors.toSet());
@@ -57,7 +57,6 @@ public class GlobalMap {
             // For this person coordinate, find the closest person location; if any
             double minDistance = Double.MAX_VALUE;
             PersonLocation closest = null;
-
             for (PersonLocation pl : personLocations) {
                 double distance = Math.sqrt(Math.pow(pc.getX() - pl.getSnapshot().getX(), 2) +
                         Math.pow(pc.getY() - pl.getSnapshot().getY(), 2));
@@ -67,6 +66,8 @@ public class GlobalMap {
                 }
             }
 
+            int id = new Random().nextInt(200) + 1;
+
             /*
              * Now we know at least that there are person locations in the map since we have something called
              * closest. But there's not guarantee that it is actually close until we check with a threshold.
@@ -75,7 +76,6 @@ public class GlobalMap {
              */
             if (pc.getImage() != null) {
                 // TODO: 9/3/17 Send to Re-ID system and get an ID
-                int id = new Random().nextInt(200) + 1;
 
                 if (closest != null && minDistance < Constants.DISTANCE_THRESHOLD) {
                     logger.debug("Found match for person {} at {}", id, pc);
@@ -95,6 +95,7 @@ public class GlobalMap {
                     closest.addPoint(localMap.getCameraId(), pc.toCoordinate());
                 } else {
                     logger.warn("Found erroneous coordinate {}", pc);
+                    // TODO: 9/11/17 Should we store this or not?
                     PersonLocation newPL = new PersonLocation();
                     newPL.addPoint(localMap.getCameraId(), pc.toCoordinate());
                     newPersons.add(newPL);

@@ -21,31 +21,78 @@
 
 package org.eduze.fyp.impl.db.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
+import java.util.Set;
 
 @Entity
+@Table(name = "persons")
 public class Person {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private long timestamp;
     private double x;
     private double y;
+    private String ids;
 
     protected Person() {
     }
 
-    public Person(int id, long timestamp, double x, double y) {
-        this.id = id;
+    public Person(Set<Integer> ids, long timestamp, double x, double y) {
+        setIds(ids);
         this.timestamp = timestamp;
         this.x = x;
         this.y = y;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public String getIds() {
+        return ids;
+    }
+
+    public void setIds(Set<Integer> ids) {
+        this.ids = ids.stream()
+                .map(String::valueOf)
+                .reduce("", (str1, str2) -> String.format("%s,%s", str1, str2));
+    }
 }
 
 

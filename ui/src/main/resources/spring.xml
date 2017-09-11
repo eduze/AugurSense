@@ -56,7 +56,39 @@
         <property name="mapProcessor" ref="map-processor"/>
     </bean>
 
+    <!-- Database related area -->
     <bean id="db-handler" class="org.eduze.fyp.impl.db.DBHandler">
+        <property name="personDAO" ref="personDAO"/>
+    </bean>
+
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+        <constructor-arg>
+            <bean class="com.mysql.jdbc.Driver"/>
+        </constructor-arg>
+        <constructor-arg value="jdbc:mysql://localhost:3306/analytics"/>
+        <constructor-arg value="root"/>
+        <constructor-arg value="root"/>
+    </bean>
+
+    <bean id="hibernateAnnotatedSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="annotatedClasses">
+            <list>
+                <value>org.eduze.fyp.impl.db.model.Person</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQL55Dialect</prop>
+                <prop key="hibernate.current_session_context_class">thread</prop>
+                <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.hbm2ddl.auto">create</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="personDAO" class="org.eduze.fyp.impl.db.dao.PersonDAOImpl">
+        <property name="sessionFactory" ref="hibernateAnnotatedSessionFactory"/>
     </bean>
 
 

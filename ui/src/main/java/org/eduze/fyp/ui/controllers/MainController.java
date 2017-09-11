@@ -18,7 +18,7 @@ import org.eduze.fyp.api.AnalyticsEngine;
 import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.api.listeners.ConfigurationListener;
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
-import org.eduze.fyp.api.resources.Coordinate;
+import org.eduze.fyp.api.resources.PersonSnapshot;
 import org.eduze.fyp.api.resources.Point;
 import org.eduze.fyp.api.resources.PointMapping;
 import org.eduze.fyp.ui.controllers.util.ImageUtils;
@@ -152,7 +152,7 @@ public class MainController implements Initializable, ProcessedMapListener, Conf
     }
 
     @Override
-    public void mapProcessed(Set<Coordinate> snapshots) {
+    public void mapProcessed(Set<PersonSnapshot> snapshots) {
         if (realtimeMap == null) return;
 
         BufferedImage map = ImageUtils.copyImage(originalMap);

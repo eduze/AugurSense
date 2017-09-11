@@ -23,29 +23,40 @@ package org.eduze.fyp.impl.db;
 
 import org.eduze.fyp.api.annotations.AutoStart;
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
-import org.eduze.fyp.api.resources.Coordinate;
+import org.eduze.fyp.api.resources.PersonSnapshot;
+import org.eduze.fyp.impl.db.dao.PersonDAO;
 import org.eduze.fyp.impl.db.model.Person;
-import org.springframework.context.annotation.Bean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Set;
 
 @AutoStart(startOrder = 2)
 public class DBHandler implements ProcessedMapListener {
 
+    private static final Logger logger = LoggerFactory.getLogger(DBHandler.class);
+
+    private PersonDAO personDAO;
+
     @Override
-    public void mapProcessed(Set<Coordinate> map) {
-
-
+    public void mapProcessed(Set<PersonSnapshot> snapshots) {
+        logger.debug("MapSnapshot received {}", snapshots);
+        snapshots.stream()
+                .map(snapshot -> new Person(snapshot.getIds(), snapshot.getTimestamp(), snapshot.getX(), snapshot.getY()))
+                .forEach(person -> {
+                    try {
+                        personDAO.save(person);
+                    } catch (Exception e) {
+                        logger.error("Error saving person", e);
+                    }
+                });
     }
 
+    public PersonDAO getPersonDAO() {
+        return personDAO;
+    }
 
-    public void savePerson(PersonRepository repository) {
-
-        // save a couple of customers
-        repository.save(new Person(1, 1L, 1, 1));
+    public void setPersonDAO(PersonDAO personDAO) {
+        this.personDAO = personDAO;
     }
 }
