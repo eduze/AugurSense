@@ -23,6 +23,14 @@
                 <version>1.0-SNAPSHOT</version>
             </dependency>
             <dependency>
+                <groupId>org.eduze.fyp</groupId>
+                <artifactId>web</artifactId>
+                <version>1.0-SNAPSHOT</version>
+                <type>war</type>
+            </dependency>
+
+            <!-- Spring Framework -->
+            <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>
                 <version>${spring.version}</version>
@@ -42,6 +50,8 @@
                 <artifactId>spring-orm</artifactId>
                 <version>${spring.version}</version>
             </dependency>
+
+            <!-- Jetty -->
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-server</artifactId>
@@ -54,9 +64,16 @@
             </dependency>
             <dependency>
                 <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-webapp</artifactId>
+                <version>${jetty-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-xml</artifactId>
                 <version>${jetty-version}</version>
             </dependency>
+
+            <!-- Jersey -->
             <dependency>
                 <groupId>org.glassfish.jersey.containers</groupId>
                 <artifactId>jersey-container-servlet-core</artifactId>
@@ -73,10 +90,17 @@
                 <version>${jersey-version}</version>
             </dependency>
             <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-common</artifactId>
+                <version>${jersey-version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.glassfish.jersey.media</groupId>
                 <artifactId>jersey-media-json-jackson</artifactId>
                 <version>${jersey-version}</version>
             </dependency>
+
+            <!-- Logging -->
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
@@ -92,6 +116,7 @@
                 <artifactId>log4j-slf4j-impl</artifactId>
                 <version>${log4j2.version}</version>
             </dependency>
+
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>

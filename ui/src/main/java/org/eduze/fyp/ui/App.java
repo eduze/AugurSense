@@ -26,6 +26,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.eduze.fyp.CHASS;
 import org.eduze.fyp.api.AnalyticsEngine;
 import org.eduze.fyp.ui.resources.AppResources;
 import org.slf4j.Logger;

@@ -20,9 +20,12 @@
       "prefix": "app",
       "styles": [
         "styles.css",
-        "../node_modules/bootstrap/dist/css/bootstrap.min.css"
+        "../node_modules/bootstrap/dist/css/bootstrap.min.css",
+        "../node_modules/highcharts/css/highcharts.css"
       ],
-      "scripts": [],
+      "scripts": [
+        "../node_modules/highcharts/js/highcharts.js"
+      ],
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",

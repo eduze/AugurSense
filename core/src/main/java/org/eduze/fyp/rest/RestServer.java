@@ -4,6 +4,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.eclipse.jetty.xml.XmlConfiguration;
 import org.eduze.fyp.api.annotations.AutoStart;
 import org.eduze.fyp.api.config.Startable;
@@ -12,6 +13,7 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
@@ -32,6 +34,7 @@ public class RestServer implements Startable {
 
     private Set<Object> controllers = new HashSet<>();
     private Server jettyServer;
+    private Server webServer;
 
     private RestServer() {
     }
@@ -41,6 +44,12 @@ public class RestServer implements Startable {
      */
     @Override
     public void start() {
+        startRestServer();
+        startWebServer();
+        logger.info("Servers started successfully");
+    }
+
+    private void startRestServer() {
         XmlConfiguration configuration;
         try {
             URL configFile = getClass().getClassLoader().getResource(JETTY_CONFIG);
@@ -78,6 +87,35 @@ public class RestServer implements Startable {
         logger.info("REST Server started successfully ...");
     }
 
+    private void startWebServer() {
+        webServer = new Server(8000);
+
+        WebAppContext webAppContext = new WebAppContext();
+        webAppContext.setContextPath("/*");
+        URL war = Thread.currentThread().getContextClassLoader().getResource("web");
+        File warFile;
+        try {
+            logger.debug("Using war file {}", war.toString());
+            warFile = new File(war.toURI());
+        } catch (Exception e) {
+            logger.error("Error occurred when determining WAR file", e);
+            throw new IllegalStateException("Unable to start WEB Server", e);
+        }
+        webAppContext.setWar(warFile.getAbsolutePath());
+        webAppContext.setExtractWAR(true);
+        webServer.setHandler(webAppContext);
+
+        logger.debug("Starting WEB server");
+        try {
+            webServer.start();
+            Runtime.getRuntime().addShutdownHook(new Thread(RestServer.this::stop));
+        } catch (Exception e) {
+            logger.error("Error occurred when starting WEB server due to : {}", e.getMessage());
+            throw new IllegalStateException("Unable to start WEB server", e);
+        }
+        logger.info("WEB Server started successfully ...");
+    }
+
     /**
      * Stops the jetty server
      */
@@ -89,6 +127,15 @@ public class RestServer implements Startable {
                 jettyServer.stop();
             } catch (Exception e) {
                 logger.error("Error occurred when stopping the REST server due to : {}", e.getMessage());
+            }
+        }
+
+        if (webServer != null && webServer.isStarted()) {
+            logger.info("Stopping WEB Server ...");
+            try {
+                webServer.stop();
+            } catch (Exception e) {
+                logger.error("Error occurred when stopping the WEB server due to : {}", e.getMessage());
             }
         }
     }

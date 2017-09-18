@@ -15,11 +15,16 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-client</artifactId>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <finalName>web</finalName>
 
@@ -69,7 +74,8 @@
                             <executable>ng</executable>
                             <arguments>
                                 <argument>build</argument>
-                                <argument>--base-href=/ng/</argument>
+                                <argument>--base-href=./</argument>
+                                <argument>--target=production</argument>
                             </arguments>
                         </configuration>
                         <goals>

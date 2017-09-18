@@ -65,7 +65,8 @@ public class AppTest {
 
     private static final String[] views = new String[]{
             "src/test/resources/views/view1.png",
-            "src/test/resources/views/view2.jpg"};
+            "src/test/resources/views/view2.jpg"
+    };
 
     public static void main(String[] args) throws IOException, InterruptedException {
         Thread mainThread = new Thread(() -> App.main(args));
