@@ -17,33 +17,27 @@
  * IN THE SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core'
-import {Observable} from 'rxjs/Rx';
+package org.eduze.fyp.rest.services;
 
-import {AnalyticsService} from "../services/analytics.service";
-import {PersonSnapshot} from "../resources/person-snapshot";
+import org.eduze.fyp.api.listeners.ProcessedMapListener;
+import org.eduze.fyp.api.resources.PersonSnapshot;
 
-@Component({
-  selector: 'dashboard',
-  templateUrl: './dashboard.component.html'
-})
+import java.util.HashSet;
+import java.util.Set;
 
-export class DashboardComponent implements OnInit {
+public class AnalyticsService implements ProcessedMapListener {
 
-  personSnapshots: PersonSnapshot[] = [];
+    private Set<PersonSnapshot> snapshots = new HashSet<>();
 
-  constructor(private analyticsService: AnalyticsService) {
-  }
+    public AnalyticsService() {
+    }
 
-  ngOnInit(): void {
-    Observable.interval(5000).subscribe(x => {
-      console.log("Sending request");
-      this.analyticsService.getRealTimeMap()
-        .then(personSnapshots => {
-          console.log(personSnapshots);
-          this.personSnapshots = personSnapshots;
-        })
-        .catch(reason => console.log(reason));
-    });
-  }
+    public Set<PersonSnapshot> getRealTimeMap() {
+        return snapshots;
+    }
+
+    @Override
+    public void mapProcessed(Set<PersonSnapshot> snapshots) {
+        this.snapshots = snapshots;
+    }
 }

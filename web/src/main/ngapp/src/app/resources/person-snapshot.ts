@@ -17,33 +17,9 @@
  * IN THE SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core'
-import {Observable} from 'rxjs/Rx';
-
-import {AnalyticsService} from "../services/analytics.service";
-import {PersonSnapshot} from "../resources/person-snapshot";
-
-@Component({
-  selector: 'dashboard',
-  templateUrl: './dashboard.component.html'
-})
-
-export class DashboardComponent implements OnInit {
-
-  personSnapshots: PersonSnapshot[] = [];
-
-  constructor(private analyticsService: AnalyticsService) {
-  }
-
-  ngOnInit(): void {
-    Observable.interval(5000).subscribe(x => {
-      console.log("Sending request");
-      this.analyticsService.getRealTimeMap()
-        .then(personSnapshots => {
-          console.log(personSnapshots);
-          this.personSnapshots = personSnapshots;
-        })
-        .catch(reason => console.log(reason));
-    });
-  }
+export class PersonSnapshot {
+  ids: number[];
+  timestamp: number;
+  x: number;
+  y: number;
 }

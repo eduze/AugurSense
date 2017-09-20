@@ -49,6 +49,7 @@
         <property name="mapListeners">
             <set>
                 <ref bean="db-handler"/>
+                <ref bean="analytics-service"/>
             </set>
         </property>
     </bean>
@@ -100,14 +101,23 @@
         <property name="controllers">
             <set>
                 <ref bean="config-controller"/>
+                <ref bean="analytics-controller"/>
             </set>
         </property>
     </bean>
 
+    <!-- Config Controller -->
     <bean id="config-controller" class="org.eduze.fyp.rest.controllers.ConfigController">
         <property name="configService">
             <bean class="org.eduze.fyp.rest.services.ConfigService"/>
         </property>
     </bean>
+
+    <!-- Analytics Controller -->
+    <bean id="analytics-controller" class="org.eduze.fyp.rest.controllers.AnalyticsController">
+        <constructor-arg ref="analytics-service"/>
+    </bean>
+
+    <bean id="analytics-service" class="org.eduze.fyp.rest.services.AnalyticsService"/>
 
 </beans>

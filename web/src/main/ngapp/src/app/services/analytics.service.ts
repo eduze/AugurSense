@@ -17,33 +17,32 @@
  * IN THE SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core'
-import {Observable} from 'rxjs/Rx';
+import {Injectable} from '@angular/core'
+import {Http} from '@angular/http'
+import 'rxjs/add/operator/toPromise';
 
-import {AnalyticsService} from "../services/analytics.service";
 import {PersonSnapshot} from "../resources/person-snapshot";
 
-@Component({
-  selector: 'dashboard',
-  templateUrl: './dashboard.component.html'
-})
+@Injectable()
+export class AnalyticsService {
 
-export class DashboardComponent implements OnInit {
+  private baseUrl: string = "http://localhost:8085/api/v1/";
 
-  personSnapshots: PersonSnapshot[] = [];
-
-  constructor(private analyticsService: AnalyticsService) {
+  constructor(private http: Http) {
   }
 
-  ngOnInit(): void {
-    Observable.interval(5000).subscribe(x => {
-      console.log("Sending request");
-      this.analyticsService.getRealTimeMap()
-        .then(personSnapshots => {
-          console.log(personSnapshots);
-          this.personSnapshots = personSnapshots;
-        })
-        .catch(reason => console.log(reason));
-    });
+  getRealTimeMap(): Promise<PersonSnapshot[]> {
+    return this.http.get(this.baseUrl + "analytics/realTimeMap")
+      .toPromise()
+      .then(response => {
+        console.log(response.json());
+        return response.json() as PersonSnapshot[]
+      })
+      .catch(this.handleError);
+  }
+
+  private handleError(error: any): Promise<any> {
+    console.error('An error occurred', error);
+    return Promise.reject(error.message || error);
   }
 }
