@@ -40,22 +40,25 @@ import org.slf4j.LoggerFactory;
 import javax.imageio.ImageIO;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.eduze.fyp.Constants.CAMERA_NOTIFICATION_PATH;
 
@@ -66,6 +69,11 @@ public class AppTest {
     private static final String[] views = new String[]{
             "src/test/resources/views/view1.png",
             "src/test/resources/views/view2.jpg"
+    };
+
+    private static final String[] data = new String[]{
+            "src/test/resources/data/PETS09S2L1V1_Points.txt",
+            "src/test/resources/data/PETS09S2L1V5_Points.txt"
     };
 
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -83,7 +91,6 @@ public class AppTest {
 
         Set<CameraSimulator> simulators = new HashSet<>();
         for (int i = 0; i < views.length; i++) {
-
             Camera camera = setupCamera();
             int port = (8000 + camera.getId());
 
@@ -94,7 +101,7 @@ public class AppTest {
             logger.debug("Camera-{} configured", camera.getId());
 
             CameraSimulator simulator = new CameraSimulator(camera.getId(), (int) dimension.getWidth(),
-                    (int) dimension.getHeight(), port);
+                    (int) dimension.getHeight(), data[i], port);
             simulator.start();
             simulators.add(simulator);
         }
@@ -161,36 +168,18 @@ public class AppTest {
         private int cameraId;
         private int mapWidth;
         private int mapHeight;
-        private WebTarget target;
-        private List<PersonCoordinate> coordinates = new ArrayList<>();
+        private List<String> lines;
+        private int lineNumber = 0;
         private Random random = new Random();
         private ObjectMapper mapper = new ObjectMapper();
 
         private HttpServer server;
 
-        private CameraSimulator(int cameraId, int mapWidth, int mapHeight, int serverPort) throws IOException {
+        private CameraSimulator(int cameraId, int mapWidth, int mapHeight, String dataFile, int serverPort) throws IOException {
             this.cameraId = cameraId;
             this.mapWidth = mapWidth;
             this.mapHeight = mapHeight;
-
-            Client client = JerseyClientBuilder.createClient();
-            UriBuilder builder = UriBuilder.fromPath("api")
-                    .scheme("http")
-                    .path("v1")
-                    .path("realtime")
-                    .host("localhost")
-                    .port(8085);
-
-            target = client.target(builder);
-
-            int pointCount = random.nextInt(5) + 1;
-            long timestamp = System.currentTimeMillis();
-            for (int i = 0; i < pointCount; i++) {
-                double x = random.nextInt(mapWidth);
-                double y = random.nextInt(mapHeight);
-                coordinates.add(new PersonCoordinate(x, y, timestamp, null));
-            }
-
+            lines = Files.readAllLines(new File(dataFile).toPath());
             server = HttpServer.create(new InetSocketAddress(serverPort), 0);
             server.createContext(CAMERA_NOTIFICATION_PATH, this);
         }
@@ -206,9 +195,36 @@ public class AppTest {
 
 
         public LocalMap processNextMap(long timestamp) {
+            String line = lines.get(lineNumber);
+            lineNumber++;
+            if (lineNumber == lines.size()) {
+                lineNumber = 0;
+            }
+
+            List<Double> points = Stream.of(line.split(","))
+                    .mapToDouble(Double::parseDouble)
+                    .boxed()
+                    .collect(Collectors.toList());
+
+            List<PersonCoordinate> coordinates = new ArrayList<>();
+            PersonCoordinate personCoordinate = null;
+            for (int i = 0; i < points.size(); i++) {
+                if (personCoordinate == null) {
+                    personCoordinate = new PersonCoordinate();
+                    personCoordinate.setX(points.get(i));
+                } else {
+                    personCoordinate.setY(points.get(i));
+                }
+
+                if (i % 2 != 0) {
+                    coordinates.add(personCoordinate);
+                    personCoordinate = null;
+                }
+            }
+
             coordinates.forEach(coordinate -> {
-                double x = coordinate.getX() + (random.nextBoolean() ? 1 : -1) * random.nextInt(50);
-                double y = coordinate.getY() + (random.nextBoolean() ? 1 : -1) * random.nextInt(50);
+                double x = coordinate.getX();
+                double y = coordinate.getY();
 
                 x = x < 0 ? 0 : x;
                 x = x > mapWidth ? mapHeight : x;

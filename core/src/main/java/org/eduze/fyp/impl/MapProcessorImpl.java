@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -105,15 +106,19 @@ public class MapProcessorImpl implements MapProcessor {
 
                 if (nextMap == null) continue;
 
-                globalMap.update(nextMap);
+                try {
+                    globalMap.update(nextMap);
 
-                if (cameraCoordinator.getCurrentTimestamp() % MAP_REFRESH_INTERVAL == 0) {
-                    long minTimestamp = cameraCoordinator.getCurrentTimestamp() - MAP_REFRESH_THRESHOLD;
-                    globalMap.refresh(minTimestamp);
+                    if (cameraCoordinator.getCurrentTimestamp() % MAP_REFRESH_INTERVAL == 0) {
+                        long minTimestamp = cameraCoordinator.getCurrentTimestamp() - MAP_REFRESH_THRESHOLD;
+                        globalMap.refresh(minTimestamp);
+                    }
+
+                    List<List<PersonSnapshot>> snapshots = globalMap.getSnapshot();
+                    mapListeners.forEach(listener -> listener.mapProcessed(snapshots));
+                } catch (Exception e) {
+                    logger.error("error", e);
                 }
-
-                Set<PersonSnapshot> snapshots = globalMap.getSnapshot();
-                mapListeners.forEach(listener -> listener.mapProcessed(snapshots));
             }
         });
 

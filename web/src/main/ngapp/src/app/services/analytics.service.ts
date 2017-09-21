@@ -31,12 +31,12 @@ export class AnalyticsService {
   constructor(private http: Http) {
   }
 
-  getRealTimeMap(): Promise<PersonSnapshot[]> {
+  getRealTimeMap(): Promise<PersonSnapshot[][]> {
     return this.http.get(this.baseUrl + "analytics/realTimeMap")
       .toPromise()
       .then(response => {
         console.log(response.json());
-        return response.json() as PersonSnapshot[]
+        return response.json() as PersonSnapshot[][]
       })
       .catch(this.handleError);
   }

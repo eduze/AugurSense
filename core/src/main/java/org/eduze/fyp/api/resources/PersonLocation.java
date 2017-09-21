@@ -21,16 +21,21 @@
 
 package org.eduze.fyp.api.resources;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class PersonLocation {
 
+    private static final int HISTORY_SIZE = 20;
+
     private final Set<Integer> ids = new HashSet<>();
     private Map<Integer, Coordinate> contributingCoordinates = new HashMap<>();
-    private PersonSnapshot snapshot = new PersonSnapshot();
+    private LinkedList<PersonSnapshot> snapshots = new LinkedList<>();
 
     public PersonLocation() {
     }
@@ -51,16 +56,27 @@ public class PersonLocation {
     }
 
     private void updateSnapshot(Coordinate original) {
-        long timestamp = snapshot.getTimestamp() < original.getTimestamp() ?
-                original.getTimestamp() : snapshot.getTimestamp();
+        long timestamp;
+        if (snapshots.isEmpty()) {
+            timestamp = original.getTimestamp();
+        } else {
+            PersonSnapshot snapshot = snapshots.getFirst();
+            timestamp = snapshot.getTimestamp() < original.getTimestamp() ? original.getTimestamp() : snapshot.getTimestamp();
+        }
 
-        Coordinate coordinate = contributingCoordinates.values().stream()
+        Coordinate coordinate = contributingCoordinates.values()
+                .stream()
                 .reduce(new Coordinate(0, 0, timestamp),
                         (p1, p2) -> new Coordinate(p1.getX() + p2.getX(), p1.getY() + p2.getY(), timestamp));
         coordinate.setX(coordinate.getX() / contributingCoordinates.size());
         coordinate.setY(coordinate.getY() / contributingCoordinates.size());
 
-        this.snapshot = new PersonSnapshot(ids, coordinate);
+        if (snapshots.size() == HISTORY_SIZE) {
+            snapshots.removeLast();
+        }
+
+        // TODO: 9/21/17 All have the same reference to IDs
+        snapshots.addFirst(new PersonSnapshot(ids, coordinate));
     }
 
     public void addId(int id) {
@@ -75,7 +91,15 @@ public class PersonLocation {
         return contributingCoordinates;
     }
 
+    public List<PersonSnapshot> getSnapshots() {
+        return new ArrayList<>(snapshots);
+    }
+
     public PersonSnapshot getSnapshot() {
-        return snapshot;
+        if (snapshots.size() > 0) {
+            return snapshots.getFirst();
+        }
+
+        return null;
     }
 }

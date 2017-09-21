@@ -22,9 +22,9 @@ package org.eduze.fyp.api.listeners;
 
 import org.eduze.fyp.api.resources.PersonSnapshot;
 
-import java.util.Set;
+import java.util.List;
 
 public interface ProcessedMapListener {
 
-    void mapProcessed(Set<PersonSnapshot> snapshots);
+    void mapProcessed(List<List<PersonSnapshot>> snapshots);
 }

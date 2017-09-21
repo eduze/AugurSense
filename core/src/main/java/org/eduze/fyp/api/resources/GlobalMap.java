@@ -19,11 +19,13 @@
 
 package org.eduze.fyp.api.resources;
 
+import org.apache.commons.math3.util.Pair;
 import org.eduze.fyp.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -43,67 +45,40 @@ public class GlobalMap {
 
     private List<PersonLocation> personLocations = new ArrayList<>();
 
-    public synchronized Set<PersonSnapshot> getSnapshot() {
+    public synchronized List<List<PersonSnapshot>> getSnapshot() {
         return personLocations.stream()
-                .map(PersonLocation::getSnapshot)
-                .collect(Collectors.toSet());
+                .map(PersonLocation::getSnapshots)
+                .collect(Collectors.toList());
     }
 
     public synchronized void update(LocalMap localMap) {
-        Set<PersonLocation> newPersons = new HashSet<>();
         logger.debug("Updating global map with {} coordinates in local map", localMap.getPersonCoordinates().size());
 
-        for (PersonCoordinate pc : localMap.getPersonCoordinates()) {
-            // For this person coordinate, find the closest person location; if any
-            double minDistance = Double.MAX_VALUE;
-            PersonLocation closest = null;
-            for (PersonLocation pl : personLocations) {
-                double distance = Math.sqrt(Math.pow(pc.getX() - pl.getSnapshot().getX(), 2) +
-                        Math.pow(pc.getY() - pl.getSnapshot().getY(), 2));
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    closest = pl;
-                }
+        List<LocationPair> tuples = new ArrayList<>();
+        localMap.getPersonCoordinates().forEach(personCoordinate -> {
+            tuples.add(new LocationPair(personCoordinate, null));
+            personLocations.forEach(personLocation -> {
+                tuples.add(new LocationPair(personCoordinate, personLocation));
+            });
+        });
+
+        Collections.sort(tuples);
+        Set<PersonCoordinate> used = new HashSet<>();
+        Set<PersonLocation> newPeople = new HashSet<>();
+        tuples.forEach(pair -> {
+            if (!used.contains(pair.getKey()) && pair.distance() < Constants.DISTANCE_THRESHOLD) {
+                used.add(pair.getKey());
+                pair.getValue().addPoint(localMap.getCameraId(), pair.getKey().toCoordinate());
+            } else if (!used.contains(pair.getKey()) && pair.getValue() == null) {
+                int id = new Random().nextInt(200) + 1;
+                PersonLocation newPL = new PersonLocation(id);
+                newPL.addPoint(localMap.getCameraId(), pair.getKey().toCoordinate());
+                newPeople.add(newPL);
+                used.add(pair.getKey());
             }
+        });
 
-            int id = new Random().nextInt(200) + 1;
-
-            /*
-             * Now we know at least that there are person locations in the map since we have something called
-             * closest. But there's not guarantee that it is actually close until we check with a threshold.
-             * If the person coordinate comes with an image, then there is a possibility that it is a new
-             * person. Other wise, no matter what, we have to attach that person to the closest person location.
-             */
-            if (pc.getImage() != null) {
-                // TODO: 9/3/17 Send to Re-ID system and get an ID
-
-                if (closest != null && minDistance < Constants.DISTANCE_THRESHOLD) {
-                    logger.debug("Found match for person {} at {}", id, pc);
-                    closest.addPoint(localMap.getCameraId(), pc.toCoordinate());
-                    closest.addId(id);
-                } else {
-                    // Then, this is a new person
-                    logger.debug("Found new person {} at {}", id, pc);
-                    PersonLocation newPL = new PersonLocation(id);
-                    newPL.addPoint(localMap.getCameraId(), pc.toCoordinate());
-                    newPersons.add(newPL);
-                }
-            } else {
-                // We have to attach to the closest person location. Points that are erroneous will be ignored.
-                if (closest != null && minDistance < Constants.DISTANCE_THRESHOLD) {
-                    logger.debug("Found existing person at {}", pc);
-                    closest.addPoint(localMap.getCameraId(), pc.toCoordinate());
-                } else {
-                    logger.warn("Found erroneous coordinate {}", pc);
-                    // TODO: 9/11/17 Should we store this or not?
-                    PersonLocation newPL = new PersonLocation();
-                    newPL.addPoint(localMap.getCameraId(), pc.toCoordinate());
-                    newPersons.add(newPL);
-                }
-            }
-        }
-
-        personLocations.addAll(newPersons);
+        personLocations.addAll(newPeople);
     }
 
     public synchronized void refresh(long minTimestamp) {
@@ -122,6 +97,41 @@ public class GlobalMap {
                 logger.debug("Removing outdated person location {}", personLocation);
                 iterator.remove();
             }
+        }
+    }
+
+    private class LocationPair extends Pair<PersonCoordinate, PersonLocation> implements Comparable<LocationPair> {
+        public LocationPair(PersonCoordinate personCoordinate, PersonLocation personLocation) {
+            super(personCoordinate, personLocation);
+            if (personCoordinate == null && personLocation == null) {
+                throw new IllegalArgumentException("Both points cannot be null");
+            }
+        }
+
+        public LocationPair(Pair<? extends PersonCoordinate, ? extends PersonLocation> entry) {
+            this(entry.getKey(), entry.getValue());
+        }
+
+        public double distance() {
+            PersonSnapshot snapshot = null;
+            if (getValue() != null) {
+                snapshot = getValue().getSnapshot();
+            }
+
+            if (getKey() == null || getValue() == null || snapshot == null) {
+                // To match bounds
+                return Float.MAX_VALUE;
+            }
+
+            double x = getKey().getX() - snapshot.getX();
+            double y = getKey().getY() - snapshot.getY();
+
+            return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+        }
+
+        @Override
+        public int compareTo(LocationPair pair) {
+            return (int) Math.ceil(this.distance() - pair.distance());
         }
     }
 }

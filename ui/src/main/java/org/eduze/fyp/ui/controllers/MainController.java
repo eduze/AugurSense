@@ -29,9 +29,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Controller for the main window of the {@link org.eduze.fyp.ui.App}
@@ -151,14 +152,39 @@ public class MainController implements Initializable, ProcessedMapListener, Conf
         Platform.runLater(() -> imageView.setImage(updatedImage));
     }
 
+    private void drawPath(ImageView imageView, BufferedImage image, List<Point> points, int pointWidth, Color color) {
+        Graphics2D graphics = (Graphics2D) image.getGraphics();
+        graphics.setColor(color);
+        graphics.setStroke(new BasicStroke(pointWidth));
+
+        Point p = points.get(0);
+        for (int i = 1; i < points.size(); i++) {
+            graphics.drawLine((int) p.getX(), (int) p.getY(), (int) points.get(i).getX(), (int) points.get(i).getY());
+            p = points.get(i);
+        }
+
+        Image updatedImage = SwingFXUtils.toFXImage(image, null);
+        Platform.runLater(() -> imageView.setImage(updatedImage));
+    }
+
     @Override
-    public void mapProcessed(Set<PersonSnapshot> snapshots) {
+    public void mapProcessed(List<List<PersonSnapshot>> snapshots) {
         if (realtimeMap == null) return;
 
         BufferedImage map = ImageUtils.copyImage(originalMap);
+
         logger.debug("Received {} points for real-time map", snapshots.size());
-        snapshots.forEach(point -> drawPoint(realtimeMapImageView, map,
-                point.getX(), point.getY(), 10, 10, Color.red));
+        snapshots.forEach(snapshotList -> {
+            List<Point> points =
+                    snapshotList.stream()
+                            .map(snapshot -> new Point(snapshot.getX(), snapshot.getY()))
+                            .collect(Collectors.toList());
+            if (points.size() == 1) {
+                drawPoint(realtimeMapImageView, map, points.get(0).getX(), points.get(0).getY());
+            } else if (points.size() > 1) {
+                drawPath(realtimeMapImageView, map, points, 5, Color.red);
+            }
+        });
     }
 
     @Override

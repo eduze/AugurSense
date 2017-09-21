@@ -17,7 +17,7 @@
  * IN THE SOFTWARE.
  */
 
-import {Component, OnInit} from '@angular/core'
+import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core'
 import {Observable} from 'rxjs/Rx';
 
 import {AnalyticsService} from "../services/analytics.service";
@@ -25,12 +25,16 @@ import {PersonSnapshot} from "../resources/person-snapshot";
 
 @Component({
   selector: 'dashboard',
-  templateUrl: './dashboard.component.html'
+  templateUrl: './dashboard.component.html',
+  styles: ['canvas { border: 1px solid #000; }']
 })
 
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit {
 
-  personSnapshots: PersonSnapshot[] = [];
+  @ViewChild('canvas') public canvas: ElementRef;
+  private cx: CanvasRenderingContext2D;
+
+  personSnapshots: PersonSnapshot[][] = [[]];
 
   constructor(private analyticsService: AnalyticsService) {
   }
@@ -42,8 +46,47 @@ export class DashboardComponent implements OnInit {
         .then(personSnapshots => {
           console.log(personSnapshots);
           this.personSnapshots = personSnapshots;
+          this.drawOnCanvas();
         })
         .catch(reason => console.log(reason));
     });
+  }
+
+  private drawOnCanvas(): void {
+    if (!this.cx) {
+      console.log("cx is not set");
+      return;
+    }
+
+    const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
+    this.cx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+
+    this.personSnapshots.forEach(snapshots => {
+      var prev: PersonSnapshot;
+      for (let i in snapshots) {
+        if (prev) {
+          this.cx.beginPath();
+          this.cx.moveTo(prev.x, prev.y);
+          this.cx.lineTo(snapshots[i].x, snapshots[i].y);
+          this.cx.stroke();
+        }
+
+        prev = snapshots[i];
+      }
+    });
+  }
+
+  ngAfterViewInit(): void {
+    const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
+    this.cx = canvasEl.getContext('2d');
+
+    // set the width and height
+    canvasEl.width = 800;
+    canvasEl.height = 800;
+
+    // set some default properties about the line
+    this.cx.lineWidth = 3;
+    this.cx.lineCap = 'round';
+    this.cx.strokeStyle = '#000';
   }
 }

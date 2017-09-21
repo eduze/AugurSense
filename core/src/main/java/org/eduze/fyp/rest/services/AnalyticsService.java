@@ -22,22 +22,22 @@ package org.eduze.fyp.rest.services;
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
 import org.eduze.fyp.api.resources.PersonSnapshot;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AnalyticsService implements ProcessedMapListener {
 
-    private Set<PersonSnapshot> snapshots = new HashSet<>();
+    private List<List<PersonSnapshot>> snapshots = new ArrayList<>();
 
     public AnalyticsService() {
     }
 
-    public Set<PersonSnapshot> getRealTimeMap() {
+    public List<List<PersonSnapshot>> getRealTimeMap() {
         return snapshots;
     }
 
     @Override
-    public void mapProcessed(Set<PersonSnapshot> snapshots) {
+    public void mapProcessed(List<List<PersonSnapshot>> snapshots) {
         this.snapshots = snapshots;
     }
 }

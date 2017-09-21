@@ -29,7 +29,7 @@ import org.eduze.fyp.impl.db.model.Person;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Set;
+import java.util.List;
 
 @AutoStart(startOrder = 2)
 public class DBHandler implements ProcessedMapListener {
@@ -39,17 +39,21 @@ public class DBHandler implements ProcessedMapListener {
     private PersonDAO personDAO;
 
     @Override
-    public void mapProcessed(Set<PersonSnapshot> snapshots) {
+    public void mapProcessed(List<List<PersonSnapshot>> snapshots) {
         logger.debug("MapSnapshot received {}", snapshots);
         snapshots.stream()
-                .map(snapshot -> new Person(snapshot.getIds(), snapshot.getTimestamp(), snapshot.getX(), snapshot.getY()))
-                .forEach(person -> {
-                    try {
-                        personDAO.save(person);
-                    } catch (Exception e) {
-                        logger.error("Error saving person", e);
-                    }
-                });
+                 .filter(snapshotList -> snapshotList.size() > 0)
+                 .map(snapshotList -> {
+                     PersonSnapshot snapshot = snapshotList.get(0);
+                     return new Person(snapshot.getIds(), snapshot.getTimestamp(), snapshot.getX(), snapshot.getY());
+                 })
+                 .forEach(person -> {
+                     try {
+                         personDAO.save(person);
+                     } catch (Exception e) {
+                         logger.error("Error saving person", e);
+                     }
+                 });
     }
 
     public PersonDAO getPersonDAO() {

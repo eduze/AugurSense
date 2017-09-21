@@ -1,7 +1,13 @@
 <div class="container-fluid">
   <ul>
-    <li *ngFor="let snapshot of personSnapshots">
-      {{snapshot.x}}, {{snapshot.y}}
+    <li *ngFor="let snapshotList of personSnapshots">
+        <span *ngFor="let snapshot of snapShotList">
+          ({{snapshot.x}}, {{snapshot.y}})
+        </span>
     </li>
   </ul>
+</div>
+
+<div class="container-fluid">
+  <canvas #canvas></canvas>
 </div>
