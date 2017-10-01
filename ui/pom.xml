@@ -11,6 +11,7 @@
     <packaging>jar</packaging>
 
     <artifactId>ui</artifactId>
+    <name>Analytics Engine UI</name>
 
     <dependencies>
         <dependency>

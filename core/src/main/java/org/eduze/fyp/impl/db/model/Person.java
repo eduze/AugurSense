@@ -21,12 +21,19 @@
 
 package org.eduze.fyp.impl.db.model;
 
+import org.eduze.fyp.impl.db.helpers.PersonIdConverter;
+
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -37,17 +44,23 @@ public class Person {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private long timestamp;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "time_stamp")
+    private Date timestamp;
+
     private double x;
     private double y;
-    private String ids;
+
+    @Convert(converter = PersonIdConverter.class)
+    private Set<Integer> ids;
 
     protected Person() {
     }
 
     public Person(Set<Integer> ids, long timestamp, double x, double y) {
         setIds(ids);
-        this.timestamp = timestamp;
+        this.timestamp = new Date(timestamp);
         this.x = x;
         this.y = y;
     }
@@ -60,11 +73,11 @@ public class Person {
         this.id = id;
     }
 
-    public long getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(long timestamp) {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -84,14 +97,12 @@ public class Person {
         this.y = y;
     }
 
-    public String getIds() {
+    public Set<Integer> getIds() {
         return ids;
     }
 
     public void setIds(Set<Integer> ids) {
-        this.ids = ids.stream()
-                .map(String::valueOf)
-                .reduce("", (str1, str2) -> String.format("%s,%s", str1, str2));
+        this.ids = new HashSet<>(ids);
     }
 }
 

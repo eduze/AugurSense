@@ -19,7 +19,6 @@
 
 package org.eduze.fyp.impl;
 
-import org.eduze.fyp.Constants;
 import org.eduze.fyp.api.CameraCoordinator;
 import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.api.MapProcessor;
@@ -32,10 +31,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
+
+import static org.eduze.fyp.Constants.FRAME_PROCESSING_INTERVAL;
 
 @AutoStart(startOrder = 2)
 public class CentralizedCameraCoordinator implements CameraCoordinator, ConfigurationListener {
@@ -107,7 +109,7 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
 
         while (stateManager.isState(State.STARTED)) {
             try {
-                Thread.sleep(Constants.FRAME_PROCESSING_INTERVAL);
+                Thread.sleep(FRAME_PROCESSING_INTERVAL);
             } catch (InterruptedException e) {
                 logger.error("Interrupted while waiting to notify cameras", e);
                 break;
@@ -120,11 +122,11 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
 
             logger.debug("Asking for processed frames for timestamp {}", currentTimestamp);
             synchronized (this) {
+                // Is there an error? We take timestamp few milli-seconds earlier
+                currentTimestamp = new Date().getTime();
                 cameraNotifiers.values()
                         .forEach(notifier -> executorService.submit(() -> notifier.notifyCamera(currentTimestamp)));
             }
-
-            currentTimestamp++;
         }
 
         logger.warn("Stopping camera coordination");

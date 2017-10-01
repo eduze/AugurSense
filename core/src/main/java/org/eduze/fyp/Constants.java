@@ -35,7 +35,7 @@ public class Constants {
 
     /** Global map refresh interval */
     public static final long MAP_REFRESH_INTERVAL = 5;
-    public static final long MAP_REFRESH_THRESHOLD = 3;
+    public static final long MAP_REFRESH_THRESHOLD = 3000;
 
     public static class Properties {
         public static final String FLOOR_MAP_IMAGE = "org.eduze.fyp.config.map";

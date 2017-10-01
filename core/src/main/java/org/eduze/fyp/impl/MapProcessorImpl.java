@@ -34,6 +34,7 @@ import org.eduze.fyp.api.util.Args;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -109,7 +110,7 @@ public class MapProcessorImpl implements MapProcessor {
                 try {
                     globalMap.update(nextMap);
 
-                    if (cameraCoordinator.getCurrentTimestamp() % MAP_REFRESH_INTERVAL == 0) {
+                    if (new Date().getTime() - cameraCoordinator.getCurrentTimestamp() > MAP_REFRESH_INTERVAL) {
                         long minTimestamp = cameraCoordinator.getCurrentTimestamp() - MAP_REFRESH_THRESHOLD;
                         globalMap.refresh(minTimestamp);
                     }

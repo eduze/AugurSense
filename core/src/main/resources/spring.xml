@@ -68,7 +68,7 @@
         <constructor-arg>
             <bean class="com.mysql.jdbc.Driver"/>
         </constructor-arg>
-        <constructor-arg value="jdbc:mysql://localhost:3306/analytics"/>
+        <constructor-arg value="jdbc:mysql://localhost:3306/analytics?createDatabaseIfNotExist=true"/>
         <constructor-arg value="root"/>
         <constructor-arg value="root"/>
     </bean>
@@ -85,7 +85,7 @@
                 <prop key="hibernate.dialect">org.hibernate.dialect.MySQL55Dialect</prop>
                 <prop key="hibernate.current_session_context_class">thread</prop>
                 <prop key="hibernate.show_sql">false</prop>
-                <prop key="hibernate.hbm2ddl.auto">create</prop>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
             </props>
         </property>
     </bean>
@@ -118,6 +118,8 @@
         <constructor-arg ref="analytics-service"/>
     </bean>
 
-    <bean id="analytics-service" class="org.eduze.fyp.rest.services.AnalyticsService"/>
+    <bean id="analytics-service" class="org.eduze.fyp.rest.services.AnalyticsService">
+        <property name="personDAO" ref="personDAO"/>
+    </bean>
 
 </beans>

@@ -17,18 +17,26 @@
  * IN THE SOFTWARE.
  */
 
-package org.eduze.fyp.impl.db.dao;
+package org.eduze.fyp.impl.db.helpers;
 
-import org.eduze.fyp.impl.db.model.Person;
+import javax.persistence.AttributeConverter;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import java.util.Date;
-import java.util.List;
+public class PersonIdConverter implements AttributeConverter<Set<Integer>, String> {
 
-public interface PersonDAO {
+    @Override
+    public String convertToDatabaseColumn(Set<Integer> ids) {
+        return ids.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+    }
 
-    void save(Person p);
-
-    List<Person> list();
-
-    List<Person> list(Date from, Date to);
+    @Override
+    public Set<Integer> convertToEntityAttribute(String stringIds) {
+        return Stream.of(stringIds.split(","))
+                .map(Integer::valueOf)
+                .collect(Collectors.toSet());
+    }
 }

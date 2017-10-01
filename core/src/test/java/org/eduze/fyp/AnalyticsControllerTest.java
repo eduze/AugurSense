@@ -17,18 +17,42 @@
  * IN THE SOFTWARE.
  */
 
-package org.eduze.fyp.impl.db.dao;
+package org.eduze.fyp;
 
 import org.eduze.fyp.impl.db.model.Person;
+import org.glassfish.jersey.client.JerseyClientBuilder;
+import org.junit.Assert;
+import org.junit.Test;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriBuilder;
 import java.util.Date;
 import java.util.List;
 
-public interface PersonDAO {
+public class AnalyticsControllerTest extends AbstractTestCase {
 
-    void save(Person p);
+    @Test
+    public void testGetHeatMap() {
+        Date start = new Date(1451606400);
+        Date end = new Date();
+        Client client = JerseyClientBuilder.createClient();
 
-    List<Person> list();
+        UriBuilder builder = UriBuilder.fromPath("api")
+                .scheme("http")
+                .host("localhost")
+                .port(8085)
+                .path("v1")
+                .path("analytics")
+                .path("heatMap")
+                .path(String.valueOf(start.getTime()))
+                .path(String.valueOf(end.getTime()));
 
-    List<Person> list(Date from, Date to);
+        List<Person> people = client.target(builder)
+                .request(MediaType.APPLICATION_JSON)
+                .get(new GenericType<List<Person>>() {});
+
+        Assert.assertNotNull(people);
+    }
 }

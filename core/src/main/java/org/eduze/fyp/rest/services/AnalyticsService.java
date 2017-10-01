@@ -21,13 +21,17 @@ package org.eduze.fyp.rest.services;
 
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
 import org.eduze.fyp.api.resources.PersonSnapshot;
+import org.eduze.fyp.impl.db.dao.PersonDAO;
+import org.eduze.fyp.impl.db.model.Person;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class AnalyticsService implements ProcessedMapListener {
 
     private List<List<PersonSnapshot>> snapshots = new ArrayList<>();
+    private PersonDAO personDAO;
 
     public AnalyticsService() {
     }
@@ -36,8 +40,19 @@ public class AnalyticsService implements ProcessedMapListener {
         return snapshots;
     }
 
+    public List<Person> getHeatMap(long fromTimestamp, long toTimestamp) {
+        Date from = new Date(fromTimestamp);
+        Date to = new Date(toTimestamp);
+        List<Person> people = personDAO.list(from, to);
+        return people;
+    }
+
     @Override
     public void mapProcessed(List<List<PersonSnapshot>> snapshots) {
         this.snapshots = snapshots;
+    }
+
+    public void setPersonDAO(PersonDAO personDAO) {
+        this.personDAO = personDAO;
     }
 }

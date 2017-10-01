@@ -11,6 +11,7 @@
     <packaging>jar</packaging>
 
     <artifactId>core</artifactId>
+    <name>Analytics Engine Core</name>
 
     <dependencies>
         <!-- Spring Framework -->

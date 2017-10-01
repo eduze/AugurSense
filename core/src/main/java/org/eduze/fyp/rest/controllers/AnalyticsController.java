@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -50,11 +51,18 @@ public class AnalyticsController {
         }
     }
 
-    public AnalyticsController(AnalyticsService analyticsService) {
-        this.analyticsService = analyticsService;
+    @GET
+    @Path("/heatMap/{from}/{to}")
+    public Response getHeatMap(@PathParam("from") long from, @PathParam("to") long to) {
+        try {
+            return Response.status(200).entity(analyticsService.getHeatMap(from, to)).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining real time map. {}", e);
+            return Response.status(500).build();
+        }
     }
 
-    public void setAnalyticsService(AnalyticsService analyticsService) {
+    public AnalyticsController(AnalyticsService analyticsService) {
         this.analyticsService = analyticsService;
     }
 }

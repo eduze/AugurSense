@@ -23,16 +23,19 @@ import org.eduze.fyp.impl.db.model.Person;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
+import org.hibernate.query.Query;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.persistence.TemporalType;
+import java.util.Date;
 import java.util.List;
 
 public class PersonDAOImpl implements PersonDAO {
 
-    private SessionFactory sessionFactory;
+    private static final Logger logger = LoggerFactory.getLogger(PersonDAO.class);
 
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
+    private SessionFactory sessionFactory;
 
     @Override
     public void save(Person p) {
@@ -43,7 +46,6 @@ public class PersonDAOImpl implements PersonDAO {
         session.close();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<Person> list() {
         Session session = this.sessionFactory.openSession();
@@ -52,4 +54,19 @@ public class PersonDAOImpl implements PersonDAO {
         return personList;
     }
 
+    @Override
+    public List<Person> list(Date from, Date to) {
+        Session session = this.sessionFactory.openSession();
+        Query query = session.createQuery("from Person P where P.timestamp between :startTime and :endTime")
+                .setParameter("startTime", from, TemporalType.TIMESTAMP)
+                .setParameter("endTime", to, TemporalType.TIMESTAMP);
+        List personList = query.list();
+        session.close();
+
+        return personList;
+    }
+
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
+    }
 }

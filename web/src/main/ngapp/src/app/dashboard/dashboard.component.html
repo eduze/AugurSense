@@ -1,13 +1,8 @@
+<h3>People on the map: <span class="label label-default">{{personSnapshots.length}}</span></h3>
 <div class="container-fluid">
-  <ul>
-    <li *ngFor="let snapshotList of personSnapshots">
-        <span *ngFor="let snapshot of snapShotList">
-          ({{snapshot.x}}, {{snapshot.y}})
-        </span>
-    </li>
-  </ul>
+  <canvas #canvas></canvas>
 </div>
 
 <div class="container-fluid">
-  <canvas #canvas></canvas>
+  <heatmap></heatmap>
 </div>

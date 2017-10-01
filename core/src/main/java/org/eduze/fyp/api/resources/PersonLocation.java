@@ -60,6 +60,7 @@ public class PersonLocation {
         if (snapshots.isEmpty()) {
             timestamp = original.getTimestamp();
         } else {
+            // TODO: 9/22/17 Should we ignore this scenario?
             PersonSnapshot snapshot = snapshots.getFirst();
             timestamp = snapshot.getTimestamp() < original.getTimestamp() ? original.getTimestamp() : snapshot.getTimestamp();
         }

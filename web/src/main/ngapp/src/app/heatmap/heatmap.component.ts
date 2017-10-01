@@ -17,76 +17,59 @@
  * IN THE SOFTWARE.
  */
 
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core'
-import {Observable} from 'rxjs/Rx';
-
+import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core'
 import {AnalyticsService} from "../services/analytics.service";
-import {PersonSnapshot} from "../resources/person-snapshot";
 
 @Component({
-  selector: 'dashboard',
-  templateUrl: './dashboard.component.html',
-  styles: ['canvas { border: 1px solid #000; }']
+  selector: 'heatmap',
+  templateUrl: './heatmap.component.html'
 })
 
-export class DashboardComponent implements OnInit, AfterViewInit {
+export class HeatmapComponent implements AfterViewInit {
 
   @ViewChild('canvas') private canvas: ElementRef;
   private cx: CanvasRenderingContext2D;
 
-  personSnapshots: PersonSnapshot[][] = [[]];
-
   constructor(private analyticsService: AnalyticsService) {
-  }
-
-  ngOnInit(): void {
-    Observable.interval(2000).subscribe(x => {
-      console.log("Sending request");
-      this.analyticsService.getRealTimeMap()
-        .then(personSnapshots => {
-          console.log(personSnapshots);
-          this.personSnapshots = personSnapshots;
-          this.drawOnCanvas(personSnapshots);
-        })
-        .catch(reason => console.log(reason));
-    });
-  }
-
-  private drawOnCanvas(personSnapshots: PersonSnapshot[][]): void {
-    if (!this.cx) {
-      console.log("cx is not set");
-      return;
-    }
-
-    const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
-    this.cx.clearRect(0, 0, canvasEl.width, canvasEl.height);
-
-    personSnapshots.forEach(snapshots => {
-      let prev: PersonSnapshot;
-      for (let i in snapshots) {
-        if (prev) {
-          this.cx.beginPath();
-          this.cx.moveTo(prev.x, prev.y);
-          this.cx.lineTo(snapshots[i].x, snapshots[i].y);
-          this.cx.stroke();
-        }
-
-        prev = snapshots[i];
-      }
-    });
   }
 
   ngAfterViewInit(): void {
     const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
     this.cx = canvasEl.getContext('2d');
 
-    // set the width and height
-    canvasEl.width = 800;
-    canvasEl.height = 800;
-
     // set some default properties about the line
     this.cx.lineWidth = 3;
     this.cx.lineCap = 'round';
     this.cx.strokeStyle = '#000';
+  }
+
+  generateHeatMap(): void {
+    const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
+
+    let data: number[][] = [];
+    const i = 100;
+    const rectWidth = 5;
+    for (let x = 0; x < i; x++) {
+      for (let y = 0; y < i; y++) {
+        const d = Math.floor(Math.random() * 100);
+
+        while (!data[x]) {
+          data.push([]);
+        }
+
+        data[x].push(d);
+      }
+    }
+
+    // set the width and height
+    canvasEl.width = data.length * rectWidth;
+    canvasEl.height = data[0].length * rectWidth;
+
+    for (let x = 0; x < data.length; x++) {
+      for (let y = 0; y < data[x].length; y++) {
+        this.cx.globalAlpha = data[x][y] / 100;
+        this.cx.fillRect(x * rectWidth, y * rectWidth, rectWidth, rectWidth);
+      }
+    }
   }
 }
