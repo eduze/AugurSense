@@ -20,6 +20,7 @@
 package org.eduze.fyp.impl;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.concurrent.FutureCallback;
@@ -37,6 +38,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import static org.eduze.fyp.Constants.CAMERA_NOTIFICATION_PATH_PATTERN;
+import static org.eduze.fyp.Constants.CAMERA_NOTIFY_TIMEOUT;
 
 /**
  * Class responsible for notifying and retrieving processed local maps corresponding to a timestamp.
@@ -59,7 +61,15 @@ public class CameraNotifier implements FutureCallback<HttpResponse> {
         this.logger = LoggerFactory.getLogger(CameraNotifier.class.getSimpleName() + ":" + ipAndPort.toString());
         this.cameraCoordinator = cameraCoordinator;
         this.ipAndPort = ipAndPort;
-        this.client = HttpAsyncClients.createDefault();
+
+        RequestConfig config = RequestConfig.custom()
+                .setConnectTimeout(CAMERA_NOTIFY_TIMEOUT)
+                .setConnectionRequestTimeout(CAMERA_NOTIFY_TIMEOUT)
+                .setSocketTimeout(CAMERA_NOTIFY_TIMEOUT)
+                .build();
+        this.client = HttpAsyncClients.custom()
+                .setDefaultRequestConfig(config)
+                .build();
         client.start();
     }
 

@@ -34,7 +34,6 @@ import org.eduze.fyp.api.util.Args;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,7 +68,7 @@ public class MapProcessorImpl implements MapProcessor {
     }
 
     @Override
-    public void addProcessedMapListener(ProcessedMapListener listener) {
+    public synchronized void addProcessedMapListener(ProcessedMapListener listener) {
         mapListeners.add(listener);
     }
 
@@ -94,7 +93,8 @@ public class MapProcessorImpl implements MapProcessor {
             }
             logger.debug("Starting map processing");
 
-            // TODO: 9/3/17 Optimize to use a thread pool of 2 atleast to focus more on processing
+            // TODO: 9/3/17 Optimize to use a thread pool of 2 at least to focus more on processing
+            long lastTimestamp = 0;
             for (; ; ) {
                 if (!stateManager.isState(State.STARTED)) {
                     break;
@@ -105,20 +105,23 @@ public class MapProcessorImpl implements MapProcessor {
                     nextMap = localMapQueue.poll();
                 }
 
-                if (nextMap == null) continue;
-
                 try {
-                    globalMap.update(nextMap);
+                    if (nextMap != null) {
+                        globalMap.update(nextMap);
+                    }
 
-                    if (new Date().getTime() - cameraCoordinator.getCurrentTimestamp() > MAP_REFRESH_INTERVAL) {
-                        long minTimestamp = cameraCoordinator.getCurrentTimestamp() - MAP_REFRESH_THRESHOLD;
+                    if (cameraCoordinator.getCurrentTimestamp() - lastTimestamp > MAP_REFRESH_INTERVAL) {
+                        lastTimestamp = cameraCoordinator.getCurrentTimestamp();
+                        long minTimestamp = lastTimestamp - MAP_REFRESH_THRESHOLD;
                         globalMap.refresh(minTimestamp);
                     }
 
                     List<List<PersonSnapshot>> snapshots = globalMap.getSnapshot();
-                    mapListeners.forEach(listener -> listener.mapProcessed(snapshots));
+                    synchronized (this) {
+                        mapListeners.forEach(listener -> listener.mapProcessed(snapshots));
+                    }
                 } catch (Exception e) {
-                    logger.error("error", e);
+                    logger.error("Error occurred in map processing", e);
                 }
             }
         });
@@ -138,7 +141,7 @@ public class MapProcessorImpl implements MapProcessor {
         stateManager.setState(State.STOPPED);
     }
 
-    public void setMapListeners(Set<ProcessedMapListener> listeners) {
+    public synchronized void setMapListeners(Set<ProcessedMapListener> listeners) {
         if (listeners != null) {
             mapListeners.addAll(listeners);
         }

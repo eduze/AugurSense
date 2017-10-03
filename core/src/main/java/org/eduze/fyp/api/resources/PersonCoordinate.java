@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class PersonCoordinate extends Coordinate {
+
     private byte[] image;
 
     public PersonCoordinate() {

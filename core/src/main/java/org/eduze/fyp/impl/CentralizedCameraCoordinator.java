@@ -48,7 +48,9 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
     private Map<InetSocketAddress, CameraNotifier> cameraNotifiers = new HashMap<>();
     private ExecutorService executorService;
     private StateManager stateManager = new StateManager(State.STOPPED);
-    private long currentTimestamp = 1;
+    private long currentTimestamp = 0;
+    /** Whether to use timestamps as per current clock time or as a reference time starting from 0 */
+    private boolean useClock = false;
     private MapProcessor mapProcessor;
 
     public CentralizedCameraCoordinator(ConfigurationManager configurationManager) {
@@ -122,8 +124,13 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
 
             logger.debug("Asking for processed frames for timestamp {}", currentTimestamp);
             synchronized (this) {
-                // Is there an error? We take timestamp few milli-seconds earlier
-                currentTimestamp = new Date().getTime();
+                // TODO: 10/3/17 Is there an error? We take timestamp few milli-seconds earlier
+                if (useClock) {
+                    currentTimestamp = new Date().getTime();
+                } else {
+                    currentTimestamp += 500;
+                }
+
                 cameraNotifiers.values()
                         .forEach(notifier -> executorService.submit(() -> notifier.notifyCamera(currentTimestamp)));
             }
@@ -132,11 +139,9 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
         logger.warn("Stopping camera coordination");
     }
 
-    private void clearNotifiers() {
-        synchronized (this) {
-            cameraNotifiers.values().forEach(CameraNotifier::stop);
-            cameraNotifiers.clear();
-        }
+    private synchronized void clearNotifiers() {
+        cameraNotifiers.values().forEach(CameraNotifier::stop);
+        cameraNotifiers.clear();
     }
 
     public void addLocalMap(LocalMap map) {
@@ -154,5 +159,13 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
 
     public void setMapProcessor(MapProcessor mapProcessor) {
         this.mapProcessor = mapProcessor;
+    }
+
+    public boolean isUseClock() {
+        return useClock;
+    }
+
+    public void setUseClock(boolean useClock) {
+        this.useClock = useClock;
     }
 }

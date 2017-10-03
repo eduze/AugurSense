@@ -85,7 +85,7 @@ public class MainController implements Initializable, ProcessedMapListener, Conf
                     .count();
 
             if (incompleteMappings == 0 && pointMappings.entrySet().size() == configurationManager.getNumberOfCameras()) {
-                logger.debug("Adding 2D-3D mapping to configuration : {}", pointMappings);
+                logger.info("Adding 2D-3D mapping to configuration : {}", pointMappings);
                 pointMappings.forEach(configurationManager::addPointMapping);
             } else {
                 logger.debug("Found {} incomplete mappings of {}. Not adding to configuration",
@@ -169,16 +169,15 @@ public class MainController implements Initializable, ProcessedMapListener, Conf
 
     @Override
     public void mapProcessed(List<List<PersonSnapshot>> snapshots) {
-        if (realtimeMap == null) return;
+        if (realtimeMap == null || snapshots.size() == 0) return;
 
         BufferedImage map = ImageUtils.copyImage(originalMap);
 
         logger.debug("Received {} points for real-time map", snapshots.size());
         snapshots.forEach(snapshotList -> {
-            List<Point> points =
-                    snapshotList.stream()
-                            .map(snapshot -> new Point(snapshot.getX(), snapshot.getY()))
-                            .collect(Collectors.toList());
+            List<Point> points = snapshotList.stream()
+                    .map(snapshot -> new Point(snapshot.getX(), snapshot.getY()))
+                    .collect(Collectors.toList());
             if (points.size() == 1) {
                 drawPoint(realtimeMapImageView, map, points.get(0).getX(), points.get(0).getY());
             } else if (points.size() > 1) {

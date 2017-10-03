@@ -30,7 +30,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,6 +43,7 @@ public class GlobalMap {
     private static final Logger logger = LoggerFactory.getLogger(GlobalMap.class);
 
     private List<PersonLocation> personLocations = new ArrayList<>();
+    private volatile int id = 0;
 
     public synchronized List<List<PersonSnapshot>> getSnapshot() {
         return personLocations.stream()
@@ -67,10 +67,18 @@ public class GlobalMap {
         Set<PersonLocation> newPeople = new HashSet<>();
         tuples.forEach(pair -> {
             if (!used.contains(pair.getKey()) && pair.distance() < Constants.DISTANCE_THRESHOLD) {
+                if (pair.getKey().getImage() != null) {
+                    logger.debug("Found an image for person {}", pair.getValue().getIds());
+                    // TODO: 10/3/17 DO the re-id part here
+                }
                 used.add(pair.getKey());
                 pair.getValue().addPoint(localMap.getCameraId(), pair.getKey().toCoordinate());
             } else if (!used.contains(pair.getKey()) && pair.getValue() == null) {
-                int id = new Random().nextInt(200) + 1;
+                if (pair.getKey().getImage() != null) {
+                    logger.debug("Found a new person with image");
+                    // TODO: 10/3/17 DO the re-id part here
+                }
+                int id = this.id++;
                 PersonLocation newPL = new PersonLocation(id);
                 newPL.addPoint(localMap.getCameraId(), pair.getKey().toCoordinate());
                 newPeople.add(newPL);

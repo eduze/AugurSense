@@ -56,10 +56,13 @@
 
     <bean id="camera-coordinator" class="org.eduze.fyp.impl.CentralizedCameraCoordinator">
         <constructor-arg ref="configuration-manager"/>
+        <property name="useClock" value="false"/>
         <property name="mapProcessor" ref="map-processor"/>
     </bean>
 
-    <!-- Database related area -->
+    <!-- ============================================================================ -->
+    <!--                    Database Related Configuration                            -->
+    <!-- ============================================================================ -->
     <bean id="db-handler" class="org.eduze.fyp.impl.db.DBHandler">
         <property name="personDAO" ref="personDAO"/>
     </bean>
