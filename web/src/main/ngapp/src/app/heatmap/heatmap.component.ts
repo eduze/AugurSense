@@ -19,6 +19,8 @@
 
 import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core'
 import {AnalyticsService} from "../services/analytics.service";
+import {SimpleHeatMap} from "../lib/simple-heat-map";
+import data from '../lib/data';
 
 @Component({
   selector: 'heatmap',
@@ -36,40 +38,16 @@ export class HeatmapComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
     this.cx = canvasEl.getContext('2d');
-
-    // set some default properties about the line
-    this.cx.lineWidth = 3;
-    this.cx.lineCap = 'round';
-    this.cx.strokeStyle = '#000';
   }
 
   generateHeatMap(): void {
     const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
-
-    let data: number[][] = [];
-    const i = 100;
-    const rectWidth = 5;
-    for (let x = 0; x < i; x++) {
-      for (let y = 0; y < i; y++) {
-        const d = Math.floor(Math.random() * 100);
-
-        while (!data[x]) {
-          data.push([]);
-        }
-
-        data[x].push(d);
-      }
-    }
-
     // set the width and height
-    canvasEl.width = data.length * rectWidth;
-    canvasEl.height = data[0].length * rectWidth;
+    canvasEl.width = 800;
+    canvasEl.height = 800;
 
-    for (let x = 0; x < data.length; x++) {
-      for (let y = 0; y < data[x].length; y++) {
-        this.cx.globalAlpha = data[x][y] / 100;
-        this.cx.fillRect(x * rectWidth, y * rectWidth, rectWidth, rectWidth);
-      }
-    }
+    let heatmap: SimpleHeatMap = new SimpleHeatMap(this.canvas);
+    heatmap.data(data);
+    heatmap.draw(0.15);
   }
 }
