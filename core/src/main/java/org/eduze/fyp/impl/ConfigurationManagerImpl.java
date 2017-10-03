@@ -119,7 +119,9 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         return copyOfCameraViews;
     }
 
+    @Override
     public BufferedImage getMap() {
+        stateManager.checkState(State.STARTED);
         ColorModel cm = map.getColorModel();
         boolean isAlphaPreMultiplied = cm.isAlphaPremultiplied();
         WritableRaster raster = map.copyData(null);

@@ -38,10 +38,20 @@ export class AnalyticsService {
         console.log(response.json());
         return response.json() as PersonSnapshot[][]
       })
-      .catch(this.handleError);
+      .catch(AnalyticsService.handleError);
   }
 
-  private handleError(error: any): Promise<any> {
+  getHeatMap(from: number, to: number): Promise<number[][]> {
+    return this.http.get(this.baseUrl + "analytics/heatMap/" + from + "/" + to)
+      .toPromise()
+      .then(response => {
+        console.log(response.json());
+        return response.json() as number[][]
+      })
+      .catch(AnalyticsService.handleError);
+  }
+
+  private static handleError(error: any): Promise<any> {
     console.error('An error occurred', error);
     return Promise.reject(error.message || error);
   }

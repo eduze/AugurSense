@@ -123,6 +123,7 @@
 
     <bean id="analytics-service" class="org.eduze.fyp.rest.services.AnalyticsService">
         <property name="personDAO" ref="personDAO"/>
+        <property name="configurationManager" ref="configuration-manager"/>
     </bean>
 
 </beans>

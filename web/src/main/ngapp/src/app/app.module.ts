@@ -1,8 +1,9 @@
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
-import {ChartModule} from 'angular-highcharts';
+import {CalendarModule} from 'primeng/primeng';
 
 import {AppComponent} from "./app.component";
 import {AppRoutingModule} from "./app-routing.module";
@@ -20,10 +21,11 @@ import {HeatmapComponent} from "./heatmap/heatmap.component";
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     FormsModule,
     AppRoutingModule,
     HttpModule,
-    ChartModule
+    CalendarModule
   ],
   providers: [AnalyticsService],
   bootstrap: [AppComponent]

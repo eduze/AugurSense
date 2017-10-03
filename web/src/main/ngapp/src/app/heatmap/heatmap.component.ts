@@ -32,6 +32,10 @@ export class HeatmapComponent implements AfterViewInit {
   @ViewChild('canvas') private canvas: ElementRef;
   private cx: CanvasRenderingContext2D;
 
+  // Date picker for heat map range
+  from: Date;
+  to: Date;
+
   constructor(private analyticsService: AnalyticsService) {
   }
 
@@ -41,6 +45,11 @@ export class HeatmapComponent implements AfterViewInit {
   }
 
   generateHeatMap(): void {
+    if (!this.from || !this.to) {
+      console.log("Dates are not set");
+      return;
+    }
+
     const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
     // set the width and height
     canvasEl.width = 800;

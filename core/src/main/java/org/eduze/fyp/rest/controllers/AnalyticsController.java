@@ -57,7 +57,7 @@ public class AnalyticsController {
         try {
             return Response.status(200).entity(analyticsService.getHeatMap(from, to)).build();
         } catch (Exception e) {
-            logger.error("Error occurred when obtaining real time map. {}", e);
+            logger.error("Error occurred when obtaining heat map", e);
             return Response.status(500).build();
         }
     }
