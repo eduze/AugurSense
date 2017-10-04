@@ -41,10 +41,21 @@ public class AnalyticsController {
     private AnalyticsService analyticsService;
 
     @GET
+    @Path("/getMap")
+    public Response getMap() {
+        try {
+            return Response.ok(analyticsService.getMap()).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining map. {}", e);
+            return Response.status(500).build();
+        }
+    }
+
+    @GET
     @Path("/realTimeMap")
     public Response getRealTimeMap() {
         try {
-            return Response.status(200).entity(analyticsService.getRealTimeMap()).build();
+            return Response.ok(analyticsService.getRealTimeMap()).build();
         } catch (Exception e) {
             logger.error("Error occurred when obtaining real time map. {}", e);
             return Response.status(500).build();
@@ -55,7 +66,7 @@ public class AnalyticsController {
     @Path("/heatMap/{from}/{to}")
     public Response getHeatMap(@PathParam("from") long from, @PathParam("to") long to) {
         try {
-            return Response.status(200).entity(analyticsService.getHeatMap(from, to)).build();
+            return Response.ok(analyticsService.getHeatMap(from, to)).build();
         } catch (Exception e) {
             logger.error("Error occurred when obtaining heat map", e);
             return Response.status(500).build();

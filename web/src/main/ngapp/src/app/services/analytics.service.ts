@@ -51,6 +51,17 @@ export class AnalyticsService {
       .catch(AnalyticsService.handleError);
   }
 
+  getMap(): Promise<string> {
+    return this.http.get(this.baseUrl + "analytics/getMap")
+      .toPromise()
+      .then(response => {
+        console.debug(response);
+        console.debug(response.json());
+        return response.json().image as string
+      })
+      .catch(AnalyticsService.handleError);
+  }
+
   private static handleError(error: any): Promise<any> {
     console.error('An error occurred', error);
     return Promise.reject(error.message || error);

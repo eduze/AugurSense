@@ -24,13 +24,17 @@ import org.eduze.fyp.api.listeners.ProcessedMapListener;
 import org.eduze.fyp.api.resources.PersonSnapshot;
 import org.eduze.fyp.impl.db.dao.PersonDAO;
 import org.eduze.fyp.impl.db.model.Person;
+import org.eduze.fyp.rest.util.ImageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Map;
 
 public class AnalyticsService implements ProcessedMapListener {
 
@@ -42,7 +46,14 @@ public class AnalyticsService implements ProcessedMapListener {
     private int mapWidth = -1;
     private int mapHeight = -1;
 
-    public AnalyticsService() {
+    public AnalyticsService() { }
+
+    public Map<String, byte[]> getMap() throws IOException {
+        BufferedImage map = configurationManager.getMap();
+        byte[] bytes = ImageUtils.bufferedImageToByteArray(map);
+        Map<String, byte[]> response = new HashMap<>();
+        response.put("image", bytes);
+        return response;
     }
 
     public List<List<PersonSnapshot>> getRealTimeMap() {
@@ -65,20 +76,13 @@ public class AnalyticsService implements ProcessedMapListener {
             return heatmap;
         }
 
-        int resolution = 5;
-        AtomicInteger max = new AtomicInteger(0);
         people.forEach(person -> {
-            int x = (int) (person.getX() / resolution);
-            int y = (int) (person.getY() / resolution);
-            heatmap[x][y] += 1;
-            max.getAndUpdate(val -> val > heatmap[x][y] ? val : heatmap[x][y]);
-        });
-
-        for (int x = 0; x < mapHeight; x++) {
-            for (int y = 0; y < mapWidth; y++) {
-                heatmap[x][y] = (heatmap[x][y] * 100) / max.get();
+            int x = (int) person.getX();
+            int y = (int) person.getY();
+            if (x < mapHeight && y < mapHeight) {
+                heatmap[x][y] += 1;
             }
-        }
+        });
 
         return heatmap;
     }

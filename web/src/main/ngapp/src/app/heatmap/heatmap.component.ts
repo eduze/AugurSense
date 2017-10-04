@@ -18,23 +18,27 @@
  */
 
 import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core'
+
 import {AnalyticsService} from "../services/analytics.service";
 import {SimpleHeatMap} from "../lib/simple-heat-map";
-import data from '../lib/data';
+import {CanvasUtils} from "../lib/utils/canvas-utils";
 
 @Component({
   selector: 'heatmap',
-  templateUrl: './heatmap.component.html'
+  templateUrl: './heatmap.component.html',
+  styleUrls: ['./heatmap.component.css']
 })
 
 export class HeatmapComponent implements AfterViewInit {
 
-  @ViewChild('canvas') private canvas: ElementRef;
-  private cx: CanvasRenderingContext2D;
-
+  mapImage: string;
+  canvasConfigured: boolean = false;
   // Date picker for heat map range
   from: Date;
   to: Date;
+
+  @ViewChild('canvas') private canvas: ElementRef;
+  private cx: CanvasRenderingContext2D;
 
   constructor(private analyticsService: AnalyticsService) {
   }
@@ -42,21 +46,66 @@ export class HeatmapComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
     this.cx = canvasEl.getContext('2d');
+    this.getMapImage();
   }
 
+  /**
+   * Generates the heat map corresponding to time between {@link from} and {@link to}
+   */
   generateHeatMap(): void {
     if (!this.from || !this.to) {
-      console.log("Dates are not set");
+      console.error("Dates are not set");
       return;
     }
 
-    const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
-    // set the width and height
-    canvasEl.width = 800;
-    canvasEl.height = 800;
+    if (!this.canvasConfigured) {
+      console.error("Canvas is not configured yet");
+      return;
+    }
 
-    let heatmap: SimpleHeatMap = new SimpleHeatMap(this.canvas);
-    heatmap.data(data);
-    heatmap.draw(0.15);
+    this.analyticsService.getHeatMap(this.from.getTime(), this.to.getTime())
+      .then(points => {
+        let p = [];
+        let max: number = 0;
+        for (let x = 0; x < points.length; x++) {
+          for (let y = 0; y < points[0].length; y++) {
+            if (points[x][y] != 0) {
+              p.push([x, y, points[x][y]]);
+              if (points[x][y] > max) {
+                max = points[x][y];
+              }
+            }
+          }
+        }
+
+        let heatmap: SimpleHeatMap = new SimpleHeatMap(this.canvas);
+        heatmap.data(p);
+        heatmap.max(max);
+        heatmap.resize();
+        heatmap.draw(0.05);
+      });
+  }
+
+  configureCanvas(canvasEl: HTMLCanvasElement): void {
+    this.cx = canvasEl.getContext('2d');
+
+    // set some default properties about the line
+    this.cx.lineWidth = 3;
+    this.cx.lineCap = 'round';
+    this.cx.strokeStyle = '#000';
+
+    this.canvasConfigured = true;
+  }
+
+  /**
+   * Downloads the image of the floor plan from server
+   */
+  private getMapImage(): void {
+    this.analyticsService.getMap()
+      .then(image => {
+        this.mapImage = "data:image/JPEG;base64," + image;
+        CanvasUtils.setBackgroundImage(this.canvas.nativeElement, this.mapImage, this.configureCanvas, this);
+      })
+      .catch(reason => console.error(reason));
   }
 }
