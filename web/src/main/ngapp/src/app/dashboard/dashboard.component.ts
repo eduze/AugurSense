@@ -40,16 +40,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    Observable.interval(2000).subscribe(x => {
-      console.log("Sending request");
-      this.analyticsService.getRealTimeMap()
-        .then(personSnapshots => {
-          console.log(personSnapshots);
-          this.personSnapshots = personSnapshots;
-          this.drawOnCanvas(personSnapshots);
-        })
-        .catch(reason => console.log(reason));
-    });
   }
 
   private drawOnCanvas(personSnapshots: PersonSnapshot[][]): void {
@@ -88,5 +78,17 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     this.cx.lineWidth = 3;
     this.cx.lineCap = 'round';
     this.cx.strokeStyle = '#000';
+
+    Observable.interval(2000).subscribe(x => {
+      console.log("Sending request");
+      this.analyticsService.getRealTimeMap()
+        .then(personSnapshots => {
+          console.log(personSnapshots);
+          this.personSnapshots = personSnapshots;
+          this.drawOnCanvas(personSnapshots);
+        })
+        .catch(reason => console.log(reason));
+    });
+
   }
 }

@@ -62,6 +62,17 @@ public class AnalyticsController {
         }
     }
 
+    @GET
+    @Path("/count/{from}/{to}")
+    public Response getCount(@PathParam("from") long from, @PathParam("to") long to) {
+        try {
+            return Response.status(200).entity(analyticsService.getCount(from, to)).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining heat map", e);
+            return Response.status(500).build();
+        }
+    }
+
     public AnalyticsController(AnalyticsService analyticsService) {
         this.analyticsService = analyticsService;
     }

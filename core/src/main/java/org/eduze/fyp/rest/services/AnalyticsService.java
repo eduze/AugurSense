@@ -27,9 +27,7 @@ import org.eduze.fyp.impl.db.model.Person;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class AnalyticsService implements ProcessedMapListener {
@@ -43,6 +41,21 @@ public class AnalyticsService implements ProcessedMapListener {
     private int mapHeight = -1;
 
     public AnalyticsService() {
+    }
+
+    public int getCount(long fromTimestamp, long toTimestamp){
+        Date from = new Date(fromTimestamp);
+        Date to = new Date(toTimestamp);
+        Set<Integer> idSet= new HashSet<>();
+        List<Person> people = personDAO.list(from, to);
+        for ( Person person:people) {
+            Set<Integer> set= person.getIds();
+            Iterator itr = set.iterator();
+            while (itr.hasNext()){
+                idSet.add((Integer) itr.next());
+            }
+        }
+        return idSet.size();
     }
 
     public List<List<PersonSnapshot>> getRealTimeMap() {
