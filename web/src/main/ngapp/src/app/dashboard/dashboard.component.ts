@@ -42,7 +42,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-
   }
 
   configureCanvas(canvasEl: HTMLCanvasElement): void {
@@ -93,6 +92,29 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
+    this.cx = canvasEl.getContext('2d');
+
+    // set the width and height
+    canvasEl.width = 800;
+    canvasEl.height = 800;
+
+    // set some default properties about the line
+    this.cx.lineWidth = 3;
+    this.cx.lineCap = 'round';
+    this.cx.strokeStyle = '#000';
+
+    Observable.interval(2000).subscribe(x => {
+      console.log("Sending request");
+      this.analyticsService.getRealTimeMap()
+        .then(personSnapshots => {
+          console.log(personSnapshots);
+          this.personSnapshots = personSnapshots;
+          this.drawOnCanvas(personSnapshots);
+        })
+        .catch(reason => console.log(reason));
+    });
+
     this.analyticsService.getMap()
       .then(image => {
         this.mapImage = "data:image/JPEG;base64," + image;
