@@ -51,15 +51,15 @@ export class AnalyticsService {
       .catch(AnalyticsService.handleError);
   }
 
-  getCount(from: number, to: number): Promise<number> {
-    return this.http.get(this.baseUrl + "analytics/count/" + from + "/" + to)
-      .toPromise().then(
-        response => {
-          console.log(response.json());
-          return response.json() as number
-        }
-      ).catch(AnalyticsService.handleError);
-
+  getMap(): Promise<string> {
+    return this.http.get(this.baseUrl + "analytics/getMap")
+      .toPromise()
+      .then(response => {
+        console.debug(response);
+        console.debug(response.json());
+        return response.json().image as string
+      })
+      .catch(AnalyticsService.handleError);
   }
 
   private static handleError(error: any): Promise<any> {
