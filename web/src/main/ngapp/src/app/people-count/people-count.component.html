@@ -1,0 +1,16 @@
+<div class="container-fluid">
+  <div class="col-md-6 ">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="col-md-9">
+          <label>From</label>
+          <p-calendar [(ngModel)]="from"></p-calendar>
+          <label> To</label>
+          <p-calendar [(ngModel)]="to"></p-calendar>
+        </div>
+          <button class="btn btn-info" (click)="getCount()"> Get count</button>
+        <h4>People on the map: <span class="label label-default">{{personCount}}</span></h4>
+      </div>
+    </div>
+  </div>
+</div>
