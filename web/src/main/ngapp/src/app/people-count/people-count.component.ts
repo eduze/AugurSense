@@ -24,15 +24,6 @@ export class PeopleCountComponent implements OnInit , AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Observable.interval(2000).subscribe(x => {
-    //   console.log("Sending request");
-    //   this.analyticsService.getHeatMap(this.from.getTime(),this.to.getTime())
-    //     .then(personCount => {
-    //       console.log(personCount);
-    //       this.personCount = personCount;
-    //     })
-    //     .catch(reason => console.log(reason));
-    // });
   }
   getCount():void{
     this.analyticsService.getCount(this.from.getTime(),this.to.getTime())
