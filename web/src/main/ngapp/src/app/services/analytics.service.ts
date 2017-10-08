@@ -35,7 +35,7 @@ export class AnalyticsService {
     return this.http.get(this.baseUrl + "analytics/realTimeMap")
       .toPromise()
       .then(response => {
-        console.log(response.json());
+        console.debug(response.json());
         return response.json() as PersonSnapshot[][]
       })
       .catch(AnalyticsService.handleError);
@@ -45,7 +45,7 @@ export class AnalyticsService {
     return this.http.get(this.baseUrl + "analytics/heatMap/" + from + "/" + to)
       .toPromise()
       .then(response => {
-        console.log(response.json());
+        console.debug(response.json());
         return response.json() as number[][]
       })
       .catch(AnalyticsService.handleError);

@@ -7,7 +7,6 @@ import {CalendarModule} from 'primeng/primeng';
 
 import {AppComponent} from "./app.component";
 import {AppRoutingModule} from "./app-routing.module";
-import {NavBarComponent} from "./nav-bar/nav-bar.component";
 import {DashboardComponent} from "./dashboard/dashboard.component";
 import {AnalyticsService} from "./services/analytics.service";
 import {HeatmapComponent} from "./heatmap/heatmap.component";
@@ -16,7 +15,6 @@ import { PeopleCountComponent } from './people-count/people-count.component';
 @NgModule({
   declarations: [
     AppComponent,
-    NavBarComponent,
     DashboardComponent,
     HeatmapComponent,
     PeopleCountComponent

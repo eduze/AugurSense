@@ -17,19 +17,22 @@
   ~ IN THE SOFTWARE.
   -->
 
-
 <div class="container-fluid">
-  <div class="col-md-8 col-md-offset-2">
+
+  <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-1">
+
     <div class="panel panel-default">
       <div class="panel-heading">
         <button class="btn btn-info" (click)="generateHeatMap()">Generate Heat Map</button>
         <p-calendar [(ngModel)]="from"></p-calendar>
         <p-calendar [(ngModel)]="to"></p-calendar>
       </div>
+
+      <div class="panel-body">
+        <canvas #canvas class="center-block"></canvas>
+      </div>
     </div>
+
   </div>
 
-  <div class="panel-body">
-    <canvas #canvas></canvas>
-  </div>
 </div>

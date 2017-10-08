@@ -1,9 +1,23 @@
-<h3>People on the map: <span class="label label-default">{{personSnapshots.length}}</span></h3>
 <div class="container-fluid">
-  <canvas #canvas></canvas>
-</div>
 
-<div class="container-fluid">
-  <heatmap></heatmap>
+  <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4 class="panel-title">People on the map: <span class="label label-default">{{personSnapshots.length}}</span>
+        </h4>
+      </div>
+      <div class="panel-body">
+        <div class="container-fluid">
+          <canvas #canvas class="center-block"></canvas>
+        </div>
+
+        <div class="container-fluid">
+          <app-people-count></app-people-count>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
 </div>
-<app-people-count></app-people-count>

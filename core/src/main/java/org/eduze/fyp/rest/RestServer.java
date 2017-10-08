@@ -35,8 +35,10 @@ public class RestServer implements Startable {
     private Set<Object> controllers = new HashSet<>();
     private Server jettyServer;
     private Server webServer;
+    private boolean startWebServer = true;
 
-    private RestServer() {
+    private RestServer(boolean startWebServer) {
+        this.startWebServer = startWebServer;
     }
 
     /**
@@ -45,7 +47,10 @@ public class RestServer implements Startable {
     @Override
     public void start() {
         startRestServer();
-        startWebServer();
+        if (startWebServer) {
+            logger.warn("Not starting web server");
+            startWebServer();
+        }
         logger.info("Servers started successfully");
     }
 

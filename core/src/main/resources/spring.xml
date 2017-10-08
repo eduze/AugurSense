@@ -101,6 +101,7 @@
     <!--                    REST Server related configuration                         -->
     <!-- ============================================================================ -->
     <bean id="rest-server" class="org.eduze.fyp.rest.RestServer">
+        <constructor-arg value="false"/>
         <property name="controllers">
             <set>
                 <ref bean="config-controller"/>
