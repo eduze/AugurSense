@@ -69,7 +69,7 @@ public class GlobalMap {
             if (!used.contains(pair.getKey()) && pair.distance() < Constants.DISTANCE_THRESHOLD) {
                 if (pair.getKey().getImage() != null) {
                     logger.debug("Found an image for person {}", pair.getValue().getIds());
-                    // TODO: 10/3/17 DO the re-id part here
+                    // TODO: 10/3/17 Do the re-id part here
                 }
                 used.add(pair.getKey());
                 pair.getValue().addPoint(localMap.getCameraId(), pair.getKey().toCoordinate());

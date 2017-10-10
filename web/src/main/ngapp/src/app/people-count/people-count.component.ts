@@ -1,15 +1,13 @@
-import {Component, OnInit, AfterViewInit} from '@angular/core';
-import {PersonSnapshot} from "../resources/person-snapshot";
-import {Observable} from "rxjs/Observable";
+import {AfterViewInit, Component} from '@angular/core';
 import {AnalyticsService} from "../services/analytics.service";
 
 
 @Component({
-  selector: 'app-people-count',
+  selector: 'people-count',
   templateUrl: './people-count.component.html',
   styleUrls: ['./people-count.component.css']
 })
-export class PeopleCountComponent implements OnInit , AfterViewInit {
+export class PeopleCountComponent implements AfterViewInit {
 
   // Date picker for heat map range
   from: Date;
@@ -20,19 +18,16 @@ export class PeopleCountComponent implements OnInit , AfterViewInit {
   constructor(private analyticsService: AnalyticsService) {
   }
 
-  ngOnInit() {
-  }
-
   ngAfterViewInit(): void {
   }
-  getCount():void{
-    this.analyticsService.getCount(this.from.getTime(),this.to.getTime())
+
+  getCount(): void {
+    this.analyticsService.getCount(this.from.getTime(), this.to.getTime())
       .then(personCount => {
         console.log(personCount);
         this.personCount = personCount;
       })
       .catch(reason => console.log(reason));
-
   }
 
 }

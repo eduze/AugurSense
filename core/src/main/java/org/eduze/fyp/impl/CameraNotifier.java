@@ -107,9 +107,6 @@ public class CameraNotifier implements FutureCallback<HttpResponse> {
         try {
             String entity = HttpUtils.readEntity(httpResponse.getEntity());
             LocalMap receivedMap = HttpUtils.mapEntity(entity, LocalMap.class);
-            receivedMap.setTimestamp(currentTimestamp);
-            receivedMap.getPersonCoordinates()
-                    .forEach(personCoordinate -> personCoordinate.setTimestamp(currentTimestamp));
             cameraCoordinator.addLocalMap(receivedMap);
             setState(State.IDLE);
         } catch (IOException e) {

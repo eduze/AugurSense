@@ -49,6 +49,7 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
     private ExecutorService executorService;
     private StateManager stateManager = new StateManager(State.STOPPED);
     private long currentTimestamp = 0;
+    private long realTimestamp = 0;
     /** Whether to use timestamps as per current clock time or as a reference time starting from 0 */
     private boolean useClock = false;
     private MapProcessor mapProcessor;
@@ -125,8 +126,9 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
             logger.debug("Asking for processed frames for timestamp {}", currentTimestamp);
             synchronized (this) {
                 // TODO: 10/3/17 Is there an error? We take timestamp few milli-seconds earlier
+                realTimestamp = new Date().getTime();
                 if (useClock) {
-                    currentTimestamp = new Date().getTime();
+                    currentTimestamp = realTimestamp;
                 } else {
                     currentTimestamp += 500;
                 }
@@ -145,6 +147,10 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
     }
 
     public void addLocalMap(LocalMap map) {
+        map.setTimestamp(realTimestamp);
+        map.getPersonCoordinates()
+                .forEach(personCoordinate -> personCoordinate.setTimestamp(currentTimestamp));
+
         mapProcessor.addLocalMap(map);
     }
 

@@ -21,6 +21,7 @@ import {NgModule} from '@angular/core'
 import {RouterModule, Routes} from '@angular/router'
 import {DashboardComponent} from "./dashboard/dashboard.component";
 import {HeatmapComponent} from "./heatmap/heatmap.component";
+import {PeopleCountComponent} from "./people-count/people-count.component";
 
 const routes: Routes = [
   {
@@ -30,6 +31,10 @@ const routes: Routes = [
   {
     path: 'heatmap',
     component: HeatmapComponent
+  },
+  {
+    path: 'statistics',
+    component: PeopleCountComponent
   },
   {
     path: '',
