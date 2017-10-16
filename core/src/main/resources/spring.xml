@@ -57,6 +57,7 @@
     <bean id="camera-coordinator" class="org.eduze.fyp.impl.CentralizedCameraCoordinator">
         <constructor-arg ref="configuration-manager"/>
         <property name="useClock" value="false"/>
+        <property name="intervalMs" value="1000"/>
         <property name="mapProcessor" ref="map-processor"/>
     </bean>
 

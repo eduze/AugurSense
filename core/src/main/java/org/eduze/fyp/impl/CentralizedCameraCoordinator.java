@@ -52,6 +52,7 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
     private long realTimestamp = 0;
     /** Whether to use timestamps as per current clock time or as a reference time starting from 0 */
     private boolean useClock = false;
+    private long intervalMs;
     private MapProcessor mapProcessor;
 
     public CentralizedCameraCoordinator(ConfigurationManager configurationManager) {
@@ -61,6 +62,11 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
     @Override
     public void start() {
         stateManager.checkState(State.STOPPED);
+
+        if (intervalMs == 0 || intervalMs < 0) {
+            throw new IllegalArgumentException("IntervalMs is not set");
+        }
+
         logger.debug("Starting camera coordinator");
         configurationManager.addConfigurationListener(this);
         synchronized (this) {
@@ -130,7 +136,7 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
                 if (useClock) {
                     currentTimestamp = realTimestamp;
                 } else {
-                    currentTimestamp += 500;
+                    currentTimestamp += intervalMs;
                 }
 
                 cameraNotifiers.values()
@@ -173,5 +179,9 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
 
     public void setUseClock(boolean useClock) {
         this.useClock = useClock;
+    }
+
+    public void setIntervalMs(long intervalMs) {
+        this.intervalMs = intervalMs;
     }
 }
