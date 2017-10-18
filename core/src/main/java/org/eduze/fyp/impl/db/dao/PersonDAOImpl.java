@@ -28,8 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.TemporalType;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class PersonDAOImpl implements PersonDAO {
 
@@ -62,8 +61,31 @@ public class PersonDAOImpl implements PersonDAO {
                 .setParameter("endTime", to, TemporalType.TIMESTAMP);
         List personList = query.list();
         session.close();
-
         return personList;
+    }
+
+    @Override
+    public List<Integer> personIDs(Date from, Date to) {
+        List<Integer> ids = new ArrayList<>();
+        //TODO: neeed to Implement
+        return ids;
+    }
+
+    @Override
+    public List<Person> getRows(int id, Date from, Date to) {
+//        Set<Integer> i = new HashSet<>();
+//        i.add(id);
+//        i.add(5);
+//        Session session = this.sessionFactory.openSession();
+//        Query query = session.createQuery("from Person P where P.ids = :id  and P.timestamp between :startTime and :endTime ")
+//                .setParameter("startTime", from, TemporalType.TIMESTAMP)
+//                .setParameter("endTime", to, TemporalType.TIMESTAMP)
+//                .setParameter("id", i);
+//        List personList = query.list();
+//        session.close();
+//        return personList;
+        return null;
+
     }
 
     public void setSessionFactory(SessionFactory sessionFactory) {
