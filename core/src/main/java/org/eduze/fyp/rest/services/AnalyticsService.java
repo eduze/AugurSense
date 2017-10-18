@@ -47,7 +47,9 @@ public class AnalyticsService implements ProcessedMapListener {
     private int mapWidth = -1;
     private int mapHeight = -1;
 
-    public AnalyticsService() { }
+
+    public AnalyticsService() {
+    }
 
     public Map<String, byte[]> getMap() throws IOException {
         BufferedImage map = configurationManager.getMap();
@@ -88,24 +90,103 @@ public class AnalyticsService implements ProcessedMapListener {
         return heatmap;
     }
 
-    public int getCount(long fromTimestamp, long toTimestamp){
+    public int getCount(long fromTimestamp, long toTimestamp) {
+        List<Integer> ids = getPeopleIds(fromTimestamp, toTimestamp);
+        return ids.size();
+    }
+
+    public int[][] getStopPoints(long fromTimestamp, long toTimestamp, int r, int t, int height, int width) {
+
         Date from = new Date(fromTimestamp);
         Date to = new Date(toTimestamp);
-        Set<Integer> idSet= new HashSet<>();
-        List<Person> people = personDAO.list(from, to);
-        for ( Person person:people) {
-            Set<Integer> set= person.getIds();
-            Iterator itr = set.iterator();
-            while (itr.hasNext()){
-                idSet.add((Integer) itr.next());
+        List<int[]> stopPoints = new ArrayList<>();                      //Final stop points [x][y][density]
+        List<Integer> ids = getPeopleIds(fromTimestamp, toTimestamp);    // List of ids in relevant time period
+        List<Person> idSet = personDAO.list(from, to);                   // Get all data base row within time period
+
+        for (int id : ids) {                                              // Get one id
+            List<Person> temp = new ArrayList<>();
+            Iterator<Person> iter = idSet.iterator();
+            while (iter.hasNext()) {                                      // Go through all the rows
+                Person person = iter.next();
+                if (person.getIds().iterator().next() == id) {            // Select relevant rows to relevant ids
+                    temp.add(person);                                     // Add rows to relevant id temp array
+                }
+            }
+            //Add stop points to a common list
+            List<Person> local = new ArrayList<>();
+            if (temp.size() > 1) {
+                double x = temp.get(0).getX();
+                double y = temp.get(0).getY();
+
+                for (int i = 1; i < temp.size(); i++) {
+                    if ((Math.abs(temp.get(i).getX() - temp.get(i - 1).getX()) < 10) &&
+                            (Math.abs(temp.get(i).getY() - temp.get(i - 1).getY()) < 10)) {
+                        local.add(temp.get(i));
+                        x = x + temp.get(i).getX();
+                        y = y + temp.get(i).getY();
+                    } else {
+                        if (local.size() > 10) {
+                            int k = local.size();
+                            int[] add = {((int) x) / k, ((int) y) / k, k};
+                            stopPoints.add(add);
+                        }
+                        local.clear();
+                        x = temp.get(i).getX();
+                        y = temp.get(i).getY();
+                    }
+                }
             }
         }
-        return idSet.size();
+        int[][] canvas = new int[height][width];
+        for (int k = 0; k < height; k++) {
+            Arrays.fill(canvas[k], 0);
+        }
+
+        int threshold=5;
+        for (int j = 0; j < stopPoints.size(); j++) {
+            double xx = stopPoints.get(j)[0];
+            double yy = stopPoints.get(j)[1];
+            int dd = stopPoints.get(j)[2];
+            int xxx = (int) (xx / threshold);
+            int yyy = (int) (yy / threshold);
+            if (xx % threshold > threshold/2)
+                xxx++;
+            if (yy % threshold > threshold/2)
+                yyy++;
+
+            if (canvas[xxx][yyy] < dd) {
+                canvas[xxx][yyy] = dd;
+            }
+        }
+        return canvas;
     }
+
 
     @Override
     public void mapProcessed(List<List<PersonSnapshot>> snapshots) {
         this.snapshots = snapshots;
+    }
+
+    /**
+     * Provides unique ids of people in the given time period
+     *
+     * @param fromTimestamp
+     * @param toTimestamp
+     * @return Unique ids of persons
+     */
+    private ArrayList<Integer> getPeopleIds(long fromTimestamp, long toTimestamp) {
+        Date from = new Date(fromTimestamp);
+        Date to = new Date(toTimestamp);
+        Set<Integer> idSet = new HashSet<>();
+        List<Person> people = personDAO.list(from, to);
+        for (Person person : people) {
+            Set<Integer> set = person.getIds();
+            Iterator itr = set.iterator();
+            while (itr.hasNext()) {
+                idSet.add((Integer) itr.next());
+            }
+        }
+        return new ArrayList<Integer>(idSet);
     }
 
     public void setPersonDAO(PersonDAO personDAO) {

@@ -22,6 +22,7 @@ import {RouterModule, Routes} from '@angular/router'
 import {DashboardComponent} from "./dashboard/dashboard.component";
 import {HeatmapComponent} from "./heatmap/heatmap.component";
 import {PeopleCountComponent} from "./people-count/people-count.component";
+import {PersonStopPointsComponent} from "./person-stop-points/person-stop-points.component";
 
 const routes: Routes = [
   {
@@ -36,6 +37,11 @@ const routes: Routes = [
     path: 'statistics',
     component: PeopleCountComponent
   },
+  {
+    path:'stop_points',
+    component:PersonStopPointsComponent
+  }
+  ,
   {
     path: '',
     redirectTo: '/dashboard',
