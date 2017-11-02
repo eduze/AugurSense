@@ -66,7 +66,7 @@ public class DBHandler implements ProcessedMapListener {
                     if(snapshot.getPastPersistantZone() != null)
                         pastPersistantZone = snapshot.getPastPersistantZone().getId();
 
-                    return new Person(snapshot.getIds(),snapshot.getTimestamp(),snapshot.getX(),snapshot.getY(),instantZone,persistantZone,pastPersistantZone);
+                    return new Person(snapshot.getIds(),snapshot.getTimestamp(),snapshot.getX(),snapshot.getY(),snapshot.getSitProbability(),snapshot.getStandProbability(), snapshot.getHeadDirectionX(),snapshot.getHeadDirectionY(),instantZone,persistantZone,pastPersistantZone);
 
 
                 })

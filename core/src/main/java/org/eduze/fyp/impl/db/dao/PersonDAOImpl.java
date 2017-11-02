@@ -24,6 +24,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.hibernate.type.DoubleType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,14 +114,51 @@ public class PersonDAOImpl implements PersonDAO {
     }
 
     @Override
+    public List<Object[]> getZoneStandCounts(Date from, Date to, double thresh) {
+        Session session = this.sessionFactory.openSession();
+        Query query = session.createQuery("select P.persistantZoneId, count(*) from Person P where P.timestamp between :startTime and :endTime and P.standProbability >= :thresh group by P.persistantZoneId")
+                .setParameter("startTime", from, TemporalType.TIMESTAMP)
+                .setParameter("endTime", to, TemporalType.TIMESTAMP)
+                .setParameter("thresh",thresh, DoubleType.INSTANCE);
+        List zoneCountList = query.list();
+        session.close();
+        return zoneCountList;
+    }
+
+    @Override
+    public List<Object[]> getZoneSitCounts(Date from, Date to, double thresh) {
+        Session session = this.sessionFactory.openSession();
+        Query query = session.createQuery("select P.persistantZoneId, count(*) from Person P where P.timestamp between :startTime and :endTime and P.sitProbability >= :thresh group by P.persistantZoneId")
+                .setParameter("startTime", from, TemporalType.TIMESTAMP)
+                .setParameter("endTime", to, TemporalType.TIMESTAMP)
+                .setParameter("thresh",thresh,DoubleType.INSTANCE);
+        List zoneCountList = query.list();
+        session.close();
+        return zoneCountList;
+    }
+
+    @Override
+    public List<Object[]> getZoneUnclassifiedCounts(Date from, Date to, double threshSit, double threshStand) {
+        Session session = this.sessionFactory.openSession();
+        Query query = session.createQuery("select P.persistantZoneId, count(*) from Person P where P.timestamp between :startTime and :endTime and P.sitProbability < :threshSit and P.standProbability < :threshStand group by P.persistantZoneId")
+                .setParameter("startTime", from, TemporalType.TIMESTAMP)
+                .setParameter("endTime", to, TemporalType.TIMESTAMP)
+                .setParameter("threshSit",threshSit,DoubleType.INSTANCE)
+                .setParameter("threshStand", threshStand, DoubleType.INSTANCE);
+        List zoneCountList = query.list();
+        session.close();
+        return zoneCountList;
+    }
+
+    @Override
     public List<Object[]> getCrossCounts(Date from, Date to) {
         Session session = this.sessionFactory.openSession();
-//        Query query = session.createQuery("select z1.id as pastZone, z2.id as currentZone, count(p.id) from Person p left join Zone z1 on p.pastPersistantZoneId = z1 left join Zone z2 on p.persistantZoneId = z2.id where p.timestamp between :startTime and :endTime group by z1.id, z2.id")
-//                .setParameter("startTime", from, TemporalType.TIMESTAMP)
-//                .setParameter("endTime", to, TemporalType.TIMESTAMP);
-        Query query = session.createQuery("select p.pastPersistantZoneId as pastZone, p.persistantZoneId as currentZone, count(p.id) from Person p  where p.timestamp between :startTime and :endTime group by p.pastPersistantZoneId, p.persistantZoneId")
+        Query query = session.createQuery("select z1.id as pastZone, z2.id as currentZone, count(p.id) from Person p join Zone z1 on p.pastPersistantZoneId = z1 join Zone z2 on p.persistantZoneId = z2.id where p.timestamp between :startTime and :endTime group by z1.id, z2.id")
                 .setParameter("startTime", from, TemporalType.TIMESTAMP)
                 .setParameter("endTime", to, TemporalType.TIMESTAMP);
+//        Query query = session.createQuery("select p.pastPersistantZoneId as pastZone, p.persistantZoneId as currentZone, count(p.id) from Person p  where p.timestamp between :startTime and :endTime group by p.pastPersistantZoneId, p.persistantZoneId")
+//                .setParameter("startTime", from, TemporalType.TIMESTAMP)
+//                .setParameter("endTime", to, TemporalType.TIMESTAMP);
 
         List crossList = query.list();
         session.close();

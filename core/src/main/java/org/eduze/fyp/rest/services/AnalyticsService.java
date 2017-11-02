@@ -245,9 +245,29 @@ public class AnalyticsService implements ProcessedMapListener {
 
         List<Object[]> zoneCounts = personDAO.getZoneCounts(from, to);
 
+        List<Object[]> zoneStandCounts = personDAO.getZoneStandCounts(from, to, 1);
+        List<Object[]> zoneSitCounts = personDAO.getZoneSitCounts(from,to,1);
+
+        List<Object[]> zoneUnclassifiedPoseCounts = personDAO.getZoneUnclassifiedCounts(from,to,1,1);
+
         Map<Integer, Long> zoneCountMap = new LinkedHashMap<>();
         zoneCounts.forEach(items->{
             zoneCountMap.put((Integer)items[0],(Long)items[1]);
+        });
+
+        Map<Integer, Long> zoneStandCountMap = new LinkedHashMap<>();
+        zoneStandCounts.forEach(items->{
+            zoneStandCountMap.put((Integer)items[0],(Long)items[1]);
+        });
+
+        Map<Integer, Long> zoneSitCountMap = new LinkedHashMap<>();
+        zoneSitCounts.forEach(items->{
+            zoneSitCountMap.put((Integer)items[0],(Long)items[1]);
+        });
+
+        Map<Integer, Long> zoneUnclassifiedCountMap = new LinkedHashMap<>();
+        zoneUnclassifiedPoseCounts.forEach(items->{
+            zoneUnclassifiedCountMap.put((Integer)items[0],(Long)items[1]);
         });
 
         List<Object[]> crossCounts = personDAO.getCrossCounts(from,to);
@@ -258,6 +278,15 @@ public class AnalyticsService implements ProcessedMapListener {
             ZoneStatistics statistic = new ZoneStatistics(zone.getId(),zone.getZoneName(),fromTimestamp,toTimestamp);
             if(zoneCountMap.containsKey(zone.getId()))
                 statistic.setAveragePersonCount((double)zoneCountMap.get(zone.getId())/(double)timeStampCount);
+
+            if(zoneSitCountMap.containsKey(zone.getId()))
+                statistic.setAverageSittingCount((double)zoneSitCountMap.get(zone.getId())/(double)timeStampCount);
+
+            if(zoneStandCountMap.containsKey(zone.getId()))
+                statistic.setAverageStandingCount((double)zoneStandCountMap.get(zone.getId())/(double)timeStampCount);
+
+            if(zoneUnclassifiedCountMap.containsKey(zone.getId()))
+                statistic.setAverageUnclassifiedPoseCount((double)zoneUnclassifiedCountMap.get(zone.getId())/(double)timeStampCount);
 
             final long[] totalOutgoing = {0};
             Map<Integer, Long> outgoingCounts = new HashMap<>();

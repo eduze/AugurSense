@@ -67,10 +67,29 @@ public class PersonLocation {
 
         Coordinate coordinate = contributingCoordinates.values()
                 .stream()
-                .reduce(new Coordinate(0, 0, timestamp),
-                        (p1, p2) -> new Coordinate(p1.getX() + p2.getX(), p1.getY() + p2.getY(), timestamp));
+                .reduce(new Coordinate(0, 0, timestamp,0,0,0,0),
+                        (p1, p2) -> new Coordinate(p1.getX() + p2.getX(), p1.getY() + p2.getY(), timestamp, p1.getSitProbability() + p2.getSitProbability(), p1.getStandProbability() + p2.getStandProbability(), p1.getHeadDirectionX() + p2.getHeadDirectionX(), p1.getHeadDirectionY() + p2.getHeadDirectionY()));
+
+
+
+        long sitCount = contributingCoordinates.values().stream().filter(coordinate1 -> coordinate1.getSitProbability() > 0).count();
+        long standCount = contributingCoordinates.values().stream().filter(coordinate1 -> coordinate1.getStandProbability() > 0).count();
+
         coordinate.setX(coordinate.getX() / contributingCoordinates.size());
         coordinate.setY(coordinate.getY() / contributingCoordinates.size());
+
+        if(sitCount > 0)
+            coordinate.setSitProbability(coordinate.getSitProbability()/sitCount);
+
+        if(standCount > 0)
+            coordinate.setStandProbability(coordinate.getStandProbability()/standCount);
+
+        double headDirectionRadi = Math.sqrt(coordinate.getHeadDirectionX() * coordinate.getHeadDirectionX() + coordinate.getHeadDirectionY() + coordinate.getHeadDirectionY());
+        if (headDirectionRadi > 0){
+            coordinate.setHeadDirectionX(coordinate.getHeadDirectionX()/headDirectionRadi);
+            coordinate.setHeadDirectionY(coordinate.getHeadDirectionY()/headDirectionRadi);
+        }
+
 
         if (snapshots.size() == HISTORY_SIZE) {
             snapshots.removeLast();

@@ -38,5 +38,11 @@ public interface PersonDAO {
 
     List<Object[]> getZoneCounts(Date from, Date to);
 
-    List<Object[]> getCrossCounts(Date from,  Date to);
+    List<Object[]> getZoneStandCounts(Date from, Date to, double thresh);
+
+    List<Object[]> getZoneSitCounts(Date from, Date to, double thresh);
+
+    List<Object[]> getZoneUnclassifiedCounts(Date from, Date to, double threshSit, double threshStand);
+
+    List<Object[]> getCrossCounts(Date from, Date to);
 }

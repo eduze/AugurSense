@@ -36,11 +36,11 @@ public class PersonSnapshot extends Coordinate {
     public PersonSnapshot() { }
 
     public PersonSnapshot(Set<Integer> ids, Coordinate coordinate, Zone instantZone, Zone persistantZone, Zone prevPersistantZone) {
-        this(coordinate.getX(), coordinate.getY(), coordinate.getTimestamp(), ids, instantZone,persistantZone, prevPersistantZone);
+        this(coordinate.getX(), coordinate.getY(), coordinate.getTimestamp(),coordinate.getSitProbability(),coordinate.getStandProbability(),coordinate.getHeadDirectionX(),coordinate.getHeadDirectionY(), ids, instantZone,persistantZone, prevPersistantZone);
     }
 
-    public PersonSnapshot(double x, double y, long timestamp, Set<Integer> ids, Zone instanceZone, Zone persistantZone, Zone pastPersistantZone) {
-        super(x, y, timestamp);
+    public PersonSnapshot(double x, double y, long timestamp, double sitProbaility, double standProbability, double headDirectionX, double headDirectionY, Set<Integer> ids, Zone instanceZone, Zone persistantZone, Zone pastPersistantZone) {
+        super(x, y, timestamp, sitProbaility, standProbability,headDirectionX,headDirectionY);
         this.ids = ids;
         this.instanceZone = instanceZone;
         this.persistantZone = persistantZone;

@@ -7,6 +7,11 @@ import java.util.Map;
 
 public class ZoneStatistics {
     private double averagePersonCount;
+    private double averageSittingCount;
+    private double averageStandingCount;
+    private double averageUnclassifiedPoseCount;
+
+
     private long fromTimestamp;
     private long toTimestamp;
 
@@ -18,6 +23,31 @@ public class ZoneStatistics {
 
     private long totalOutgoing = 0;
     private long totalIncoming = 0;
+
+
+    public double getAverageSittingCount() {
+        return averageSittingCount;
+    }
+
+    public double getAverageStandingCount() {
+        return averageStandingCount;
+    }
+
+    public double getAverageUnclassifiedPoseCount() {
+        return averageUnclassifiedPoseCount;
+    }
+
+    public void setAverageSittingCount(double averageSittingCount) {
+        this.averageSittingCount = averageSittingCount;
+    }
+
+    public void setAverageStandingCount(double averageStandingCount) {
+        this.averageStandingCount = averageStandingCount;
+    }
+
+    public void setAverageUnclassifiedPoseCount(double averageUnclassifiedPoseCount) {
+        this.averageUnclassifiedPoseCount = averageUnclassifiedPoseCount;
+    }
 
     public long getTotalIncoming() {
         return totalIncoming;
