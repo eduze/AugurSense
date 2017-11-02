@@ -88,6 +88,14 @@ public class MapProcessorImpl implements MapProcessor {
     }
 
     @Override
+    public void nextFrame() {
+        List<List<PersonSnapshot>> snapshots = globalMap.getSnapshot();
+        synchronized (this) {
+            mapListeners.forEach(listener -> listener.onFrame(snapshots));
+        }
+    }
+
+    @Override
     public void start() {
 
         globalMap.setZoneMapper(zoneMapper);

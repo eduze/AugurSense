@@ -31,4 +31,6 @@ public interface MapProcessor extends Startable {
     void addProcessedMapListener(ProcessedMapListener listener);
 
     void removeProcessedMapListener(ProcessedMapListener listener);
+
+    void nextFrame();
 }

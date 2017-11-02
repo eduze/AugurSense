@@ -129,6 +129,8 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
                 continue;
             }
 
+            mapProcessor.nextFrame();
+
             logger.debug("Asking for processed frames for timestamp {}", currentTimestamp);
             synchronized (this) {
                 // TODO: 10/3/17 Is there an error? We take timestamp few milli-seconds earlier
@@ -146,6 +148,7 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
 
         logger.warn("Stopping camera coordination");
     }
+
 
     private synchronized void clearNotifiers() {
         cameraNotifiers.values().forEach(CameraNotifier::stop);

@@ -27,4 +27,6 @@ import java.util.List;
 public interface ProcessedMapListener {
 
     void mapProcessed(List<List<PersonSnapshot>> snapshots);
+
+    void onFrame(List<List<PersonSnapshot>> snapshots);
 }

@@ -109,6 +109,8 @@ public class AnalyticsService implements ProcessedMapListener {
         Date from = new Date(fromTimestamp);
         Date to = new Date(toTimestamp);
 
+        //TODO: We need to count timestamps separately. This approach would miss the frames with 0 people.
+
         return personDAO.getTimestampCount(from,to);
     }
 
@@ -187,6 +189,11 @@ public class AnalyticsService implements ProcessedMapListener {
     @Override
     public void mapProcessed(List<List<PersonSnapshot>> snapshots) {
         this.snapshots = snapshots;
+    }
+
+    @Override
+    public void onFrame(List<List<PersonSnapshot>> snapshots) {
+
     }
 
     /**

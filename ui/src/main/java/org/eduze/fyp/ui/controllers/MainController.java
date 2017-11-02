@@ -187,6 +187,11 @@ public class MainController implements Initializable, ProcessedMapListener, Conf
     }
 
     @Override
+    public void onFrame(List<List<PersonSnapshot>> snapshots) {
+
+    }
+
+    @Override
     public synchronized void configurationChanged(ConfigurationManager configurationManager) {
         logger.debug("Configuration change detected. Updating UI");
         Platform.runLater(() -> configurationManager.getCameraViews().forEach(this::checkAndAddCameraToAccordion));

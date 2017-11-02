@@ -43,6 +43,11 @@ public class DBHandler implements ProcessedMapListener {
 
     @Override
     public void mapProcessed(List<List<PersonSnapshot>> snapshots) {
+        //Nothing to do here. Code moved to on Frame.
+    }
+
+    @Override
+    public void onFrame(List<List<PersonSnapshot>> snapshots) {
         snapshots.stream()
                 .filter(snapshotList -> snapshotList.size() > 0)
                 .map(snapshotList -> {
