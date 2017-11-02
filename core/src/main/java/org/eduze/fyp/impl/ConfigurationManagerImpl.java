@@ -26,6 +26,9 @@ import org.eduze.fyp.api.StateManager;
 import org.eduze.fyp.api.annotations.AutoStart;
 import org.eduze.fyp.api.listeners.ConfigurationListener;
 import org.eduze.fyp.api.resources.PointMapping;
+import org.eduze.fyp.impl.db.dao.ZoneDAO;
+import org.eduze.fyp.impl.db.dao.ZoneDAOImpl;
+import org.eduze.fyp.impl.db.model.Zone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,11 +40,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.OptionalInt;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.eduze.fyp.Constants.Properties.FLOOR_MAP_IMAGE;
@@ -66,14 +65,33 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     private Map<Integer, PointMapping> pointMappings = new HashMap<>();
     private Map<Integer, InetSocketAddress> cameraIpAndPorts = new HashMap<>();
 
+    private ZoneDAO zoneDAO = null;
+
+    public List<Zone> getZones() {
+        return zones;
+    }
+
     private Set<ConfigurationListener> configurationListeners = new HashSet<>();
 
     public ConfigurationManagerImpl() { }
+
+    private List<Zone> zones = null;
 
     private void loadProperties() throws IOException {
         try (InputStream propertiesFile = getClass().getClassLoader().getResourceAsStream(this.propertiesFile)) {
             System.getProperties().load(propertiesFile);
         }
+    }
+
+
+    public ZoneDAO getZoneDAO() {
+        return zoneDAO;
+    }
+
+    public void setZoneDAO(ZoneDAO zoneDAO) {
+        this.zoneDAO = zoneDAO;
+        this.zones = zoneDAO.list();
+        notifyConfigurationChange();
     }
 
 
@@ -178,6 +196,8 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     public void setPropertiesFile(String propertiesFile) {
         this.propertiesFile = propertiesFile;
     }
+
+
 
     @Override
     public void start() {

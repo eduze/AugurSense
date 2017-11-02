@@ -41,6 +41,32 @@ public class AnalyticsController {
     private AnalyticsService analyticsService;
 
     @GET
+    @Path("/timestampCount/{from}/{to}")
+    public Response getTimestampCount(@PathParam("from") long from, @PathParam("to") long to){
+        try {
+            return Response.ok(analyticsService.getTimestampCount(from, to)).build();
+        }
+         catch (Exception e) {
+            logger.error("Error occurred when obtaining map. {}", e);
+            return Response.status(500).build();
+        }
+
+    }
+
+    @GET
+    @Path("/zoneStatistics/{from}/{to}")
+    public Response getZoneStatistics(@PathParam("from") long from, @PathParam("to") long to){
+        try {
+            return Response.ok(analyticsService.getZoneStatistics(from, to)).build();
+        }
+        catch (Exception e) {
+            logger.error("Error occurred when obtaining map. {}", e);
+            return Response.status(500).build();
+        }
+
+    }
+
+    @GET
     @Path("/getMap")
     public Response getMap() {
         try {

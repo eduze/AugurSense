@@ -88,6 +88,30 @@ public class PersonDAOImpl implements PersonDAO {
 
     }
 
+    @Override
+    public long getTimestampCount(Date from, Date to) {
+        Session session = this.sessionFactory.openSession();
+        Query query = session.createQuery("select count(distinct P.timestamp) from Person P where P.timestamp between :startTime and :endTime")
+                .setParameter("startTime", from, TemporalType.TIMESTAMP)
+                .setParameter("endTime", to, TemporalType.TIMESTAMP);
+        if(query.list().size() == 0)
+            return 0;
+        long count = (long) query.list().get(0);
+        session.close();
+        return count;
+    }
+
+    @Override
+    public List<Object[]> getZoneCounts(Date from, Date to) {
+        Session session = this.sessionFactory.openSession();
+        Query query = session.createQuery("select P.persistantZoneId, count(*) from Person P where P.timestamp between :startTime and :endTime group by P.persistantZoneId")
+                .setParameter("startTime", from, TemporalType.TIMESTAMP)
+                .setParameter("endTime", to, TemporalType.TIMESTAMP);
+        List zoneCountList = query.list();
+        session.close();
+        return zoneCountList;
+    }
+
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }

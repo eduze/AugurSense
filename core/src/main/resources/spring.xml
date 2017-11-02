@@ -42,6 +42,7 @@
 
     <bean id="configuration-manager" class="org.eduze.fyp.impl.ConfigurationManagerImpl">
         <property name="propertiesFile" value="analytics.properties"/>
+        <property name="zoneDAO" ref="zoneDAO"/>
     </bean>
 
     <bean id="map-processor" class="org.eduze.fyp.impl.MapProcessorImpl">
@@ -56,7 +57,7 @@
     </bean>
 
     <bean id="zone-mapper" class="org.eduze.fyp.impl.ZoneMapper">
-        <constructor-arg ref="zoneDAO"/>
+        <constructor-arg ref="configuration-manager"/>
         <property name="zonePersistantScanCount" value="5"/>
         <property name="zonePersistantThreshold" value="4"/>
     </bean>
@@ -138,6 +139,7 @@
 
     <bean id="analytics-service" class="org.eduze.fyp.rest.services.AnalyticsService">
         <property name="personDAO" ref="personDAO"/>
+        <property name="zoneDAO" ref="zoneDAO" />
         <property name="configurationManager" ref="configuration-manager"/>
     </bean>
 

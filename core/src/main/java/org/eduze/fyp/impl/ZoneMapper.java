@@ -1,5 +1,7 @@
 package org.eduze.fyp.impl;
 
+import org.eduze.fyp.api.ConfigurationManager;
+import org.eduze.fyp.api.listeners.ConfigurationListener;
 import org.eduze.fyp.api.resources.PersonLocation;
 import org.eduze.fyp.impl.db.dao.ZoneDAO;
 import org.eduze.fyp.impl.db.model.Zone;
@@ -10,11 +12,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ZoneMapper {
+public class ZoneMapper implements ConfigurationListener {
     private ZoneDAO zoneDAO = null;
     private List<Zone> zonesList = null;
     private HashMap<Zone, Polygon> zonePolygons = null;
 
+    private boolean initialized = false;
     private int zonePersistantScanCount = 5;
 
     private int zonePersistantThreshold = 4;
@@ -35,9 +38,17 @@ public class ZoneMapper {
         this.zonePersistantThreshold = zonePersistantThreshold;
     }
 
-    public ZoneMapper(ZoneDAO zoneDAO){
-        this.zoneDAO = zoneDAO;
-        this.zonesList = zoneDAO.list();
+    public ZoneMapper(ConfigurationManager configurationManager){
+        this.zonesList = configurationManager.getZones();
+        initialize();
+    }
+
+    private void initialize(){
+        if(initialized)
+            return;
+        if(zonesList == null)
+            return;
+
         this.zonePolygons = new LinkedHashMap<>();
         for(Zone zone : zonesList){
             int[] xCoordinates = zone.getXCoordinates();
@@ -45,6 +56,8 @@ public class ZoneMapper {
             Polygon p = new Polygon(xCoordinates,yCoordinates,xCoordinates.length);
             zonePolygons.put(zone,p);
         }
+
+        initialized = true;
     }
 
     public List<Zone> getZonesList() {
@@ -53,6 +66,8 @@ public class ZoneMapper {
 
 
     public void processPersonLocations(List<PersonLocation> personLocations) {
+        initialize();
+
         personLocations.forEach(personLocation -> {
             zonePolygons.forEach((zone,polygon) -> {
                 if(polygon.contains(new Point((int)personLocation.getSnapshot().getX(),(int)personLocation.getSnapshot().getY()))){
@@ -91,5 +106,10 @@ public class ZoneMapper {
                 }
             });
         });
+    }
+
+    @Override
+    public void configurationChanged(ConfigurationManager configurationManager) {
+        this.zonesList = configurationManager.getZones();
     }
 }

@@ -20,6 +20,7 @@ package org.eduze.fyp.rest.services;
 
 import org.eduze.fyp.api.AnalyticsEngine;
 import org.eduze.fyp.api.ConfigurationManager;
+import org.eduze.fyp.impl.db.model.Zone;
 import org.eduze.fyp.rest.resources.Camera;
 import org.eduze.fyp.rest.resources.CameraConfig;
 import org.eduze.fyp.rest.resources.MapConfiguration;
@@ -29,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.ws.rs.NotFoundException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 public class ConfigService {
 
@@ -81,6 +83,10 @@ public class ConfigService {
         return mapConfiguration;
     }
 
+
+    public List<Zone> getZones(){
+        return configurationManager.getZones();
+    }
     public byte[] getCameraView(int cameraId) throws IOException {
         BufferedImage cameraView = configurationManager.getCameraView(cameraId);
         if (cameraView == null) {
@@ -93,4 +99,5 @@ public class ConfigService {
     public void setConfigurationManager(ConfigurationManager configurationManager) {
         this.configurationManager = configurationManager;
     }
+
 }

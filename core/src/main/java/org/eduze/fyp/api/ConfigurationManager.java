@@ -23,10 +23,12 @@ package org.eduze.fyp.api;
 import org.eduze.fyp.api.config.Startable;
 import org.eduze.fyp.api.listeners.ConfigurationListener;
 import org.eduze.fyp.api.resources.PointMapping;
+import org.eduze.fyp.impl.db.model.Zone;
 
 import java.awt.image.BufferedImage;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -72,4 +74,6 @@ public interface ConfigurationManager extends Startable {
     void removeConfigurationListener(ConfigurationListener listener);
 
     boolean isConfigured();
+
+    List<Zone> getZones();
 }

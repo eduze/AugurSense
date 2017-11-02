@@ -18,6 +18,7 @@
  */
 package org.eduze.fyp.rest.controllers;
 
+import org.eduze.fyp.impl.db.model.Zone;
 import org.eduze.fyp.rest.resources.Camera;
 import org.eduze.fyp.rest.resources.CameraConfig;
 import org.eduze.fyp.rest.resources.MapConfiguration;
@@ -34,6 +35,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.List;
 
 @Path("/config")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -52,6 +54,19 @@ public class ConfigController {
             return Response.status(200).entity(camera).build();
         } catch (Exception e) {
             logger.error("Error occurred when obtaining next camera ID", e);
+            return Response.status(500).build();
+        }
+    }
+
+    @GET
+    @Path("/zones")
+    public Response getZones() {
+        try {
+            List<Zone> zonesList = configService.getZones();
+
+            return Response.status(200).entity(zonesList).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining zones", e);
             return Response.status(500).build();
         }
     }

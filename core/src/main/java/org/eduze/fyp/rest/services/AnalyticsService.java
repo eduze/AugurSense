@@ -23,7 +23,10 @@ import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
 import org.eduze.fyp.api.resources.PersonSnapshot;
 import org.eduze.fyp.impl.db.dao.PersonDAO;
+import org.eduze.fyp.impl.db.dao.ZoneDAO;
 import org.eduze.fyp.impl.db.model.Person;
+import org.eduze.fyp.impl.db.model.Zone;
+import org.eduze.fyp.rest.resources.ZoneStatistics;
 import org.eduze.fyp.rest.util.ImageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,10 +46,21 @@ public class AnalyticsService implements ProcessedMapListener {
 
     private List<List<PersonSnapshot>> snapshots = new ArrayList<>();
     private PersonDAO personDAO;
+
+    private ZoneDAO zoneDAO;
+
+
     private ConfigurationManager configurationManager;
     private int mapWidth = -1;
     private int mapHeight = -1;
 
+    public void setZoneDAO(ZoneDAO zoneDAO) {
+        this.zoneDAO = zoneDAO;
+    }
+
+    public ZoneDAO getZoneDAO() {
+        return zoneDAO;
+    }
 
     public AnalyticsService() {
     }
@@ -88,6 +102,14 @@ public class AnalyticsService implements ProcessedMapListener {
         });
 
         return heatmap;
+    }
+
+    public long getTimestampCount(long fromTimestamp, long toTimestamp){
+
+        Date from = new Date(fromTimestamp);
+        Date to = new Date(toTimestamp);
+
+        return personDAO.getTimestampCount(from,to);
     }
 
     public int getCount(long fromTimestamp, long toTimestamp) {
@@ -195,5 +217,30 @@ public class AnalyticsService implements ProcessedMapListener {
 
     public void setConfigurationManager(ConfigurationManager configurationManager) {
         this.configurationManager = configurationManager;
+    }
+
+    public List<ZoneStatistics> getZoneStatistics(long fromTimestamp, long toTimestamp) {
+        Date from = new Date(fromTimestamp);
+        Date to = new Date(toTimestamp);
+
+        long timeStampCount = personDAO.getTimestampCount(from,to);
+
+        List<Zone> zones = configurationManager.getZones();
+
+        List<Object[]> zoneCounts = personDAO.getZoneCounts(from, to);
+
+        Map<Integer, Long> zoneCountMap = new LinkedHashMap<>();
+        zoneCounts.forEach(items->{
+            zoneCountMap.put((Integer)items[0],(Long)items[1]);
+        });
+
+        List<ZoneStatistics> results = new ArrayList<>();
+        for(Zone zone: zones){
+            ZoneStatistics statistic = new ZoneStatistics(zone.getId(),zone.getZoneName(),fromTimestamp,toTimestamp);
+            if(zoneCountMap.containsKey(zone.getId()))
+                statistic.setAveragePersonCount((double)zoneCountMap.get(zone.getId())/(double)timeStampCount);
+            results.add(statistic);
+        }
+        return results;
     }
 }
