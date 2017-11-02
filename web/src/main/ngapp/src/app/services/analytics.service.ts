@@ -26,13 +26,13 @@ import {PersonSnapshot} from "../resources/person-snapshot";
 @Injectable()
 export class AnalyticsService {
 
-  private baseUrl: string = "http://localhost:8085/api/v1/";
+  private baseUrl: string = "http://localhost:8085/api/v1/analytics/";
 
   constructor(private http: Http) {
   }
 
   getRealTimeMap(): Promise<PersonSnapshot[][]> {
-    return this.http.get(this.baseUrl + "analytics/realTimeMap")
+    return this.http.get(this.baseUrl + "realTimeMap")
       .toPromise()
       .then(response => {
         console.debug(response.json());
@@ -42,7 +42,7 @@ export class AnalyticsService {
   }
 
   getHeatMap(from: number, to: number): Promise<number[][]> {
-    return this.http.get(this.baseUrl + "analytics/heatMap/" + from + "/" + to)
+    return this.http.get(this.baseUrl + "heatMap/" + from + "/" + to)
       .toPromise()
       .then(response => {
         console.debug(response.json());
@@ -52,10 +52,9 @@ export class AnalyticsService {
   }
 
   getMap(): Promise<string> {
-    return this.http.get(this.baseUrl + "analytics/getMap")
+    return this.http.get(this.baseUrl + "getMap")
       .toPromise()
       .then(response => {
-        console.debug(response);
         console.debug(response.json());
         return response.json().image as string
       })
@@ -63,7 +62,7 @@ export class AnalyticsService {
   }
 
   getCount(from: number, to: number): Promise<number> {
-    return this.http.get(this.baseUrl + "analytics/count/" + from + "/" + to)
+    return this.http.get(this.baseUrl + "count/" + from + "/" + to)
       .toPromise().then(
         response => {
           console.log(response.json());

@@ -11,7 +11,8 @@ import {DashboardComponent} from "./dashboard/dashboard.component";
 import {AnalyticsService} from "./services/analytics.service";
 import {HeatmapComponent} from "./heatmap/heatmap.component";
 import { PeopleCountComponent } from './people-count/people-count.component';
-import {PersonStopPointsComponent} from "./person-stop-points/person-stop-points.component";
+import { PointMappingComponent } from './settings/point-mapping/point-mapping.component';
+import {ConfigService} from "./services/config.service";
 
 @NgModule({
   declarations: [
@@ -19,7 +20,7 @@ import {PersonStopPointsComponent} from "./person-stop-points/person-stop-points
     DashboardComponent,
     HeatmapComponent,
     PeopleCountComponent,
-    PersonStopPointsComponent
+    PointMappingComponent
   ],
   imports: [
     BrowserModule,
@@ -29,7 +30,7 @@ import {PersonStopPointsComponent} from "./person-stop-points/person-stop-points
     HttpModule,
     CalendarModule
   ],
-  providers: [AnalyticsService],
+  providers: [AnalyticsService, ConfigService],
   bootstrap: [AppComponent]
 })
 

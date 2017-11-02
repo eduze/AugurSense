@@ -33,10 +33,11 @@ public class CHASS {
 
     private static final String ROOT_CONFIG = "spring.xml";
 
+    private static CHASS chass;
     private ApplicationContext applicationContext;
     private StateManager stateManager = new StateManager(State.STOPPED);
 
-    public CHASS() {
+    private CHASS() {
         applicationContext = new ClassPathXmlApplicationContext(ROOT_CONFIG);
     }
 
@@ -78,12 +79,16 @@ public class CHASS {
         return stateManager;
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        CHASS chass = new CHASS();
-        Thread main = new Thread(chass::start);
-        main.start();
-        Runtime.getRuntime().addShutdownHook(new Thread(chass::stop));
+    public static synchronized CHASS getInstance() {
+        if (chass == null) {
+            chass = new CHASS();
+        }
+        return chass;
+    }
 
-        main.join();
+    public static void main(String[] args) throws InterruptedException {
+        CHASS chass = CHASS.getInstance();
+        Runtime.getRuntime().addShutdownHook(new Thread(chass::stop));
+        chass.start();
     }
 }

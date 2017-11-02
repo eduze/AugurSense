@@ -45,7 +45,7 @@ public abstract class AbstractTestCase {
 
     @BeforeClass
     public static void setUp() {
-        chass = new CHASS();
+        chass = CHASS.getInstance();
         chass.start();
     }
 

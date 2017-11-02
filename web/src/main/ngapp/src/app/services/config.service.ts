@@ -17,41 +17,34 @@
  * IN THE SOFTWARE.
  */
 
-import {NgModule} from '@angular/core'
-import {RouterModule, Routes} from '@angular/router'
-import {DashboardComponent} from "./dashboard/dashboard.component";
-import {HeatmapComponent} from "./heatmap/heatmap.component";
-import {PeopleCountComponent} from "./people-count/people-count.component";
-import {PointMappingComponent} from "./settings/point-mapping/point-mapping.component";
+import {Injectable} from '@angular/core';
+import {Http} from '@angular/http'
+import 'rxjs/add/operator/toPromise';
 
-const routes: Routes = [
-  {
-    path: 'dashboard',
-    component: DashboardComponent
-  },
-  {
-    path: 'heatmap',
-    component: HeatmapComponent
-  },
-  {
-    path: 'statistics',
-    component: PeopleCountComponent
-  },
-  {
-    path: 'settings',
-    component: PointMappingComponent
-  },
-  {
-    path: '',
-    redirectTo: '/dashboard',
-    pathMatch: 'full'
+@Injectable()
+export class ConfigService {
+
+  private baseUrl: string = "http://localhost:8085/api/v1/config/";
+
+  constructor(private http: Http) {
   }
-];
 
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
-})
+  getCameraViews(): Promise<Map<string, string>> {
+    return this.http.get(this.baseUrl + "views")
+      .toPromise()
+      .then(response => {
+        let views: Map<string, string> = response.json() as Map<string, string>;
+        for (let key in views) {
+          views[key] = "data:image/JPEG;base64," + views[key];
+        }
+        return views;
+      })
+      .catch(ConfigService.handleError);
+  }
 
-export class AppRoutingModule {
+  private static handleError(error: any): Promise<any> {
+    console.error('An error occurred', error);
+    return Promise.reject(error.message || error);
+  }
+
 }

@@ -1,25 +1,23 @@
 /*
  * Copyright 2017 Eduze
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this
- * software and associated documentation files (the "Software"), to deal in the Software
- * without restriction, including without limitation the rights to use, copy, modify, merge,
- * publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to
- * whom the Software is furnished to do so, subject to the following conditions:
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
+ * to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
- * The above copyright notice and this permission notice shall be included in all copies or
- * substantial portions of the Software.
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions
+ * of the Software.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
  */
 
-package org.eduze.fyp.ui;
+package org.eduze.fyp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
@@ -55,16 +53,15 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.eduze.fyp.Constants.CAMERA_NOTIFICATION_PATH;
 
-public class AppTest {
+public class CHASSTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(AppTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(CHASSTest.class);
 
     private static final String[] views = new String[]{
             "src/test/resources/views/view1.png",
@@ -77,25 +74,19 @@ public class AppTest {
     };
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        Thread mainThread = new Thread(() -> App.main(args));
-        mainThread.start();
+        CHASS chass = CHASS.getInstance();
+        chass.start();
 
-        while (App.getInstance() == null) {
-            logger.debug("Waiting ...");
-            Thread.sleep(1000);
-        }
-
-        App.getInstance().getChass().getStateManager().waitFor(State.STARTED);
-        ConfigurationManager configurationManager = App.getInstance().getChass()
-                .getApplicationContext().getBean(ConfigurationManager.class);
+        chass.getStateManager().waitFor(State.STARTED);
+        ConfigurationManager configurationManager = chass.getApplicationContext()
+                .getBean(ConfigurationManager.class);
 
         Set<CameraSimulator> simulators = new HashSet<>();
         for (int i = 0; i < views.length; i++) {
             Camera camera = setupCamera();
-            int port = (8000 + camera.getId());
+            int port = 9000 + camera.getId();
 
-            Dimension dimension = setupCameraConfig(camera.getId(), views[i],
-                    "localhost:" + port);
+            Dimension dimension = setupCameraConfig(camera.getId(), views[i], "localhost:" + port);
 
             configurationManager.addPointMapping(camera.getId(), new PointMapping());
             logger.debug("Camera-{} configured", camera.getId());
@@ -106,11 +97,7 @@ public class AppTest {
             simulators.add(simulator);
         }
 
-        try {
-            mainThread.join();
-        } catch (InterruptedException ignored) {
-        }
-
+        chass.getStateManager().waitFor(State.STOPPING);
         simulators.forEach(CameraSimulator::stop);
     }
 
@@ -170,7 +157,6 @@ public class AppTest {
         private int mapHeight;
         private List<String> lines;
         private int lineNumber = 0;
-        private Random random = new Random();
         private ObjectMapper mapper = new ObjectMapper();
 
         private HttpServer server;
@@ -180,17 +166,18 @@ public class AppTest {
             this.mapWidth = mapWidth;
             this.mapHeight = mapHeight;
             lines = Files.readAllLines(new File(dataFile).toPath());
-            server = HttpServer.create(new InetSocketAddress(serverPort), 0);
+            server = HttpServer.create(new InetSocketAddress(serverPort), -1);
             server.createContext(CAMERA_NOTIFICATION_PATH, this);
         }
 
         public void start() {
             server.start();
-            logger.debug("Server {} started", this.server.getAddress().toString());
+            logger.info("Server {} started", this.server.getAddress());
         }
 
         public void stop() {
-            server.stop(0);
+            server.stop(2);
+            logger.info("Stopped server {}", this.server.getAddress());
         }
 
 
@@ -250,7 +237,7 @@ public class AppTest {
 
         @Override
         public void handle(HttpExchange httpExchange) throws IOException {
-            logger.debug("Received notification {}", httpExchange.getRequestURI().getPath());
+            logger.debug("Received frame request {}", httpExchange.getRequestURI().getPath());
             long timestamp = Long.parseLong(httpExchange.getRequestURI().getPath().split("/")[2]);
             logger.debug("Generating local map for timestamp {}", timestamp);
             LocalMap map = processNextMap(timestamp);

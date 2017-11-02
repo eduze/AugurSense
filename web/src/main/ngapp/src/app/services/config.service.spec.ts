@@ -17,41 +17,18 @@
  * IN THE SOFTWARE.
  */
 
-import {NgModule} from '@angular/core'
-import {RouterModule, Routes} from '@angular/router'
-import {DashboardComponent} from "./dashboard/dashboard.component";
-import {HeatmapComponent} from "./heatmap/heatmap.component";
-import {PeopleCountComponent} from "./people-count/people-count.component";
-import {PointMappingComponent} from "./settings/point-mapping/point-mapping.component";
+import { TestBed, inject } from '@angular/core/testing';
 
-const routes: Routes = [
-  {
-    path: 'dashboard',
-    component: DashboardComponent
-  },
-  {
-    path: 'heatmap',
-    component: HeatmapComponent
-  },
-  {
-    path: 'statistics',
-    component: PeopleCountComponent
-  },
-  {
-    path: 'settings',
-    component: PointMappingComponent
-  },
-  {
-    path: '',
-    redirectTo: '/dashboard',
-    pathMatch: 'full'
-  }
-];
+import { ConfigService } from './config.service';
 
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
-})
+describe('ConfigService', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [ConfigService]
+    });
+  });
 
-export class AppRoutingModule {
-}
+  it('should be created', inject([ConfigService], (service: ConfigService) => {
+    expect(service).toBeTruthy();
+  }));
+});

@@ -47,7 +47,7 @@ public class App extends Application {
     private CHASS chass;
 
     public App() {
-        chass = new CHASS();
+        chass = CHASS.getInstance();
         App.instance = this;
     }
 

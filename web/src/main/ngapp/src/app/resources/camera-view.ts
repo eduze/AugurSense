@@ -17,41 +17,12 @@
  * IN THE SOFTWARE.
  */
 
-import {NgModule} from '@angular/core'
-import {RouterModule, Routes} from '@angular/router'
-import {DashboardComponent} from "./dashboard/dashboard.component";
-import {HeatmapComponent} from "./heatmap/heatmap.component";
-import {PeopleCountComponent} from "./people-count/people-count.component";
-import {PointMappingComponent} from "./settings/point-mapping/point-mapping.component";
+export class CameraView {
+  id: string;
+  view: string;
 
-const routes: Routes = [
-  {
-    path: 'dashboard',
-    component: DashboardComponent
-  },
-  {
-    path: 'heatmap',
-    component: HeatmapComponent
-  },
-  {
-    path: 'statistics',
-    component: PeopleCountComponent
-  },
-  {
-    path: 'settings',
-    component: PointMappingComponent
-  },
-  {
-    path: '',
-    redirectTo: '/dashboard',
-    pathMatch: 'full'
+  constructor(id: string, view: string) {
+    this.id = id;
+    this.view = view;
   }
-];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
-})
-
-export class AppRoutingModule {
 }

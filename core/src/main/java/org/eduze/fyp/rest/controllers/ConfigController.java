@@ -89,6 +89,17 @@ public class ConfigController {
         return Response.status(200).entity(mapConfiguration).build();
     }
 
+    @GET
+    @Path("/views")
+    public Response getViews() {
+        try {
+            return Response.ok(configService.getCameraViews()).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining next camera ID", e);
+            return Response.status(500).build();
+        }
+    }
+
     @POST
     @Path("/cameraConfig")
     public Response postCameraView(CameraConfig cameraConfig) {

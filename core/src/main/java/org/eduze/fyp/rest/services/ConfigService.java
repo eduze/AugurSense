@@ -25,14 +25,20 @@ import org.eduze.fyp.rest.resources.Camera;
 import org.eduze.fyp.rest.resources.CameraConfig;
 import org.eduze.fyp.rest.resources.MapConfiguration;
 import org.eduze.fyp.rest.util.ImageUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.ws.rs.NotFoundException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ConfigService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ConfigService.class);
 
     @Autowired
     private ConfigurationManager configurationManager;
@@ -83,10 +89,30 @@ public class ConfigService {
         return mapConfiguration;
     }
 
+    public Map<String, byte[]> getCameraViews() throws IOException {
+        Map<String, byte[]> cameraViews = new HashMap<>();
+        configurationManager.getCameraViews()
+                .forEach((id, view) -> {
+                    byte[] bytes = null;
+                    try {
+                        bytes = ImageUtils.bufferedImageToByteArray(view);
+                        cameraViews.put(String.valueOf(id), bytes);
+                    } catch (IOException e) {
+                        logger.error("Error occurred when obtaining camera view for camera : {}", id);
+                    }
+                });
 
-    public List<Zone> getZones(){
+        BufferedImage map = configurationManager.getMap();
+        byte[] bytes = ImageUtils.bufferedImageToByteArray(map);
+        cameraViews.put("mapImage", bytes);
+
+        return cameraViews;
+    }
+
+    public List<Zone> getZones() {
         return configurationManager.getZones();
     }
+
     public byte[] getCameraView(int cameraId) throws IOException {
         BufferedImage cameraView = configurationManager.getCameraView(cameraId);
         if (cameraView == null) {
