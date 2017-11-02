@@ -37,4 +37,6 @@ public interface PersonDAO {
     long getTimestampCount(Date from, Date to);
 
     List<Object[]> getZoneCounts(Date from, Date to);
+
+    List<Object[]> getCrossCounts(Date from,  Date to);
 }

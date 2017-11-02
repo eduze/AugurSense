@@ -67,6 +67,19 @@ public class AnalyticsController {
     }
 
     @GET
+    @Path("/crossCounts/{from}/{to}")
+    public Response getCrossCounts(@PathParam("from") long from, @PathParam("to") long to){
+        try {
+            return Response.ok(analyticsService.getCrossCount(from, to)).build();
+        }
+        catch (Exception e) {
+            logger.error("Error occurred when obtaining map. {}", e);
+            return Response.status(500).build();
+        }
+
+    }
+
+    @GET
     @Path("/getMap")
     public Response getMap() {
         try {

@@ -104,6 +104,15 @@ public class AnalyticsService implements ProcessedMapListener {
         return heatmap;
     }
 
+
+    public List<Object[]> getCrossCount(long fromTimestamp, long toTimestamp){
+
+        Date from = new Date(fromTimestamp);
+        Date to = new Date(toTimestamp);
+
+        return personDAO.getCrossCounts(from,to);
+    }
+
     public long getTimestampCount(long fromTimestamp, long toTimestamp){
 
         Date from = new Date(fromTimestamp);
@@ -241,11 +250,36 @@ public class AnalyticsService implements ProcessedMapListener {
             zoneCountMap.put((Integer)items[0],(Long)items[1]);
         });
 
+        List<Object[]> crossCounts = personDAO.getCrossCounts(from,to);
+
+
         List<ZoneStatistics> results = new ArrayList<>();
         for(Zone zone: zones){
             ZoneStatistics statistic = new ZoneStatistics(zone.getId(),zone.getZoneName(),fromTimestamp,toTimestamp);
             if(zoneCountMap.containsKey(zone.getId()))
                 statistic.setAveragePersonCount((double)zoneCountMap.get(zone.getId())/(double)timeStampCount);
+
+            final long[] totalOutgoing = {0};
+            Map<Integer, Long> outgoingCounts = new HashMap<>();
+            crossCounts.stream().filter(crossing -> (int)crossing[0] == zone.getId() && crossing[0] != crossing[1]).forEach(crossing -> {
+                totalOutgoing[0] += (long)crossing[2];
+                outgoingCounts.put((int)crossing[1],(long)crossing[2]);
+            });
+
+            statistic.setOutgoingMap(outgoingCounts);
+
+            final long[] totalIncomming = {0};
+            Map<Integer, Long> incommingCounts = new HashMap<>();
+            crossCounts.stream().filter(crossing -> (int)crossing[1] == zone.getId() && crossing[0] != crossing[1]).forEach(crossing -> {
+                totalIncomming[0] += (long)crossing[2];
+                incommingCounts.put((int)crossing[0],(long)crossing[2]);
+            });
+
+            statistic.setIncomingMap(incommingCounts);
+
+            statistic.setTotalIncoming(totalIncomming[0]);
+            statistic.setTotalOutgoing(totalOutgoing[0]);
+
             results.add(statistic);
         }
         return results;

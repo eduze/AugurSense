@@ -112,6 +112,17 @@ public class PersonDAOImpl implements PersonDAO {
         return zoneCountList;
     }
 
+    @Override
+    public List<Object[]> getCrossCounts(Date from, Date to) {
+        Session session = this.sessionFactory.openSession();
+        Query query = session.createQuery("select z1.id as pastZone, z2.id as currentZone, count(p.id) from Person p right join Zone z1 on p.pastPersistantZoneId = z1 right join Zone z2 on p.persistantZoneId = z2.id where p.timestamp between :startTime and :endTime group by z1.id, z2.id")
+                .setParameter("startTime", from, TemporalType.TIMESTAMP)
+                .setParameter("endTime", to, TemporalType.TIMESTAMP);
+        List crossList = query.list();
+        session.close();
+        return crossList;
+    }
+
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
