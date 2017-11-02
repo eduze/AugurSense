@@ -261,18 +261,24 @@ public class AnalyticsService implements ProcessedMapListener {
 
             final long[] totalOutgoing = {0};
             Map<Integer, Long> outgoingCounts = new HashMap<>();
-            crossCounts.stream().filter(crossing -> (int)crossing[0] == zone.getId() && crossing[0] != crossing[1]).forEach(crossing -> {
+            crossCounts.stream().filter(crossing -> crossing[0] != null && (int)crossing[0] == zone.getId() && crossing[0] != crossing[1]).forEach(crossing -> {
                 totalOutgoing[0] += (long)crossing[2];
-                outgoingCounts.put((int)crossing[1],(long)crossing[2]);
+                if(crossing[1] != null)
+                    outgoingCounts.put((int)crossing[1],(long)crossing[2]);
+                else
+                    outgoingCounts.put(-1, (long)crossing[2]);
             });
 
             statistic.setOutgoingMap(outgoingCounts);
 
             final long[] totalIncomming = {0};
             Map<Integer, Long> incommingCounts = new HashMap<>();
-            crossCounts.stream().filter(crossing -> (int)crossing[1] == zone.getId() && crossing[0] != crossing[1]).forEach(crossing -> {
+            crossCounts.stream().filter(crossing -> crossing[1] != null && (int)crossing[1] == zone.getId() && crossing[0] != crossing[1]).forEach(crossing -> {
                 totalIncomming[0] += (long)crossing[2];
-                incommingCounts.put((int)crossing[0],(long)crossing[2]);
+                if(crossing[0] != null)
+                    incommingCounts.put((int)crossing[0],(long)crossing[2]);
+                else
+                    incommingCounts.put(-1,(long)crossing[2]);
             });
 
             statistic.setIncomingMap(incommingCounts);
