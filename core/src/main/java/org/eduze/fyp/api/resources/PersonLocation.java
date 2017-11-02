@@ -77,7 +77,13 @@ public class PersonLocation {
         }
 
         // TODO: 9/21/17 All have the same reference to IDs
-        snapshots.addFirst(new PersonSnapshot(ids, coordinate));
+
+        if(snapshots.size() > 0){
+            snapshots.addFirst(new PersonSnapshot(ids, coordinate,null,snapshots.get(0).getPersistantZone(),snapshots.get(0).getPersistantZone()));
+        }else{
+            snapshots.addFirst(new PersonSnapshot(ids, coordinate,null,null, null));
+        }
+
     }
 
     public void addId(int id) {

@@ -76,6 +76,8 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         }
     }
 
+
+
     public synchronized void setCameraView(int cameraId, BufferedImage view) {
         stateManager.checkState(State.STARTED);
         cameraViews.put(cameraId, view);

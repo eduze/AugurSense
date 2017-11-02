@@ -25,6 +25,7 @@ import org.eduze.fyp.api.annotations.AutoStart;
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
 import org.eduze.fyp.api.resources.PersonSnapshot;
 import org.eduze.fyp.impl.db.dao.PersonDAO;
+import org.eduze.fyp.impl.db.dao.ZoneDAO;
 import org.eduze.fyp.impl.db.model.Person;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,13 +39,31 @@ public class DBHandler implements ProcessedMapListener {
 
     private PersonDAO personDAO;
 
+    private ZoneDAO zoneDAO;
+
     @Override
     public void mapProcessed(List<List<PersonSnapshot>> snapshots) {
         snapshots.stream()
                 .filter(snapshotList -> snapshotList.size() > 0)
                 .map(snapshotList -> {
                     PersonSnapshot snapshot = snapshotList.get(0);
-                    return new Person(snapshot.getIds(), snapshot.getTimestamp(), snapshot.getX(), snapshot.getY());
+
+                    int instantZone = -1;
+                    int persistantZone = -1;
+                    int pastPersistantZone = -1;
+
+                    if(snapshot.getInstanceZone() != null)
+                        instantZone = snapshot.getInstanceZone().getId();
+
+                    if(snapshot.getPersistantZone() != null)
+                        persistantZone = snapshot.getPersistantZone().getId();
+
+                    if(snapshot.getPastPersistantZone() != null)
+                        pastPersistantZone = snapshot.getPastPersistantZone().getId();
+
+                    return new Person(snapshot.getIds(),snapshot.getTimestamp(),snapshot.getX(),snapshot.getY(),instantZone,persistantZone,pastPersistantZone);
+
+
                 })
                 .forEach(person -> {
                     try {
@@ -57,6 +76,14 @@ public class DBHandler implements ProcessedMapListener {
 
     public PersonDAO getPersonDAO() {
         return personDAO;
+    }
+
+    public void setZoneDAO(ZoneDAO zoneDAO) {
+        this.zoneDAO = zoneDAO;
+    }
+
+    public ZoneDAO getZoneDAO() {
+        return zoneDAO;
     }
 
     public void setPersonDAO(PersonDAO personDAO) {

@@ -19,22 +19,56 @@
 
 package org.eduze.fyp.api.resources;
 
+import org.eduze.fyp.impl.db.model.Zone;
+
 import java.util.HashSet;
 import java.util.Set;
 
 public class PersonSnapshot extends Coordinate {
 
     private Set<Integer> ids = new HashSet<>();
+    private Zone instanceZone;
+
+    private Zone persistantZone;
+
+    private Zone pastPersistantZone;
 
     public PersonSnapshot() { }
 
-    public PersonSnapshot(Set<Integer> ids, Coordinate coordinate) {
-        this(coordinate.getX(), coordinate.getY(), coordinate.getTimestamp(), ids);
+    public PersonSnapshot(Set<Integer> ids, Coordinate coordinate, Zone instantZone, Zone persistantZone, Zone prevPersistantZone) {
+        this(coordinate.getX(), coordinate.getY(), coordinate.getTimestamp(), ids, instantZone,persistantZone, prevPersistantZone);
     }
 
-    public PersonSnapshot(double x, double y, long timestamp, Set<Integer> ids) {
+    public PersonSnapshot(double x, double y, long timestamp, Set<Integer> ids, Zone instanceZone, Zone persistantZone, Zone pastPersistantZone) {
         super(x, y, timestamp);
         this.ids = ids;
+        this.instanceZone = instanceZone;
+        this.persistantZone = persistantZone;
+        this.pastPersistantZone = pastPersistantZone;
+    }
+
+    public void setPastPersistantZone(Zone pastPersistantZone) {
+        this.pastPersistantZone = pastPersistantZone;
+    }
+
+    public Zone getPastPersistantZone() {
+        return pastPersistantZone;
+    }
+
+    public Zone getPersistantZone() {
+        return persistantZone;
+    }
+
+    public void setPersistantZone(Zone zone) {
+        this.persistantZone = zone;
+    }
+
+    public Zone getInstanceZone(){
+        return instanceZone;
+    }
+
+    public void setInstanceZone(Zone instanceZone) {
+        this.instanceZone = instanceZone;
     }
 
     public Set<Integer> getIds() {

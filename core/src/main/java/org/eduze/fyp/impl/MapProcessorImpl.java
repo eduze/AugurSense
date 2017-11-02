@@ -57,6 +57,16 @@ public class MapProcessorImpl implements MapProcessor {
     private Set<ProcessedMapListener> mapListeners = new HashSet<>();
     private ExecutorService processor;
 
+    private ZoneMapper zoneMapper = null;
+
+    public ZoneMapper getZoneMapper() {
+        return zoneMapper;
+    }
+
+    public void setZoneMapper(ZoneMapper zoneMapper) {
+        this.zoneMapper = zoneMapper;
+    }
+
     @Override
     public void addLocalMap(LocalMap map) {
         stateManager.checkState(State.STARTED);
@@ -79,6 +89,9 @@ public class MapProcessorImpl implements MapProcessor {
 
     @Override
     public void start() {
+
+        globalMap.setZoneMapper(zoneMapper);
+
         Args.notNull(cameraCoordinator, "cameraCoordinator");
 
         stateManager.checkState(State.STOPPED);
@@ -116,10 +129,14 @@ public class MapProcessorImpl implements MapProcessor {
                         globalMap.refresh(minTimestamp);
                     }
 
-                    List<List<PersonSnapshot>> snapshots = globalMap.getSnapshot();
-                    synchronized (this) {
-                        mapListeners.forEach(listener -> listener.mapProcessed(snapshots));
+
+                    if (nextMap != null) {
+                        List<List<PersonSnapshot>> snapshots = globalMap.getSnapshot();
+                        synchronized (this) {
+                            mapListeners.forEach(listener -> listener.mapProcessed(snapshots));
+                        }
                     }
+
                 } catch (Exception e) {
                     logger.error("Error occurred in map processing", e);
                 }

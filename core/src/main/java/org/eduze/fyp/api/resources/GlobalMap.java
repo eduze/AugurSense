@@ -21,6 +21,8 @@ package org.eduze.fyp.api.resources;
 
 import org.apache.commons.math3.util.Pair;
 import org.eduze.fyp.Constants;
+import org.eduze.fyp.impl.ZoneMapper;
+import org.eduze.fyp.impl.db.model.Zone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +46,16 @@ public class GlobalMap {
 
     private List<PersonLocation> personLocations = new ArrayList<>();
     private volatile int id = 0;
+
+    private ZoneMapper zoneMapper = null;
+
+    public void setZoneMapper(ZoneMapper zoneMapper) {
+        this.zoneMapper = zoneMapper;
+    }
+
+    public ZoneMapper getZoneMapper() {
+        return zoneMapper;
+    }
 
     public synchronized List<List<PersonSnapshot>> getSnapshot() {
         return personLocations.stream()
@@ -87,6 +99,10 @@ public class GlobalMap {
         });
 
         personLocations.addAll(newPeople);
+
+        if(this.zoneMapper != null){
+            zoneMapper.processPersonLocations(personLocations);
+        }
     }
 
     public synchronized void refresh(long minTimestamp) {

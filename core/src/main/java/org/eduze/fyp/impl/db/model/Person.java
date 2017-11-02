@@ -51,6 +51,10 @@ public class Person {
 
     private double x;
     private double y;
+    private int instantZoneId;
+
+    private int persistantZoneId;
+    private int pastPersistantZoneId;
 
     @Convert(converter = PersonIdConverter.class)
     private Set<Integer> ids;
@@ -58,15 +62,40 @@ public class Person {
     protected Person() {
     }
 
-    public Person(Set<Integer> ids, long timestamp, double x, double y) {
+    public Person(Set<Integer> ids, long timestamp, double x, double y, int instantZoneId, int persistantZoneId, int pastPersistantZoneId) {
         setIds(ids);
         this.timestamp = new Date(timestamp);
         this.x = x;
         this.y = y;
+        this.instantZoneId = instantZoneId;
+        this.persistantZoneId = persistantZoneId;
+        this.pastPersistantZoneId = pastPersistantZoneId;
+    }
+
+    public int getInstantZoneId(){return instantZoneId;}
+
+    public void setInstantZoneId(int zoneId) {
+        this.instantZoneId = zoneId;
     }
 
     public int getId() {
         return id;
+    }
+
+    public int getPastPersistantZoneId() {
+        return pastPersistantZoneId;
+    }
+
+    public int getPersistantZoneId() {
+        return persistantZoneId;
+    }
+
+    public void setPastPersistantZoneId(int pastPersistantZoneId) {
+        this.pastPersistantZoneId = pastPersistantZoneId;
+    }
+
+    public void setPersistantZoneId(int persistantZoneId) {
+        this.persistantZoneId = persistantZoneId;
     }
 
     public void setId(int id) {

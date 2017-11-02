@@ -52,6 +52,13 @@
                 <ref bean="analytics-service"/>
             </set>
         </property>
+        <property name="zoneMapper" ref="zone-mapper"/>
+    </bean>
+
+    <bean id="zone-mapper" class="org.eduze.fyp.impl.ZoneMapper">
+        <constructor-arg ref="zoneDAO"/>
+        <property name="zonePersistantScanCount" value="5"/>
+        <property name="zonePersistantThreshold" value="4"/>
     </bean>
 
     <bean id="camera-coordinator" class="org.eduze.fyp.impl.CentralizedCameraCoordinator">
@@ -65,6 +72,7 @@
     <!-- ============================================================================ -->
     <bean id="db-handler" class="org.eduze.fyp.impl.db.DBHandler">
         <property name="personDAO" ref="personDAO"/>
+        <property name="zoneDAO" ref="zoneDAO"/>
     </bean>
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
@@ -73,7 +81,7 @@
         </constructor-arg>
         <constructor-arg value="jdbc:mysql://localhost:3306/analytics?createDatabaseIfNotExist=true"/>
         <constructor-arg value="root"/>
-        <constructor-arg value="root"/>
+        <constructor-arg value="123456"/>
     </bean>
 
     <bean id="hibernateAnnotatedSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
@@ -81,6 +89,7 @@
         <property name="annotatedClasses">
             <list>
                 <value>org.eduze.fyp.impl.db.model.Person</value>
+                <value>org.eduze.fyp.impl.db.model.Zone</value>
             </list>
         </property>
         <property name="hibernateProperties">
@@ -94,6 +103,10 @@
     </bean>
 
     <bean id="personDAO" class="org.eduze.fyp.impl.db.dao.PersonDAOImpl">
+        <property name="sessionFactory" ref="hibernateAnnotatedSessionFactory"/>
+    </bean>
+
+    <bean id="zoneDAO" class="org.eduze.fyp.impl.db.dao.ZoneDAOImpl">
         <property name="sessionFactory" ref="hibernateAnnotatedSessionFactory"/>
     </bean>
 
