@@ -11,13 +11,15 @@ import {DashboardComponent} from "./dashboard/dashboard.component";
 import {AnalyticsService} from "./services/analytics.service";
 import {HeatmapComponent} from "./heatmap/heatmap.component";
 import { PeopleCountComponent } from './people-count/people-count.component';
+import {PersonStopPointsComponent} from "./person-stop-points/person-stop-points.component";
 
 @NgModule({
   declarations: [
     AppComponent,
     DashboardComponent,
     HeatmapComponent,
-    PeopleCountComponent
+    PeopleCountComponent,
+    PersonStopPointsComponent
   ],
   imports: [
     BrowserModule,

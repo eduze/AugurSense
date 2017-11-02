@@ -31,4 +31,6 @@ public interface PersonDAO {
     List<Person> list();
 
     List<Person> list(Date from, Date to);
+    List<Integer> personIDs(Date from, Date to);
+    List<Person> getRows(int id,Date from, Date to);
 }

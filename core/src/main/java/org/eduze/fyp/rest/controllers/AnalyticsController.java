@@ -84,6 +84,19 @@ public class AnalyticsController {
         }
     }
 
+    @GET
+    @Path("/stoppoints/{from}/{to}/{radius}/{time}/{height}/{width}")
+    public Response getStopPoints(@PathParam("from") long from, @PathParam("to") long to, @PathParam("radius") int radius,
+                                  @PathParam("time") int time, @PathParam("height") int height, @PathParam("width") int width) {
+        try {
+            return Response.status(200).entity(analyticsService.getStopPoints(from, to, radius, time, height, width)).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining heat map", e);
+            return Response.status(500).build();
+        }
+    }
+
+
     public AnalyticsController(AnalyticsService analyticsService) {
         this.analyticsService = analyticsService;
     }
