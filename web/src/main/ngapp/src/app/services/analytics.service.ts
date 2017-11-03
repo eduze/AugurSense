@@ -22,6 +22,7 @@ import {Http} from '@angular/http'
 import 'rxjs/add/operator/toPromise';
 
 import {PersonSnapshot} from "../resources/person-snapshot";
+import {ZoneStatistic} from "../resources/zone-statistic";
 
 @Injectable()
 export class AnalyticsService {
@@ -37,6 +38,16 @@ export class AnalyticsService {
       .then(response => {
         console.debug(response.json());
         return response.json() as PersonSnapshot[][]
+      })
+      .catch(AnalyticsService.handleError);
+  }
+
+  getZoneStatistics(from: number, to: number): Promise<ZoneStatistic[]> {
+    return this.http.get(this.baseUrl + "zoneStatistics/" + from + "/" + to)
+      .toPromise()
+      .then(response => {
+        console.debug(response.json());
+        return response.json() as ZoneStatistic[]
       })
       .catch(AnalyticsService.handleError);
   }
