@@ -14,6 +14,8 @@ import { PeopleCountComponent } from './people-count/people-count.component';
 import { PointMappingComponent } from './settings/point-mapping/point-mapping.component';
 import {ConfigService} from "./services/config.service";
 import { ZonesComponent } from './zones/zones.component';
+import { ZoneInfoComponent } from './zone-info/zone-info.component';
+import { ChartModule } from 'primeng/primeng';
 
 @NgModule({
   declarations: [
@@ -22,7 +24,8 @@ import { ZonesComponent } from './zones/zones.component';
     HeatmapComponent,
     PeopleCountComponent,
     PointMappingComponent,
-    ZonesComponent
+    ZonesComponent,
+    ZoneInfoComponent
   ],
   imports: [
     BrowserModule,
@@ -30,7 +33,8 @@ import { ZonesComponent } from './zones/zones.component';
     FormsModule,
     AppRoutingModule,
     HttpModule,
-    CalendarModule
+    CalendarModule,
+    ChartModule
   ],
   providers: [AnalyticsService, ConfigService],
   bootstrap: [AppComponent]

@@ -26,6 +26,7 @@
         "../node_modules/font-awesome/css/font-awesome.min.css"
       ],
       "scripts": [
+        "../node_modules/chart.js/dist/Chart.js"
       ],
       "environmentSource": "environments/environment.ts",
       "environments": {

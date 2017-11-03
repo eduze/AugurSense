@@ -24,6 +24,7 @@ import {HeatmapComponent} from "./heatmap/heatmap.component";
 import {PeopleCountComponent} from "./people-count/people-count.component";
 import {PointMappingComponent} from "./settings/point-mapping/point-mapping.component";
 import {ZonesComponent} from "./zones/zones.component";
+import {ZoneInfoComponent} from "./zone-info/zone-info.component";
 
 const routes: Routes = [
   {
@@ -50,6 +51,10 @@ const routes: Routes = [
     path: '',
     redirectTo: '/dashboard',
     pathMatch: 'full'
+  },
+  {
+    path :'zone-info',
+    component: ZoneInfoComponent
   }
 ];
 

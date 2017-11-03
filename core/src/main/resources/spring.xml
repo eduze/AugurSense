@@ -83,7 +83,7 @@
         </constructor-arg>
         <constructor-arg value="jdbc:mysql://localhost:3306/analytics?createDatabaseIfNotExist=true"/>
         <constructor-arg value="root"/>
-        <constructor-arg value="root"/>
+        <constructor-arg value="123456"/>
     </bean>
 
     <bean id="hibernateAnnotatedSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
