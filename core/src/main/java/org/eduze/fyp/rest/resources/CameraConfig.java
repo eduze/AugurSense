@@ -3,6 +3,8 @@
  */
 package org.eduze.fyp.rest.resources;
 
+import org.eduze.fyp.api.resources.PointMapping;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
 
@@ -25,6 +27,8 @@ public class CameraConfig {
     private Camera camera;
     private String ipAndPort;
     private byte[] viewBytes;
+
+    private PointMapping initialMapping = null;
 
     public Camera getCamera() {
         return camera;
@@ -52,5 +56,13 @@ public class CameraConfig {
 
     public String toString() {
         return String.format("{ camera : %s, bytesLength : %d }", camera, viewBytes.length);
+    }
+
+    public PointMapping getInitialMapping() {
+        return initialMapping;
+    }
+
+    public void setInitialMapping(PointMapping initialMapping) {
+        this.initialMapping = initialMapping;
     }
 }

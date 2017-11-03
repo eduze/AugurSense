@@ -69,7 +69,15 @@ public class MainController implements Initializable, ProcessedMapListener, Conf
 
         Map<Integer, BufferedImage> cameraViews = configurationManager.getCameraViews();
 
-        cameraViews.forEach(this::checkAndAddCameraToAccordion);
+        cameraViews.forEach((k,v)->{
+            if(configurationManager.getInitialMappings().containsKey(k))
+            {
+                this.checkAndAddCameraToAccordion(k,v,configurationManager.getInitialMappings().get(k));
+            }
+            else{
+                this.checkAndAddCameraToAccordion(k,v,null);
+            }
+        });
 
         Image realTimeMap = SwingFXUtils.toFXImage(realtimeMap, null);
         realtimeMapImageView = new ImageView(realTimeMap);
@@ -96,7 +104,7 @@ public class MainController implements Initializable, ProcessedMapListener, Conf
         analyticsEngine.getMapProcessor().addProcessedMapListener(this);
     }
 
-    private synchronized void checkAndAddCameraToAccordion(int cameraId, BufferedImage viewImage) {
+    private synchronized void checkAndAddCameraToAccordion(int cameraId, BufferedImage viewImage, PointMapping initialMapping) {
         if (mapsOnUI.containsKey(cameraId)) {
             logger.warn("Camera with id: {} already shown in the UI. Ignoring", cameraId);
             return;
@@ -108,6 +116,26 @@ public class MainController implements Initializable, ProcessedMapListener, Conf
         Image cameraView = SwingFXUtils.toFXImage(viewImage, null);
         ImageView cameraImageView = new ImageView(cameraView);
         ImageView mapImageView = new ImageView(mapImage);
+
+        if(initialMapping != null)
+        {
+            for(Point p : initialMapping.getScreenSpacePoints()){
+                PointMapping mapping = pointMappings.computeIfAbsent(cameraId, (k) -> new PointMapping());
+                if (mapping.getScreenSpacePoints().size() < 4) {
+                    mapping.addScreenSpacePoint(new Point(p.getX(), p.getY()));
+
+                    drawPoint(cameraImageView, viewImage, p.getX(), p.getY());
+                }
+            }
+            for(Point p : initialMapping.getWorldSpacePoints()){
+                PointMapping mapping = pointMappings.computeIfAbsent(cameraId, (k) -> new PointMapping());
+                if (mapping.getWorldSpacePoints().size() < 4) {
+                    mapping.addWorldSpacePoint(new Point(p.getX(), p.getY()));
+
+                    drawPoint(mapImageView, mapsOnUI.get(cameraId), p.getX(), p.getY());
+                }
+            }
+        }
 
         cameraImageView.setOnMouseClicked((event) -> {
             logger.debug("CameraConfig-{} clicked at x : {}, y : {}", cameraId, event.getX(), event.getY());
@@ -194,6 +222,15 @@ public class MainController implements Initializable, ProcessedMapListener, Conf
     @Override
     public synchronized void configurationChanged(ConfigurationManager configurationManager) {
         logger.debug("Configuration change detected. Updating UI");
-        Platform.runLater(() -> configurationManager.getCameraViews().forEach(this::checkAndAddCameraToAccordion));
+        Platform.runLater(() -> configurationManager.getCameraViews().forEach((k,v)->{
+            if(configurationManager.getInitialMappings().containsKey(k))
+            {
+                this.checkAndAddCameraToAccordion(k,v,configurationManager.getInitialMappings().get(k));
+            }
+            else{
+                this.checkAndAddCameraToAccordion(k,v,null);
+            }
+        }));
+
     }
 }

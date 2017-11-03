@@ -21,6 +21,7 @@ export class ZonesComponent implements OnInit {
   zoneStatistics : ZoneStatistic[] = [];
   selectedZoneStatistic: ZoneStatistic = null;
   selectedZoneIndex : number = -1;
+  totalPeople: number;
 
   private _fromDate : Date;
   private _toDate : Date;
@@ -55,7 +56,10 @@ export class ZonesComponent implements OnInit {
     this.selectedZoneIndex = -1;
     this.selectedZoneStatistic = null;
     console.log("Unselected");
+
   }
+
+
 
 
   private fetchResults() : void{
@@ -66,6 +70,8 @@ export class ZonesComponent implements OnInit {
 
     this.analyticsService.getZoneStatistics(this.fromDate.getTime(), this.toDate.getTime()).then((zs) => {
       this.zoneStatistics = zs;
+
+      this.totalPeople = this.zoneStatistics.map((item) => item.averagePersonCount).reduce((r1,r2)=> r1+ r2);
 
       this.polygons.map((item) => {
         let matches = zs.filter((match) => {

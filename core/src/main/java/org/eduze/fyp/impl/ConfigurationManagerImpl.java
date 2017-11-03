@@ -62,6 +62,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 
     private Set<Integer> cameraIds = new HashSet<>();
     private Map<Integer, BufferedImage> cameraViews = new ConcurrentHashMap<>();
+    private Map<Integer,PointMapping> initialMappings = new ConcurrentHashMap<>();
     private Map<Integer, PointMapping> pointMappings = new HashMap<>();
     private Map<Integer, InetSocketAddress> cameraIpAndPorts = new HashMap<>();
 
@@ -95,10 +96,15 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     }
 
 
+    @Override
+    public Map<Integer, PointMapping> getInitialMappings() {
+        return initialMappings;
+    }
 
-    public synchronized void setCameraView(int cameraId, BufferedImage view) {
+    public synchronized void setCameraView(int cameraId, BufferedImage view, PointMapping initialMapping) {
         stateManager.checkState(State.STARTED);
         cameraViews.put(cameraId, view);
+        initialMappings.put(cameraId,initialMapping);
         notifyConfigurationChange();
     }
 

@@ -62,7 +62,8 @@ public class ConfigService {
      */
     public void configureCameraView(CameraConfig cameraConfig) throws IOException {
         BufferedImage view = ImageUtils.byteArrayToBufferedImage(cameraConfig.getViewBytes());
-        configurationManager.setCameraView(cameraConfig.getCamera().getId(), view);
+
+        configurationManager.setCameraView(cameraConfig.getCamera().getId(), view, cameraConfig.getInitialMapping());
         configurationManager.setCameraIpAndPort(cameraConfig.getCamera().getId(), cameraConfig.getIpAndPort());
     }
 

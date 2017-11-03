@@ -39,7 +39,7 @@ import java.util.Set;
  */
 public interface ConfigurationManager extends Startable {
 
-    void setCameraView(int cameraId, BufferedImage view);
+    void setCameraView(int cameraId, BufferedImage view, PointMapping initialMapping);
 
     void setCameraIpAndPort(int cameraId, String ipAndPort) throws UnknownHostException;
 
@@ -56,6 +56,8 @@ public interface ConfigurationManager extends Startable {
     BufferedImage getCameraView(int cameraId);
 
     Map<Integer, BufferedImage> getCameraViews();
+
+    Map<Integer, PointMapping> getInitialMappings();
 
     BufferedImage getMap();
 
