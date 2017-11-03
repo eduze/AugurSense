@@ -67,12 +67,12 @@ export class HeatmapComponent implements AfterViewInit {
       .then(points => {
         let p = [];
         let max: number = 0;
-        for (let x = 0; x < points.length; x++) {
-          for (let y = 0; y < points[0].length; y++) {
-            if (points[x][y] != 0) {
-              p.push([x, y, points[x][y]]);
-              if (points[x][y] > max) {
-                max = points[x][y];
+        for (let y = 0; y < points.length; y++) {
+          for (let x = 0; x < points[0].length; x++) {
+            if (points[y][x] != 0) {
+              p.push([x, y, points[y][x]]);
+              if (points[y][x] > max) {
+                max = points[y][x];
               }
             }
           }

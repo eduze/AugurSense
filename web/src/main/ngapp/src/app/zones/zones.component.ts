@@ -4,6 +4,7 @@ import {Zone} from "../resources/zone";
 import {ConfigService} from "../services/config.service";
 import {GlobalMap} from "../resources/global-map";
 import {ZoneStatistic} from "../resources/zone-statistic";
+import {Observable} from "rxjs/Observable";
 
 @Component({
   selector: 'app-zones',
@@ -19,7 +20,6 @@ export class ZonesComponent implements OnInit {
   polygons: any[] = [];
 
   zoneStatistics : ZoneStatistic[] = [];
-  selectedZoneStatistic: ZoneStatistic = null;
   selectedZoneIndex : number = -1;
   totalPeople: number;
 
@@ -48,13 +48,11 @@ export class ZonesComponent implements OnInit {
   }
 
   private zoneClicked(index: number): void {
-    this.selectedZoneStatistic = this.zoneStatistics[index];
     this.selectedZoneIndex = index;
   }
 
   private backgroundClicked(){
     this.selectedZoneIndex = -1;
-    this.selectedZoneStatistic = null;
     console.log("Unselected");
 
   }
@@ -74,6 +72,9 @@ export class ZonesComponent implements OnInit {
       this.totalPeople = this.zoneStatistics.map((item) => item.averagePersonCount).reduce((r1,r2)=> r1+ r2);
 
       this.polygons.map((item) => {
+        item.outgoingMap.length = 0;
+        item.incomingMap.length = 0;
+
         let matches = zs.filter((match) => {
           return item.zone.id == match.zoneId
         });
@@ -162,7 +163,10 @@ export class ZonesComponent implements OnInit {
       console.log(this.globalMap);
     });
 
-    this.fetchResults();
+    Observable.interval(2000).subscribe(x => {
+      this.fetchResults();
+    });
+
 
   }
 }
