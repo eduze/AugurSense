@@ -17,46 +17,16 @@
  * IN THE SOFTWARE.
  */
 
-import {NgModule} from '@angular/core'
-import {RouterModule, Routes} from '@angular/router'
-import {DashboardComponent} from "./dashboard/dashboard.component";
-import {HeatmapComponent} from "./heatmap/heatmap.component";
-import {PeopleCountComponent} from "./people-count/people-count.component";
-import {PointMappingComponent} from "./settings/point-mapping/point-mapping.component";
-import {ZonesComponent} from "./zones/zones.component";
+export class Zone {
+  id: number;
+  name: string;
+  xCoordinates: number[];
+  yCoordinates: number[];
 
-const routes: Routes = [
-  {
-    path: 'dashboard',
-    component: DashboardComponent
-  },
-  {
-    path: 'zones',
-    component: ZonesComponent
-  },
-  {
-    path: 'heatmap',
-    component: HeatmapComponent
-  },
-  {
-    path: 'statistics',
-    component: PeopleCountComponent
-  },
-  {
-    path: 'settings',
-    component: PointMappingComponent
-  },
-  {
-    path: '',
-    redirectTo: '/dashboard',
-    pathMatch: 'full'
+  constructor(id: number, name: string, xCoordinates: number[], yCoordinates: number[]) {
+    this.id = id;
+    this.name = name;
+    this.xCoordinates = xCoordinates;
+    this.yCoordinates = yCoordinates;
   }
-];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
-})
-
-export class AppRoutingModule {
 }

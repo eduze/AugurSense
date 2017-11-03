@@ -20,9 +20,19 @@
 export class CameraView {
   id: string;
   view: string;
+  width: number;
+  height: number;
 
   constructor(id: string, view: string) {
     this.id = id;
     this.view = view;
+
+    let obj = this;
+    let image = new Image();
+    image.onload = function () {
+      obj.height = image.height;
+      obj.width = image.width;
+    };
+    image.src = view;
   }
 }

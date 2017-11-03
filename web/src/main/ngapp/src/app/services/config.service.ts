@@ -20,6 +20,8 @@
 import {Injectable} from '@angular/core';
 import {Http} from '@angular/http'
 import 'rxjs/add/operator/toPromise';
+import {Zone} from "../resources/zone";
+import {GlobalMap} from "../resources/global-map";
 
 @Injectable()
 export class ConfigService {
@@ -40,6 +42,41 @@ export class ConfigService {
         return views;
       })
       .catch(ConfigService.handleError);
+  }
+
+  getMap(): Promise<GlobalMap> {
+    return this.http.get(this.baseUrl + "getMap")
+      .toPromise()
+      .then(response => {
+        console.log(response.json());
+        let views: Map<string, string> = response.json() as Map<string, string>;
+        let base64: string = "data:image/JPEG;base64," + views["mapImage"];
+
+        return new GlobalMap(base64);
+      })
+      .catch(ConfigService.handleError);
+  }
+
+  getZones(): Promise<Zone[]> {
+    return this.http.get(this.baseUrl + "zones")
+      .toPromise()
+      .then(response => {
+        let arr = response.json();
+        let zones: Zone[] = [];
+        for (let i of arr) {
+          zones.push(new Zone(i.id, i.zoneName, i.xcoordinates, i.ycoordinates));
+        }
+        return zones;
+      })
+      .catch(ConfigService.handleError);
+  }
+
+  private static stringToNumberArray(str: string): number[] {
+    let arr: number[] = [];
+    for (let s of str.split(",")) {
+      arr.push(parseInt(s));
+    }
+    return arr;
   }
 
   private static handleError(error: any): Promise<any> {

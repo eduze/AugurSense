@@ -30,7 +30,7 @@ import {CameraView} from "../../resources/camera-view";
 export class PointMappingComponent implements OnInit, AfterViewInit {
 
   cameraViews: CameraView[];
-  mapImage: string;
+  mapImage: CameraView;
   imagesLoaded: boolean = false;
 
   constructor(private configService: ConfigService) {
@@ -39,11 +39,10 @@ export class PointMappingComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.configService.getCameraViews()
       .then(views => {
-        console.log(views);
         this.cameraViews = [];
         for (let key in views) {
           if (key === "mapImage") {
-            this.mapImage = views[key];
+            this.mapImage = new CameraView("0", views[key]);
           } else {
             this.cameraViews.push(new CameraView(key, views[key]));
           }
@@ -55,48 +54,22 @@ export class PointMappingComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    if (this.imagesLoaded) {
-      this.drawImages();
-    } else {
-      console.log("Images are not loaded");
-      setTimeout(() => this.drawImages(), 1000);
-    }
   }
 
-  private drawImages(): void {
-    console.log("Drawing images");
-    for (let index in this.cameraViews) {
-      let canvas = <HTMLCanvasElement> document.getElementById("camera" + index);
-      console.log("Index is: %s", ("camera" + index));
-      if (!canvas) {
-        console.log("Canvas is null");
-        continue;
-      }
-      let ctx = canvas.getContext('2d');
-      const img: HTMLImageElement = new Image();
-      img.onload = function () {
-        canvas.width = img.width;
-        canvas.height = img.height;
+  public cameraViewClicked(event: MouseEvent, i: number): void {
+    let cameraView = this.cameraViews[i];
+    let h = parseInt(document.getElementById("camera" + i).getAttribute("height"));
+    let w = (cameraView.width / cameraView.height) * h;
+    console.log("%d x %d", w, h);
 
-        ctx.lineWidth = 3;
-        ctx.lineCap = 'round';
-        ctx.strokeStyle = '#000';
-        ctx.drawImage(img, 0, 0);
-      };
-      img.src = this.cameraViews[index].view;
-    }
+    document.getElementById("camera" + i)
   }
 
-  cameraViewClicked(event: MouseEvent, i: number): void {
-    const canvasElement = <HTMLCanvasElement>event.srcElement;
+  public mapImageClicked(event: MouseEvent, i: number): void {
+    const svgElement = <SVGImageElement>event.srcElement;
     console.log("Offset (%d, %d) clicked", event.offsetX, event.offsetY);
-// this.cameraCanvasList.find((element, index, elements) => {
-//   return element.id === ("camera" + i);
-// });
+    console.log("Offset (%d, %d) clicked", event.x, event.y);
+    console.log("Offset (%d, %d) clicked", event.clientX, event.clientY);
+    console.log(svgElement);
   }
-
-  mapImageClicked(event: MouseEvent): void {
-    console.log("%d, %d clicked", event.x, event.y);
-  }
-
 }

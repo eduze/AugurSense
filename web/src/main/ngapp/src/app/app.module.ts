@@ -13,6 +13,7 @@ import {HeatmapComponent} from "./heatmap/heatmap.component";
 import { PeopleCountComponent } from './people-count/people-count.component';
 import { PointMappingComponent } from './settings/point-mapping/point-mapping.component';
 import {ConfigService} from "./services/config.service";
+import { ZonesComponent } from './zones/zones.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import {ConfigService} from "./services/config.service";
     DashboardComponent,
     HeatmapComponent,
     PeopleCountComponent,
-    PointMappingComponent
+    PointMappingComponent,
+    ZonesComponent
   ],
   imports: [
     BrowserModule,

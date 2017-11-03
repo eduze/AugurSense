@@ -89,6 +89,14 @@ public class ConfigService {
         return mapConfiguration;
     }
 
+    public Map<String, byte[]> getMap() throws IOException {
+        Map<String, byte[]> cameraViews = new HashMap<>();
+        BufferedImage map = configurationManager.getMap();
+        byte[] bytes = ImageUtils.bufferedImageToByteArray(map);
+        cameraViews.put("mapImage", bytes);
+        return cameraViews;
+    }
+
     public Map<String, byte[]> getCameraViews() throws IOException {
         Map<String, byte[]> cameraViews = new HashMap<>();
         configurationManager.getCameraViews()

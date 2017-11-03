@@ -63,10 +63,21 @@ public class ConfigController {
     public Response getZones() {
         try {
             List<Zone> zonesList = configService.getZones();
-
+            logger.info("{} zones", zonesList);
             return Response.status(200).entity(zonesList).build();
         } catch (Exception e) {
             logger.error("Error occurred when obtaining zones", e);
+            return Response.status(500).build();
+        }
+    }
+
+    @GET
+    @Path("/getMap")
+    public Response getMap() {
+        try {
+            return Response.ok(configService.getMap()).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining map. {}", e);
             return Response.status(500).build();
         }
     }
