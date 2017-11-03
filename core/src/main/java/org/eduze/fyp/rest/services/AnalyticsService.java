@@ -104,6 +104,15 @@ public class AnalyticsService implements ProcessedMapListener {
         return heatmap;
     }
 
+
+    public List<Object[]> getCrossCount(long fromTimestamp, long toTimestamp){
+
+        Date from = new Date(fromTimestamp);
+        Date to = new Date(toTimestamp);
+
+        return personDAO.getCrossCounts(from,to);
+    }
+
     public long getTimestampCount(long fromTimestamp, long toTimestamp){
 
         Date from = new Date(fromTimestamp);
@@ -236,16 +245,76 @@ public class AnalyticsService implements ProcessedMapListener {
 
         List<Object[]> zoneCounts = personDAO.getZoneCounts(from, to);
 
+        List<Object[]> zoneStandCounts = personDAO.getZoneStandCounts(from, to, 1);
+        List<Object[]> zoneSitCounts = personDAO.getZoneSitCounts(from,to,1);
+
+        List<Object[]> zoneUnclassifiedPoseCounts = personDAO.getZoneUnclassifiedCounts(from,to,1,1);
+
         Map<Integer, Long> zoneCountMap = new LinkedHashMap<>();
         zoneCounts.forEach(items->{
             zoneCountMap.put((Integer)items[0],(Long)items[1]);
         });
+
+        Map<Integer, Long> zoneStandCountMap = new LinkedHashMap<>();
+        zoneStandCounts.forEach(items->{
+            zoneStandCountMap.put((Integer)items[0],(Long)items[1]);
+        });
+
+        Map<Integer, Long> zoneSitCountMap = new LinkedHashMap<>();
+        zoneSitCounts.forEach(items->{
+            zoneSitCountMap.put((Integer)items[0],(Long)items[1]);
+        });
+
+        Map<Integer, Long> zoneUnclassifiedCountMap = new LinkedHashMap<>();
+        zoneUnclassifiedPoseCounts.forEach(items->{
+            zoneUnclassifiedCountMap.put((Integer)items[0],(Long)items[1]);
+        });
+
+        List<Object[]> crossCounts = personDAO.getCrossCounts(from,to);
+
 
         List<ZoneStatistics> results = new ArrayList<>();
         for(Zone zone: zones){
             ZoneStatistics statistic = new ZoneStatistics(zone.getId(),zone.getZoneName(),fromTimestamp,toTimestamp);
             if(zoneCountMap.containsKey(zone.getId()))
                 statistic.setAveragePersonCount((double)zoneCountMap.get(zone.getId())/(double)timeStampCount);
+
+            if(zoneSitCountMap.containsKey(zone.getId()))
+                statistic.setAverageSittingCount((double)zoneSitCountMap.get(zone.getId())/(double)timeStampCount);
+
+            if(zoneStandCountMap.containsKey(zone.getId()))
+                statistic.setAverageStandingCount((double)zoneStandCountMap.get(zone.getId())/(double)timeStampCount);
+
+            if(zoneUnclassifiedCountMap.containsKey(zone.getId()))
+                statistic.setAverageUnclassifiedPoseCount((double)zoneUnclassifiedCountMap.get(zone.getId())/(double)timeStampCount);
+
+            final long[] totalOutgoing = {0};
+            Map<Integer, Long> outgoingCounts = new HashMap<>();
+            crossCounts.stream().filter(crossing -> crossing[0] != null && (int)crossing[0] == zone.getId() && crossing[0] != crossing[1]).forEach(crossing -> {
+                totalOutgoing[0] += (long)crossing[2];
+                if(crossing[1] != null)
+                    outgoingCounts.put((int)crossing[1],(long)crossing[2]);
+                else
+                    outgoingCounts.put(-1, (long)crossing[2]);
+            });
+
+            statistic.setOutgoingMap(outgoingCounts);
+
+            final long[] totalIncomming = {0};
+            Map<Integer, Long> incommingCounts = new HashMap<>();
+            crossCounts.stream().filter(crossing -> crossing[1] != null && (int)crossing[1] == zone.getId() && crossing[0] != crossing[1]).forEach(crossing -> {
+                totalIncomming[0] += (long)crossing[2];
+                if(crossing[0] != null)
+                    incommingCounts.put((int)crossing[0],(long)crossing[2]);
+                else
+                    incommingCounts.put(-1,(long)crossing[2]);
+            });
+
+            statistic.setIncomingMap(incommingCounts);
+
+            statistic.setTotalIncoming(totalIncomming[0]);
+            statistic.setTotalOutgoing(totalOutgoing[0]);
+
             results.add(statistic);
         }
         return results;

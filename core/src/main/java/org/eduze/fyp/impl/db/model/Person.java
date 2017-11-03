@@ -56,13 +56,52 @@ public class Person {
     private int persistantZoneId;
     private int pastPersistantZoneId;
 
+    private double sitProbability;
+    private double standProbability;
+
+    private double headDirectionX;
+    private double headDirectionY;
+
+    public void setHeadDirectionY(double headDirectionY) {
+        this.headDirectionY = headDirectionY;
+    }
+
+    public void setHeadDirectionX(double headDirectionX) {
+        this.headDirectionX = headDirectionX;
+    }
+
+    public double getHeadDirectionY() {
+        return headDirectionY;
+    }
+
+    public void setStandProbability(double standProbability) {
+        this.standProbability = standProbability;
+    }
+
+    public void setSitProbability(double sitProbability) {
+        this.sitProbability = sitProbability;
+    }
+
+    public double getStandProbability() {
+        return standProbability;
+    }
+
+    public double getSitProbability() {
+        return sitProbability;
+    }
+
+    public double getHeadDirectionX() {
+        return headDirectionX;
+    }
+
+
     @Convert(converter = PersonIdConverter.class)
     private Set<Integer> ids;
 
     protected Person() {
     }
 
-    public Person(Set<Integer> ids, long timestamp, double x, double y, int instantZoneId, int persistantZoneId, int pastPersistantZoneId) {
+    public Person(Set<Integer> ids, long timestamp, double x, double y,double sitProbability, double standProbability, double headDirectionX, double headDirectionY, int instantZoneId, int persistantZoneId, int pastPersistantZoneId) {
         setIds(ids);
         this.timestamp = new Date(timestamp);
         this.x = x;
@@ -70,6 +109,11 @@ public class Person {
         this.instantZoneId = instantZoneId;
         this.persistantZoneId = persistantZoneId;
         this.pastPersistantZoneId = pastPersistantZoneId;
+
+        this.sitProbability = sitProbability;
+        this.standProbability = standProbability;
+        this.headDirectionX = headDirectionX;
+        this.headDirectionY = headDirectionY;
     }
 
     public int getInstantZoneId(){return instantZoneId;}

@@ -2,13 +2,84 @@ package org.eduze.fyp.rest.resources;
 
 import jdk.nashorn.internal.runtime.regexp.joni.constants.StringType;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ZoneStatistics {
     private double averagePersonCount;
+    private double averageSittingCount;
+    private double averageStandingCount;
+    private double averageUnclassifiedPoseCount;
+
+
     private long fromTimestamp;
     private long toTimestamp;
 
+    private Map<Integer,Long> outgoingMap = null;
+    private Map<Integer,Long> incomingMap = null;
+
     private int zoneId;
     private String zoneName;
+
+    private long totalOutgoing = 0;
+    private long totalIncoming = 0;
+
+
+    public double getAverageSittingCount() {
+        return averageSittingCount;
+    }
+
+    public double getAverageStandingCount() {
+        return averageStandingCount;
+    }
+
+    public double getAverageUnclassifiedPoseCount() {
+        return averageUnclassifiedPoseCount;
+    }
+
+    public void setAverageSittingCount(double averageSittingCount) {
+        this.averageSittingCount = averageSittingCount;
+    }
+
+    public void setAverageStandingCount(double averageStandingCount) {
+        this.averageStandingCount = averageStandingCount;
+    }
+
+    public void setAverageUnclassifiedPoseCount(double averageUnclassifiedPoseCount) {
+        this.averageUnclassifiedPoseCount = averageUnclassifiedPoseCount;
+    }
+
+    public long getTotalIncoming() {
+        return totalIncoming;
+    }
+
+    public long getTotalOutgoing() {
+        return totalOutgoing;
+    }
+
+    public void setTotalIncoming(long totalIncoming) {
+        this.totalIncoming = totalIncoming;
+    }
+
+    public void setTotalOutgoing(long totalOutgoing) {
+        this.totalOutgoing = totalOutgoing;
+    }
+
+    public Map<Integer, Long> getOutgoingMap() {
+        return outgoingMap;
+    }
+
+    public void setOutgoingMap(Map<Integer, Long> outgoingMap) {
+        this.outgoingMap = outgoingMap;
+    }
+
+    public Map<Integer, Long> getIncomingMap() {
+        return incomingMap;
+    }
+
+    public void setIncomingMap(Map<Integer, Long> incomingMap) {
+        this.incomingMap = incomingMap;
+    }
 
     public String getZoneName() {
         return zoneName;

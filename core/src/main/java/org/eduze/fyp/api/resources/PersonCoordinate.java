@@ -26,6 +26,9 @@ public class PersonCoordinate extends Coordinate {
 
     private byte[] image;
 
+
+
+
     public PersonCoordinate() {
     }
 
@@ -33,10 +36,12 @@ public class PersonCoordinate extends Coordinate {
         this.image = image;
     }
 
-    public PersonCoordinate(double x, double y, long timestamp, byte[] image) {
-        super(x, y, timestamp);
+    public PersonCoordinate(double x, double y, long timestamp, double sitProbability, double standProbability, double headDirectionX, double headDirectionY, byte[] image) {
+        super(x, y, timestamp, standProbability,sitProbability,headDirectionX,headDirectionY);
         this.image = image;
     }
+
+
 
     public byte[] getImage() {
         return image;
@@ -47,6 +52,6 @@ public class PersonCoordinate extends Coordinate {
     }
 
     public Coordinate toCoordinate() {
-        return new Coordinate(getX(), getY(), getTimestamp());
+        return new Coordinate(getX(), getY(), getTimestamp(),getSitProbability(),getStandProbability(), getHeadDirectionX(),getHeadDirectionY());
     }
 }
