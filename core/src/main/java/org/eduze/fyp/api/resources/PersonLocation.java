@@ -84,7 +84,7 @@ public class PersonLocation {
         if(standCount > 0)
             coordinate.setStandProbability(coordinate.getStandProbability()/standCount);
 
-        double headDirectionRadi = Math.sqrt(coordinate.getHeadDirectionX() * coordinate.getHeadDirectionX() + coordinate.getHeadDirectionY() + coordinate.getHeadDirectionY());
+        double headDirectionRadi = Math.sqrt(coordinate.getHeadDirectionX() * coordinate.getHeadDirectionX() + coordinate.getHeadDirectionY() * coordinate.getHeadDirectionY());
         if (headDirectionRadi > 0){
             coordinate.setHeadDirectionX(coordinate.getHeadDirectionX()/headDirectionRadi);
             coordinate.setHeadDirectionY(coordinate.getHeadDirectionY()/headDirectionRadi);

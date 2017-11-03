@@ -22,4 +22,17 @@ export class PersonSnapshot {
   timestamp: number;
   x: number;
   y: number;
+  instanceZone: number;
+  persistantZone: number;
+  pastPersistantZone: number;
+  standProbability: number;
+  sitProbability: number;
+  headDirectionX: number;
+  headDirectionY: number;
+
+  colour: string;
+  standSitColour: string;
+
 }
+
+

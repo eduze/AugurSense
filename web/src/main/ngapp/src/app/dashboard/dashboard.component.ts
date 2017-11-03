@@ -77,17 +77,45 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     personSnapshots.forEach(snapshots => {
       let prev: PersonSnapshot;
+      let index = snapshots[0].ids[0];
+
       for (let i in snapshots) {
         if (prev) {
           this.cx.beginPath();
           this.cx.moveTo(prev.x, prev.y);
           this.cx.lineTo(snapshots[i].x, snapshots[i].y);
+          this.cx.lineWidth = 3;
+          this.cx.strokeStyle = "rgba(" + Math.round(((index / 256 / 256) * 40) % 256).toString() + "," + Math.round(((index / 256) * 40) % 256).toString() + "," + Math.round((index * 40) % 256).toString() + ", 0.5)";
           this.cx.stroke();
+          this.cx.strokeStyle = '#000';
         }
-
         prev = snapshots[i];
       }
     });
+      personSnapshots.forEach(snapshots => {
+        let index = snapshots[0].ids[0];
+        this.cx.beginPath();
+        this.cx.fillStyle="rgb(" + Math.round(((index / 256 / 256) * 40) % 256).toString() + "," + Math.round(((index / 256) * 40) % 256).toString() + "," + Math.round((index * 40) % 256).toString() + ")";
+        this.cx.ellipse(snapshots[0].x,snapshots[0].y,5,5,0,0,360,false);
+        this.cx.fill();
+
+        if(snapshots[0].hasOwnProperty("headDirectionX") && snapshots[0].hasOwnProperty("headDirectionY")){
+          console.info(snapshots[0]);
+          this.cx.beginPath();
+          this.cx.moveTo(snapshots[0].x,snapshots[0].y);
+          this.cx.lineTo(snapshots[0].x + snapshots[0].headDirectionX * 10, snapshots[0].y + snapshots[0].headDirectionY * 10);
+          this.cx.lineWidth = 3;
+
+          const standCol = Math.round(snapshots[0].standProbability * 255);
+          const sitCol = Math.round(snapshots[0].sitProbability * 255);
+
+          this.cx.strokeStyle = "rgb("+standCol.toString()+", " +sitCol.toString() + ",255 )";
+          this.cx.stroke();
+        }
+
+
+      });
+
   }
 
   ngAfterViewInit(): void {
@@ -99,7 +127,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     canvasEl.height = 800;
 
     // set some default properties about the line
-    this.cx.lineWidth = 3;
+
     this.cx.lineCap = 'round';
     this.cx.strokeStyle = '#000';
 

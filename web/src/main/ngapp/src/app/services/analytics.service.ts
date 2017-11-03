@@ -36,7 +36,6 @@ export class AnalyticsService {
     return this.http.get(this.baseUrl + "realTimeMap")
       .toPromise()
       .then(response => {
-        console.debug(response.json());
         return response.json() as PersonSnapshot[][]
       })
       .catch(AnalyticsService.handleError);
