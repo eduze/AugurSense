@@ -75,17 +75,19 @@ public class GlobalMap {
         });
 
         Collections.sort(tuples);
-        Set<PersonCoordinate> used = new HashSet<>();
+        Set<PersonCoordinate> usedKNew = new HashSet<>();
+        Set<PersonLocation> usedVPL = new HashSet<>();
         Set<PersonLocation> newPeople = new HashSet<>();
         tuples.forEach(pair -> {
-            if (!used.contains(pair.getKey()) && pair.distance() < Constants.DISTANCE_THRESHOLD) {
+            if (!usedKNew.contains(pair.getKey()) && !usedVPL.contains(pair.getValue()) && pair.distance() < Constants.DISTANCE_THRESHOLD) {
                 if (pair.getKey().getImage() != null) {
                     logger.debug("Found an image for person {}", pair.getValue().getIds());
                     // TODO: 10/3/17 Do the re-id part here
                 }
-                used.add(pair.getKey());
+                usedKNew.add(pair.getKey());
+                usedVPL.add(pair.getValue());
                 pair.getValue().addPoint(localMap.getCameraId(), pair.getKey().toCoordinate());
-            } else if (!used.contains(pair.getKey()) && pair.getValue() == null) {
+            } else if (!usedKNew.contains(pair.getKey()) && pair.getValue() == null) {
                 if (pair.getKey().getImage() != null) {
                     logger.debug("Found a new person with image");
                     // TODO: 10/3/17 DO the re-id part here
@@ -94,7 +96,7 @@ public class GlobalMap {
                 PersonLocation newPL = new PersonLocation(id);
                 newPL.addPoint(localMap.getCameraId(), pair.getKey().toCoordinate());
                 newPeople.add(newPL);
-                used.add(pair.getKey());
+                usedKNew.add(pair.getKey());
             }
         });
 
