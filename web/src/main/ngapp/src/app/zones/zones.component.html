@@ -20,6 +20,11 @@
               <image [attr.xlink:href]="globalMap.image" x="0" y="0" (click)="backgroundClicked();"></image>
               <g *ngFor="let poly of polygons; let i = index">
                 <polygon class="zone" [attr.points]="poly.polygon" (click)="zoneClicked(i);" [class.zone-selected]="i === selectedZoneIndex"></polygon>
+
+                <text [attr.x] = "poly.midX" [attr.y] = "poly.midY-30"  font-size="20" text-anchor="middle">
+                  {{ poly.zone.name }}
+                </text>
+
                 <text [attr.x] = "poly.midX" [attr.y] = "poly.midY"  font-size="20" text-anchor="middle" *ngIf="poly.zoneStatistic != null && (selectedZoneStatistic == null || selectedZoneIndex == i)">
                   {{ poly.zoneStatistic.averagePersonCount }} People
                 </text>
