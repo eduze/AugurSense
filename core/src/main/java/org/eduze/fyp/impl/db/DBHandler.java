@@ -24,12 +24,15 @@ package org.eduze.fyp.impl.db;
 import org.eduze.fyp.api.annotations.AutoStart;
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
 import org.eduze.fyp.api.resources.PersonSnapshot;
+import org.eduze.fyp.impl.db.dao.CaptureStampDAO;
 import org.eduze.fyp.impl.db.dao.PersonDAO;
 import org.eduze.fyp.impl.db.dao.ZoneDAO;
+import org.eduze.fyp.impl.db.model.CaptureStamp;
 import org.eduze.fyp.impl.db.model.Person;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
 import java.util.List;
 
 @AutoStart(startOrder = 2)
@@ -41,13 +44,25 @@ public class DBHandler implements ProcessedMapListener {
 
     private ZoneDAO zoneDAO;
 
+    private CaptureStampDAO captureStampDAO;
+
+    public CaptureStampDAO getCaptureStampDAO() {
+        return captureStampDAO;
+    }
+
+    public void setCaptureStampDAO(CaptureStampDAO captureStampDAO) {
+        this.captureStampDAO = captureStampDAO;
+    }
+
     @Override
     public void mapProcessed(List<List<PersonSnapshot>> snapshots) {
         //Nothing to do here. Code moved to on Frame.
     }
 
     @Override
-    public void onFrame(List<List<PersonSnapshot>> snapshots) {
+    public void onFrame(List<List<PersonSnapshot>> snapshots, Date timestamp) {
+        captureStampDAO.save(new CaptureStamp(timestamp));
+
         snapshots.stream()
                 .filter(snapshotList -> snapshotList.size() > 0)
                 .map(snapshotList -> {

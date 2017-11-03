@@ -34,11 +34,7 @@ import org.eduze.fyp.api.util.Args;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -88,10 +84,10 @@ public class MapProcessorImpl implements MapProcessor {
     }
 
     @Override
-    public void nextFrame() {
+    public void nextFrame(Date timestamp) {
         List<List<PersonSnapshot>> snapshots = globalMap.getSnapshot();
         synchronized (this) {
-            mapListeners.forEach(listener -> listener.onFrame(snapshots));
+            mapListeners.forEach(listener -> listener.onFrame(snapshots,timestamp));
         }
     }
 

@@ -129,7 +129,7 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
                 continue;
             }
 
-            mapProcessor.nextFrame();
+            mapProcessor.nextFrame(new Date(currentTimestamp));
 
             logger.debug("Asking for processed frames for timestamp {}", currentTimestamp);
             synchronized (this) {

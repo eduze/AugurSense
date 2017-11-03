@@ -75,6 +75,7 @@
     <bean id="db-handler" class="org.eduze.fyp.impl.db.DBHandler">
         <property name="personDAO" ref="personDAO"/>
         <property name="zoneDAO" ref="zoneDAO"/>
+        <property name="captureStampDAO" ref="captureStampDAO"/>
     </bean>
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
@@ -92,6 +93,7 @@
             <list>
                 <value>org.eduze.fyp.impl.db.model.Person</value>
                 <value>org.eduze.fyp.impl.db.model.Zone</value>
+                <value>org.eduze.fyp.impl.db.model.CaptureStamp</value>
             </list>
         </property>
         <property name="hibernateProperties">
@@ -105,6 +107,10 @@
     </bean>
 
     <bean id="personDAO" class="org.eduze.fyp.impl.db.dao.PersonDAOImpl">
+        <property name="sessionFactory" ref="hibernateAnnotatedSessionFactory"/>
+    </bean>
+
+    <bean id="captureStampDAO" class="org.eduze.fyp.impl.db.dao.CaptureStampDAOImpl">
         <property name="sessionFactory" ref="hibernateAnnotatedSessionFactory"/>
     </bean>
 
@@ -140,6 +146,7 @@
     <bean id="analytics-service" class="org.eduze.fyp.rest.services.AnalyticsService">
         <property name="personDAO" ref="personDAO"/>
         <property name="zoneDAO" ref="zoneDAO" />
+        <property name="captureStampDAO" ref="captureStampDAO"/>
         <property name="configurationManager" ref="configuration-manager"/>
     </bean>
 

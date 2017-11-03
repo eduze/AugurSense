@@ -22,6 +22,7 @@ package org.eduze.fyp.rest.services;
 import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
 import org.eduze.fyp.api.resources.PersonSnapshot;
+import org.eduze.fyp.impl.db.dao.CaptureStampDAO;
 import org.eduze.fyp.impl.db.dao.PersonDAO;
 import org.eduze.fyp.impl.db.dao.ZoneDAO;
 import org.eduze.fyp.impl.db.model.Person;
@@ -49,10 +50,19 @@ public class AnalyticsService implements ProcessedMapListener {
 
     private ZoneDAO zoneDAO;
 
+    private CaptureStampDAO captureStampDAO;
 
     private ConfigurationManager configurationManager;
     private int mapWidth = -1;
     private int mapHeight = -1;
+
+    public void setCaptureStampDAO(CaptureStampDAO captureStampDAO) {
+        this.captureStampDAO = captureStampDAO;
+    }
+
+    public CaptureStampDAO getCaptureStampDAO() {
+        return captureStampDAO;
+    }
 
     public void setZoneDAO(ZoneDAO zoneDAO) {
         this.zoneDAO = zoneDAO;
@@ -96,8 +106,8 @@ public class AnalyticsService implements ProcessedMapListener {
         people.forEach(person -> {
             int x = (int) person.getX();
             int y = (int) person.getY();
-            if (x < mapHeight && y < mapHeight) {
-                heatmap[x][y] += 1;
+            if (x >= 0 && y >= 0 && x < mapWidth && y < mapHeight) {
+                heatmap[y][x] += 1;
             }
         });
 
@@ -118,9 +128,7 @@ public class AnalyticsService implements ProcessedMapListener {
         Date from = new Date(fromTimestamp);
         Date to = new Date(toTimestamp);
 
-        //TODO: We need to count timestamps separately. This approach would miss the frames with 0 people.
-
-        return personDAO.getTimestampCount(from,to);
+        return captureStampDAO.getCaptureStampCount(from,to);
     }
 
     public int getCount(long fromTimestamp, long toTimestamp) {
@@ -201,7 +209,7 @@ public class AnalyticsService implements ProcessedMapListener {
     }
 
     @Override
-    public void onFrame(List<List<PersonSnapshot>> snapshots) {
+    public void onFrame(List<List<PersonSnapshot>> snapshots, Date timestamp) {
 
     }
 
@@ -239,7 +247,7 @@ public class AnalyticsService implements ProcessedMapListener {
         Date from = new Date(fromTimestamp);
         Date to = new Date(toTimestamp);
 
-        long timeStampCount = personDAO.getTimestampCount(from,to);
+        long timeStampCount = captureStampDAO.getCaptureStampCount(from,to);
 
         List<Zone> zones = configurationManager.getZones();
 

@@ -22,11 +22,12 @@ package org.eduze.fyp.api.listeners;
 
 import org.eduze.fyp.api.resources.PersonSnapshot;
 
+import java.util.Date;
 import java.util.List;
 
 public interface ProcessedMapListener {
 
     void mapProcessed(List<List<PersonSnapshot>> snapshots);
 
-    void onFrame(List<List<PersonSnapshot>> snapshots);
+    void onFrame(List<List<PersonSnapshot>> snapshots, Date timestamp);
 }

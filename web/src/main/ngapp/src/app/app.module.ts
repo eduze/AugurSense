@@ -16,6 +16,7 @@ import {ConfigService} from "./services/config.service";
 import { ZonesComponent } from './zones/zones.component';
 import { ZoneInfoComponent } from './zone-info/zone-info.component';
 import { ChartModule } from 'primeng/primeng';
+import { RealtimeMapComponent } from './realtime-map/realtime-map.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { ChartModule } from 'primeng/primeng';
     PeopleCountComponent,
     PointMappingComponent,
     ZonesComponent,
-    ZoneInfoComponent
+    ZoneInfoComponent,
+    RealtimeMapComponent
   ],
   imports: [
     BrowserModule,

@@ -25,6 +25,7 @@ import {PeopleCountComponent} from "./people-count/people-count.component";
 import {PointMappingComponent} from "./settings/point-mapping/point-mapping.component";
 import {ZonesComponent} from "./zones/zones.component";
 import {ZoneInfoComponent} from "./zone-info/zone-info.component";
+import {RealtimeMapComponent} from "./realtime-map/realtime-map.component";
 
 const routes: Routes = [
   {
@@ -53,8 +54,8 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
-    path :'zone-info',
-    component: ZoneInfoComponent
+    path :'realtime',
+    component: RealtimeMapComponent
   }
 ];
 

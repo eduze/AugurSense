@@ -19,28 +19,18 @@
 
 package org.eduze.fyp.impl.db.dao;
 
+import org.eduze.fyp.impl.db.model.CaptureStamp;
 import org.eduze.fyp.impl.db.model.Person;
 
 import java.util.Date;
 import java.util.List;
 
-public interface PersonDAO {
+public interface CaptureStampDAO {
 
-    void save(Person p);
+    void save(CaptureStamp captureStamp);
 
-    List<Person> list();
+    List<Object[]> getCaptureStamps(Date from, Date to);
 
-    List<Person> list(Date from, Date to);
-    List<Integer> personIDs(Date from, Date to);
-    List<Person> getRows(int id,Date from, Date to);
+    long getCaptureStampCount(Date from, Date to);
 
-    List<Object[]> getZoneCounts(Date from, Date to);
-
-    List<Object[]> getZoneStandCounts(Date from, Date to, double thresh);
-
-    List<Object[]> getZoneSitCounts(Date from, Date to, double thresh);
-
-    List<Object[]> getZoneUnclassifiedCounts(Date from, Date to, double threshSit, double threshStand);
-
-    List<Object[]> getCrossCounts(Date from, Date to);
 }
