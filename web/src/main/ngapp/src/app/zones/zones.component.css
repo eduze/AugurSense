@@ -1,0 +1,10 @@
+.zone-selected{
+  fill-opacity: 0.6 !important;
+}
+
+.zone{
+  fill: #31b5ff;
+  fill-opacity: 0.0;
+  stroke:purple;
+  stroke-width:1
+}

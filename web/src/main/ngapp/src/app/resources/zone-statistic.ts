@@ -4,8 +4,8 @@ export class ZoneStatistic{
   averagePersonCount: number;
   averageSittingCount: number;
   averageStandingCount: number;
-  fromTimeStamp: number;
-  toTimeStamp: number;
+  fromTimestamp: number;
+  toTimestamp: number;
   totalOutgoing: number;
   totalIncoming: number;
   outgoingMap: {[id:number] : number};

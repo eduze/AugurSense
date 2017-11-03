@@ -15,26 +15,139 @@ export class ZonesComponent implements OnInit {
 
   zones: Zone[] = [];
   globalMap: GlobalMap;
-  polygons: string[] = [];
+
+  polygons: any[] = [];
+
   zoneStatistics : ZoneStatistic[] = [];
   selectedZoneStatistic: ZoneStatistic = null;
+  selectedZoneIndex : number = -1;
 
-  fromDate : number = 0;
-  toDate : number = 100000000;
+  private _fromDate : Date;
+  private _toDate : Date;
 
+  get fromDate() : Date{
+    return this._fromDate;
+  }
+
+  set fromDate(value : Date){
+    this._fromDate = value;
+    this.fetchResults();
+  }
+
+  get toDate() : Date{
+    return this._toDate;
+  }
+
+  set toDate(value : Date){
+    this._toDate = value;
+    this.fetchResults();
+  }
 
   constructor(private analyticsService: AnalyticsService, private configService: ConfigService) {
+  }
+
+  private zoneClicked(index: number): void {
+    this.selectedZoneStatistic = this.zoneStatistics[index];
+    this.selectedZoneIndex = index;
+  }
+
+  private backgroundClicked(){
+    this.selectedZoneIndex = -1;
+    this.selectedZoneStatistic = null;
+    console.log("Unselected");
+  }
+
+
+  private fetchResults() : void{
+    if(this.fromDate == null)
+      return;
+    if(this.toDate == null)
+      return;
+
+    this.analyticsService.getZoneStatistics(this.fromDate.getTime(), this.toDate.getTime()).then((zs) => {
+      this.zoneStatistics = zs;
+
+      this.polygons.map((item) => {
+        let matches = zs.filter((match) => {
+          return item.zone.id == match.zoneId
+        });
+        if(matches.length > 0){
+          item.zoneStatistic = matches[0];
+
+          for(var key in item.zoneStatistic.outgoingMap) {
+            if(item.zoneStatistic.outgoingMap.hasOwnProperty(key)) {
+              // find matching polygon
+              let matching_polys = this.polygons.filter((mat_poly)=>{
+                return key == mat_poly.zone.id;
+              });
+              if(matching_polys.length > 0){
+                let matching_poly = matching_polys[0];
+                let transmission = { midX: matching_poly.midX, midY: matching_poly.midY, count: item.zoneStatistic.outgoingMap[key] / item.zoneStatistic.totalOutgoing};
+                item.outgoingMap.push(transmission);
+              }
+            }
+          }
+
+          for(var key in item.zoneStatistic.incomingMap) {
+            if(item.zoneStatistic.incomingMap.hasOwnProperty(key)) {
+              // find matching polygon
+              let matching_polys = this.polygons.filter((mat_poly)=>{
+                return key == mat_poly.zone.id;
+              });
+              if(matching_polys.length > 0){
+                let matching_poly = matching_polys[0];
+                let transmission = { midX: matching_poly.midX, midY: matching_poly.midY, count: item.zoneStatistic.incomingMap[key] / item.zoneStatistic.totalIncoming};
+                item.incomingMap.push(transmission);
+              }
+            }
+          }
+
+        }
+
+
+
+      });
+      //this.selectedZoneStatistic = zs[0];
+      console.log(zs);
+    });
+
+
   }
 
   ngOnInit() {
     this.configService.getZones().then((zones) => {
       this.zones = zones;
       for (let zone of zones) {
+        let poly: { polygon: String, midX: number, midY: number, zone: Zone, zoneStatistic: ZoneStatistic, outgoingMap:any, incomingMap : any } = {
+          polygon: null,
+          midX: 0,
+          midY: 0,
+          zone: null,
+          zoneStatistic: null,
+          outgoingMap : [],
+          incomingMap : []
+        };
+        let midX = 0;
+        let midY = 0;
+
         let p = "";
         for (let i in zone.xCoordinates) {
           p += zone.xCoordinates[i] + "," + zone.yCoordinates[i] + " ";
+          midX += zone.xCoordinates[i];
+          midY += zone.yCoordinates[i];
         }
-        this.polygons.push(p);
+
+        midX /= zone.xCoordinates.length;
+        midY /= zone.yCoordinates.length;
+
+        poly.polygon = p;
+        poly.midX = midX;
+        poly.midY = midY;
+        poly.zone = zone;
+
+
+
+        this.polygons.push(poly);
       }
     });
 
@@ -43,11 +156,7 @@ export class ZonesComponent implements OnInit {
       console.log(this.globalMap);
     });
 
-    this.analyticsService.getZoneStatistics(this.fromDate, this.toDate).then((zs) => {
-      this.zoneStatistics = zs;
-      this.selectedZoneStatistic = zs[0];
-      console.log(zs);
-    });
+    this.fetchResults();
 
   }
 }
