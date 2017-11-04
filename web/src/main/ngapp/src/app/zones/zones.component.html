@@ -4,10 +4,10 @@
     <div class="panel-heading">
       <b>Zone Map</b>
         <span style="padding-left: 10px; padding-right: 2px;">
-          From <p-calendar [(ngModel)]="fromDate"></p-calendar>
+          From <p-calendar [showTime] = "true" [(ngModel)]="fromDate"></p-calendar>
         </span>
         <span style="padding-left: 10px; padding-right: 2px;">
-            To <p-calendar [(ngModel)]="toDate"></p-calendar>
+            To <p-calendar [showTime]="true" [(ngModel)]="toDate"></p-calendar>
         </span>
     </div>
 

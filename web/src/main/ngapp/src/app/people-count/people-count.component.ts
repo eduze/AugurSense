@@ -10,8 +10,8 @@ import {AnalyticsService} from "../services/analytics.service";
 export class PeopleCountComponent implements AfterViewInit {
 
   // Date picker for heat map range
-  from: Date;
-  to: Date;
+  from: Date = new Date(0);
+  to: Date = new Date();
 
   personCount: number;
 

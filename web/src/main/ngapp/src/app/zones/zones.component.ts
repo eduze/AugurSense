@@ -23,8 +23,8 @@ export class ZonesComponent implements OnInit {
   selectedZoneIndex : number = -1;
   totalPeople: number;
 
-  private _fromDate : Date;
-  private _toDate : Date;
+  private _fromDate : Date = new Date(0);
+  private _toDate : Date = new Date();
 
   get fromDate() : Date{
     return this._fromDate;

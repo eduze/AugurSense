@@ -18,7 +18,7 @@ export class RealtimeMapComponent implements OnInit {
 
   selectedTrackIndex: number = -1;
 
-  personSnapshots: PersonSnapshot[][] = [[]];
+  personSnapshots: PersonSnapshot[][] = [];
 
   private getColour(index: number) : string{
     return "rgb(" + Math.round(((index / 256 / 256) * 40) % 256).toString() + "," + Math.round(((index / 256) * 40) % 256).toString() + "," + Math.round((index * 40) % 256).toString() + ")";

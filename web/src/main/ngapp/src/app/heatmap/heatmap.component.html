@@ -24,8 +24,8 @@
     <div class="panel panel-default">
       <div class="panel-heading">
         <button class="btn btn-info" (click)="generateHeatMap()">Generate Heat Map</button>
-        <p-calendar [(ngModel)]="from"></p-calendar>
-        <p-calendar [(ngModel)]="to"></p-calendar>
+        <p-calendar [showTime] = "true" [(ngModel)]="from"></p-calendar>
+        <p-calendar [showTime]="true" [(ngModel)]="to"></p-calendar>
       </div>
 
       <div class="panel-body">

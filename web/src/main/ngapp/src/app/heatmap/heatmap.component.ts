@@ -34,8 +34,8 @@ export class HeatmapComponent implements AfterViewInit {
   mapImage: string;
   canvasConfigured: boolean = false;
   // Date picker for heat map range
-  from: Date;
-  to: Date;
+  from: Date = new Date(0);
+  to: Date = new Date();
 
   @ViewChild('canvas') private canvas: ElementRef;
   private cx: CanvasRenderingContext2D;

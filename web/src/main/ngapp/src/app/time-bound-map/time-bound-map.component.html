@@ -8,6 +8,7 @@
         <p-calendar [(ngModel)]="endTime" [showTime]="true"></p-calendar>
 
         <span>From {{ toDateTimeString(from) }} to {{ toDateTimeString(to) }}</span>
+        <span style="float:right;">{{ personSnapshots.length }} people</span>
       </div>
 
     </div>
