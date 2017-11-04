@@ -17,8 +17,19 @@
 
               <g *ngFor="let personTrack of personSnapshots" (click)="trackClicked(personTrack);">
                 <g *ngIf="personTrack[0] != null">
-                  <circle [attr.fill]="personTrack[0].colour" r="5" [attr.cx]="personTrack[0].x" [attr.cy]="personTrack[0].y" ></circle>
-                  <line [attr.stroke]="personTrack[0].colour" stroke-width="2" *ngFor="let person of personTrack | slice : 1; let i = index" [attr.x1]="personTrack[i].x" [attr.y1]="personTrack[i].y" [attr.x2]="personTrack[i+1].x" [attr.y2]="personTrack[i+1].y"></line>
+                  <g *ngIf="personTrack[0].ids.length == 0 || personTrack[0].ids[0] != selectedTrackIndex">
+                    <circle [attr.fill]="personTrack[0].colour" r="5" [attr.cx]="personTrack[0].x" [attr.cy]="personTrack[0].y" ></circle>
+                  </g>
+                  <g *ngIf="personTrack[0].ids.length != 0 && personTrack[0].ids[0] == selectedTrackIndex">
+                    <circle fill="gold" r="5" [attr.cx]="personTrack[0].x" [attr.cy]="personTrack[0].y" ></circle>
+                  </g>
+
+                  <g *ngIf="personTrack[0].ids.length == 0 || personTrack[0].ids[0] != selectedTrackIndex">
+                    <line [attr.stroke]="personTrack[0].colour" stroke-width="2" *ngFor="let person of personTrack | slice : 1; let i = index" [attr.x1]="personTrack[i].x" [attr.y1]="personTrack[i].y" [attr.x2]="personTrack[i+1].x" [attr.y2]="personTrack[i+1].y"></line>
+                  </g>
+                  <g *ngIf="personTrack[0].ids.length != 0 && personTrack[0].ids[0] == selectedTrackIndex">
+                    <line stroke="gold" stroke-width="2" *ngFor="let person of personTrack | slice : 1; let i = index" [attr.x1]="personTrack[i].x" [attr.y1]="personTrack[i].y" [attr.x2]="personTrack[i+1].x" [attr.y2]="personTrack[i+1].y"></line>
+                  </g>
 
                   <line [attr.x1]="personTrack[0].x" [attr.y1] = "personTrack[0].y"
                         [attr.x2]="personTrack[0].x + personTrack[0].headDirectionX * 10"
