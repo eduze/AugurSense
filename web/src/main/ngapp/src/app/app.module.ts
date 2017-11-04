@@ -17,6 +17,7 @@ import { ZonesComponent } from './zones/zones.component';
 import { ZoneInfoComponent } from './zone-info/zone-info.component';
 import { ChartModule } from 'primeng/primeng';
 import { RealtimeMapComponent } from './realtime-map/realtime-map.component';
+import { RealtimeInfoComponent } from './realtime-info/realtime-info.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { RealtimeMapComponent } from './realtime-map/realtime-map.component';
     PointMappingComponent,
     ZonesComponent,
     ZoneInfoComponent,
-    RealtimeMapComponent
+    RealtimeMapComponent,
+    RealtimeInfoComponent
   ],
   imports: [
     BrowserModule,
