@@ -1,0 +1,62 @@
+<div class="col-md-12" style="display: flex;">
+<div class="col-md-5">
+  <h3 *ngIf="zoneStatistic != null">
+    {{ zoneStatistic.zoneName }}
+  </h3>
+  <span *ngIf="zoneStatistic != null">
+    {{fromTimestamp}} - {{ toTimestamp }}
+  </span>
+  <div class="col-md-12 panel panel-default" *ngIf="zoneStatistic != null">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>
+          Statistics
+        </th>
+        <th>
+          #
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>
+          Average People Count
+        </td>
+        <td>
+          {{ zoneStatistic.averagePersonCount }}
+        </td>
+      </tr>
+      <tr>
+        <td style="padding-left: 20px;">
+          Standing
+        </td>
+        <td>
+          {{ zoneStatistic.averageStandingCount }}
+        </td>
+      </tr>
+      <tr>
+        <td style="padding-left: 20px;">
+          Sitting
+        </td>
+        <td>
+          {{ zoneStatistic.averageSittingCount }}
+        </td>
+      </tr>
+      </tbody>
+
+    </table>
+  </div>
+
+</div>
+<div class="panel panel-default col-md-4" *ngIf="zoneStatistic != null">
+  <h4>Outgoing Flow</h4>
+  <p-chart type="pie" [data]="outgoingData" [options] = "chartOptions"></p-chart>
+
+</div>
+
+<div class="panel panel-default col-md-4" style="margin-left: 10px;" *ngIf="zoneStatistic != null">
+  <h4>Incomming Flow</h4>
+  <p-chart type="pie" [options] = "chartOptions" [data]="incomingData"></p-chart>
+</div>
+</div>

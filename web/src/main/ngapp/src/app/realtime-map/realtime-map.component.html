@@ -1,0 +1,37 @@
+<div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">People on the map: <span class="label label-default">{{personSnapshots.length}}</span>
+      </h4>
+    </div>
+
+    <div class="panel-body">
+      <div class="row" *ngIf="globalMap">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+
+          <svg x="0" y="0" width="100%" height="700">
+            <g height="100%" width="100%">
+              <image [attr.xlink:href]="globalMap.image" x="0" y="0" (click)="backgroundClicked();"></image>
+            </g>
+
+              <g *ngFor="let personTrack of personSnapshots" (click)="trackClicked(personTrack);">
+                <g *ngIf="personTrack[0] != null">
+                  <circle [attr.fill]="personTrack[0].colour" r="5" [attr.cx]="personTrack[0].x" [attr.cy]="personTrack[0].y" ></circle>
+                  <line [attr.stroke]="personTrack[0].colour" stroke-width="2" *ngFor="let person of personTrack | slice : 1; let i = index" [attr.x1]="personTrack[i].x" [attr.y1]="personTrack[i].y" [attr.x2]="personTrack[i+1].x" [attr.y2]="personTrack[i+1].y"></line>
+
+                  <line [attr.x1]="personTrack[0].x" [attr.y1] = "personTrack[0].y"
+                        [attr.x2]="personTrack[0].x + personTrack[0].headDirectionX * 10"
+                        [attr.y2]="personTrack[0].y + personTrack[0].headDirectionY * 10"
+                        [attr.stroke]="personTrack[0].standSitColour" stroke-width="2"
+                    *ngIf="personTrack[0]['headDirectionX'] != null && personTrack[0]['headDirectionY'] != null"></line>
+
+                </g>
+              </g>
+
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
