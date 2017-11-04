@@ -55,8 +55,18 @@ public class MapProcessorImpl implements MapProcessor {
 
     private ZoneMapper zoneMapper = null;
 
+    private PhotoMapper photoMapper = null;
+
     public ZoneMapper getZoneMapper() {
         return zoneMapper;
+    }
+
+    public PhotoMapper getPhotoMapper() {
+        return photoMapper;
+    }
+
+    public void setPhotoMapper(PhotoMapper photoMapper) {
+        this.photoMapper = photoMapper;
     }
 
     public void setZoneMapper(ZoneMapper zoneMapper) {
@@ -95,6 +105,7 @@ public class MapProcessorImpl implements MapProcessor {
     public void start() {
 
         globalMap.setZoneMapper(zoneMapper);
+        globalMap.setPhotoMapper(photoMapper);
 
         Args.notNull(cameraCoordinator, "cameraCoordinator");
 

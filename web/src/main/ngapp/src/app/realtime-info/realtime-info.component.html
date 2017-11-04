@@ -1,3 +1,16 @@
-<p>
-  realtime-info works!
-</p>
+<div>
+  <div *ngIf="personImages != null" style="display: flex;">
+      <div class="panel panel-default" style="height: 250px; width: 200px; margin: 5px;" *ngFor="let personImage of personImages">
+        <div class="panel-heading">{{ getDateString(personImage.timestamp) }}</div>
+
+        <div class="panel-body" style="height:80%; width: 100%; text-align: center;">
+          <img [src]="personImage.image" style="width: 100%; height: 100%; object-fit: contain;"/>
+        </div>
+
+      </div>
+  </div>
+  <div *ngIf="personImages == null" style="display: flex;">
+    No Track Selected
+  </div>
+
+</div>

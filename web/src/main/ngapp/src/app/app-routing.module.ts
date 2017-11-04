@@ -26,6 +26,7 @@ import {PointMappingComponent} from "./settings/point-mapping/point-mapping.comp
 import {ZonesComponent} from "./zones/zones.component";
 import {ZoneInfoComponent} from "./zone-info/zone-info.component";
 import {RealtimeMapComponent} from "./realtime-map/realtime-map.component";
+import {RealtimeInfoComponent} from "./realtime-info/realtime-info.component";
 
 const routes: Routes = [
   {
@@ -56,6 +57,10 @@ const routes: Routes = [
   {
     path :'realtime',
     component: RealtimeMapComponent
+  },
+  {
+    path :'realtime-info',
+    component: RealtimeInfoComponent
   }
 ];
 

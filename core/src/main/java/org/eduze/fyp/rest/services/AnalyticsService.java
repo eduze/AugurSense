@@ -21,7 +21,9 @@ package org.eduze.fyp.rest.services;
 
 import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
+import org.eduze.fyp.api.resources.PersonCoordinate;
 import org.eduze.fyp.api.resources.PersonSnapshot;
+import org.eduze.fyp.impl.PhotoMapper;
 import org.eduze.fyp.impl.db.dao.CaptureStampDAO;
 import org.eduze.fyp.impl.db.dao.PersonDAO;
 import org.eduze.fyp.impl.db.dao.ZoneDAO;
@@ -56,6 +58,16 @@ public class AnalyticsService implements ProcessedMapListener {
     private int mapWidth = -1;
     private int mapHeight = -1;
 
+    private PhotoMapper photoMapper = null;
+
+    public PhotoMapper getPhotoMapper() {
+        return photoMapper;
+    }
+
+    public void setPhotoMapper(PhotoMapper photoMapper) {
+        this.photoMapper = photoMapper;
+    }
+
     public void setCaptureStampDAO(CaptureStampDAO captureStampDAO) {
         this.captureStampDAO = captureStampDAO;
     }
@@ -73,6 +85,10 @@ public class AnalyticsService implements ProcessedMapListener {
     }
 
     public AnalyticsService() {
+    }
+
+    public List<PersonCoordinate> getPhotos(int trackingId){
+        return photoMapper.getSnapshots(trackingId);
     }
 
     public Map<String, byte[]> getMap() throws IOException {

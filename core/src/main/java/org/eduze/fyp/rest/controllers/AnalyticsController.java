@@ -102,6 +102,17 @@ public class AnalyticsController {
     }
 
     @GET
+    @Path("/realTimeMap/{id}")
+    public Response getRealTimeInfo(@PathParam("id") int id) {
+        try {
+            return Response.ok(analyticsService.getPhotos(id)).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining real time map. {}", e);
+            return Response.status(500).build();
+        }
+    }
+
+    @GET
     @Path("/heatMap/{from}/{to}")
     public Response getHeatMap(@PathParam("from") long from, @PathParam("to") long to) {
         try {

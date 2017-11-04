@@ -21,8 +21,8 @@ package org.eduze.fyp.api.resources;
 
 import org.apache.commons.math3.util.Pair;
 import org.eduze.fyp.Constants;
+import org.eduze.fyp.impl.PhotoMapper;
 import org.eduze.fyp.impl.ZoneMapper;
-import org.eduze.fyp.impl.db.model.Zone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,6 +47,7 @@ public class GlobalMap {
     private List<PersonLocation> personLocations = new ArrayList<>();
     private volatile int id = 0;
 
+    private PhotoMapper photoMapper = null;
     private ZoneMapper zoneMapper = null;
 
     public void setZoneMapper(ZoneMapper zoneMapper) {
@@ -83,6 +84,7 @@ public class GlobalMap {
                 if (pair.getKey().getImage() != null) {
                     logger.debug("Found an image for person {}", pair.getValue().getIds());
                     // TODO: 10/3/17 Do the re-id part here
+                    photoMapper.addSnapshot(pair.getKey(),pair.getValue().getIds());
                 }
                 usedKNew.add(pair.getKey());
                 usedVPL.add(pair.getValue());
@@ -90,6 +92,7 @@ public class GlobalMap {
             } else if (!usedKNew.contains(pair.getKey()) && pair.getValue() == null) {
                 if (pair.getKey().getImage() != null) {
                     logger.debug("Found a new person with image");
+                    photoMapper.addSnapshot(pair.getKey(),pair.getValue().getIds());
                     // TODO: 10/3/17 DO the re-id part here
                 }
                 int id = this.id++;
@@ -121,9 +124,18 @@ public class GlobalMap {
 
             if (personLocation.getContributingCoordinates().size() == 0) {
                 logger.debug("Removing outdated person location {}", personLocation);
+
                 iterator.remove();
             }
         }
+    }
+
+    public PhotoMapper getPhotoMapper() {
+        return photoMapper;
+    }
+
+    public void setPhotoMapper(PhotoMapper photoMapper) {
+        this.photoMapper = photoMapper;
     }
 
     private class LocationPair extends Pair<PersonCoordinate, PersonLocation> implements Comparable<LocationPair> {

@@ -23,6 +23,7 @@ import 'rxjs/add/operator/toPromise';
 
 import {PersonSnapshot} from "../resources/person-snapshot";
 import {ZoneStatistic} from "../resources/zone-statistic";
+import {PersonImage} from "../resources/person-image";
 
 @Injectable()
 export class AnalyticsService {
@@ -57,6 +58,32 @@ export class AnalyticsService {
       .then(response => {
         console.debug(response.json());
         return response.json() as number[][]
+      })
+      .catch(AnalyticsService.handleError);
+  }
+
+  getRealtimeInfo(trackingId : number): Promise<PersonImage[]> {
+    return this.http.get(this.baseUrl + "realTimeMap/" + trackingId)
+      .toPromise()
+      .then(response => {
+        let results = response.json() as PersonImage[];
+
+        results.forEach((personImage) => {
+          let base64: string = "data:image/JPEG;base64," + personImage["image"];
+
+          let obj = personImage;
+          let img = new Image();
+          img.onload = function () {
+            obj["height"] = img.height;
+            obj["width"] = img.width;
+            console.log(obj);
+          };
+          img.src = base64;
+          obj["image"] = base64;
+
+        });
+
+        return results;
       })
       .catch(AnalyticsService.handleError);
   }

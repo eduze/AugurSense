@@ -54,6 +54,7 @@
             </set>
         </property>
         <property name="zoneMapper" ref="zone-mapper"/>
+        <property name="photoMapper" ref="photo-mapper"/>
     </bean>
 
     <bean id="zone-mapper" class="org.eduze.fyp.impl.ZoneMapper">
@@ -61,6 +62,8 @@
         <property name="zonePersistantScanCount" value="5"/>
         <property name="zonePersistantThreshold" value="4"/>
     </bean>
+
+    <bean id="photo-mapper" class="org.eduze.fyp.impl.PhotoMapper"/>
 
     <bean id="camera-coordinator" class="org.eduze.fyp.impl.CentralizedCameraCoordinator">
         <constructor-arg ref="configuration-manager"/>
@@ -148,6 +151,7 @@
         <property name="zoneDAO" ref="zoneDAO" />
         <property name="captureStampDAO" ref="captureStampDAO"/>
         <property name="configurationManager" ref="configuration-manager"/>
+        <property name="photoMapper" ref="photo-mapper"/>
     </bean>
 
 </beans>

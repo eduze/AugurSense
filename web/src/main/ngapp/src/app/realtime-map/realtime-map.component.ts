@@ -16,6 +16,8 @@ export class RealtimeMapComponent implements OnInit {
 
   globalMap: GlobalMap;
 
+  selectedTrackIndex: number = -1;
+
   personSnapshots: PersonSnapshot[][] = [[]];
 
   private getColour(index: number) : string{
@@ -30,10 +32,12 @@ export class RealtimeMapComponent implements OnInit {
   }
 
   private backgroundClicked() : void{
-
+    this.selectedTrackIndex = -1;
   }
 
   private trackClicked(track:PersonSnapshot[]): void{
+    if(track[0].ids.length > 0)
+      this.selectedTrackIndex = track[0].ids[0];
     console.log("Track clicked" + track[0].ids[0].toString());
     console.log(track);
   }

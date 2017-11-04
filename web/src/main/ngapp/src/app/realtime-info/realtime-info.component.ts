@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {PersonImage} from "../resources/person-image";
+import {AnalyticsService} from "../services/analytics.service";
+import {ConfigService} from "../services/config.service";
 
 @Component({
   selector: 'app-realtime-info',
@@ -7,9 +10,37 @@ import { Component, OnInit } from '@angular/core';
 })
 export class RealtimeInfoComponent implements OnInit {
 
-  constructor() { }
+  private _id : number;
+
+  private personImages : PersonImage[] = null;
+
+  get id(): number{
+    return this._id;
+  }
+
+  @Input() set id(value : number){
+    this._id = value;
+    this.refresh();
+  }
+
+  refresh() : void{
+    if(this.id < 0){
+      this.personImages = null;
+      return;
+    }
+    this.analyticsService.getRealtimeInfo(this.id).then((pi) => {
+      this.personImages = pi;
+      console.log(pi);
+    });
+
+  }
+
+  constructor(private analyticsService: AnalyticsService, private configService: ConfigService) { }
 
   ngOnInit() {
   }
 
+  getDateString(timestamp: number) {
+    return new Date(timestamp).toLocaleString();
+  }
 }
