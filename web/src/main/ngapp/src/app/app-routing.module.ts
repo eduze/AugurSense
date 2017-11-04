@@ -27,6 +27,7 @@ import {ZonesComponent} from "./zones/zones.component";
 import {ZoneInfoComponent} from "./zone-info/zone-info.component";
 import {RealtimeMapComponent} from "./realtime-map/realtime-map.component";
 import {RealtimeInfoComponent} from "./realtime-info/realtime-info.component";
+import {TimeBoundMapComponent} from "./time-bound-map/time-bound-map.component";
 
 const routes: Routes = [
   {
@@ -59,8 +60,8 @@ const routes: Routes = [
     component: RealtimeMapComponent
   },
   {
-    path :'realtime-info',
-    component: RealtimeInfoComponent
+    path :'time-bound-map',
+    component: TimeBoundMapComponent
   }
 ];
 

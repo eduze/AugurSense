@@ -43,4 +43,5 @@ public interface PersonDAO {
     List<Object[]> getZoneUnclassifiedCounts(Date from, Date to, double threshSit, double threshStand);
 
     List<Object[]> getCrossCounts(Date from, Date to);
+
 }

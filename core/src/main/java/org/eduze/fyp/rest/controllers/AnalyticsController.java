@@ -30,6 +30,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Date;
 
 @Path("/analytics")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -102,6 +103,20 @@ public class AnalyticsController {
     }
 
     @GET
+    @Path("/timeBoundMap/{from}/{to}")
+    public Response getTimeboundMap(@PathParam("from") long from, @PathParam("to") long to) {
+        try {
+            Date fromD = new Date(from);
+            Date toD = new Date(to);
+
+            return Response.ok(analyticsService.getTimeBoundMovements(fromD,toD)).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining real time map. {}", e);
+            return Response.status(500).build();
+        }
+    }
+
+    @GET
     @Path("/realTimeMap/{id}")
     public Response getRealTimeInfo(@PathParam("id") int id) {
         try {
@@ -116,6 +131,7 @@ public class AnalyticsController {
     @Path("/heatMap/{from}/{to}")
     public Response getHeatMap(@PathParam("from") long from, @PathParam("to") long to) {
         try {
+
             return Response.ok(analyticsService.getHeatMap(from, to)).build();
         } catch (Exception e) {
             logger.error("Error occurred when obtaining heat map", e);

@@ -42,6 +42,15 @@ export class AnalyticsService {
       .catch(AnalyticsService.handleError);
   }
 
+  getTimeboundMap(from: number, to:number): Promise<PersonSnapshot[][]> {
+    return this.http.get(this.baseUrl + "timeBoundMap/" + from + "/" + to)
+      .toPromise()
+      .then(response => {
+        return response.json() as PersonSnapshot[][]
+      })
+      .catch(AnalyticsService.handleError);
+  }
+
   getZoneStatistics(from: number, to: number): Promise<ZoneStatistic[]> {
     return this.http.get(this.baseUrl + "zoneStatistics/" + from + "/" + to)
       .toPromise()

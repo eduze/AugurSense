@@ -18,6 +18,8 @@ import { ZoneInfoComponent } from './zone-info/zone-info.component';
 import { ChartModule } from 'primeng/primeng';
 import { RealtimeMapComponent } from './realtime-map/realtime-map.component';
 import { RealtimeInfoComponent } from './realtime-info/realtime-info.component';
+import { TimeBoundMapComponent } from './time-bound-map/time-bound-map.component';
+import {SliderModule} from 'primeng/primeng';
 
 @NgModule({
   declarations: [
@@ -29,7 +31,8 @@ import { RealtimeInfoComponent } from './realtime-info/realtime-info.component';
     ZonesComponent,
     ZoneInfoComponent,
     RealtimeMapComponent,
-    RealtimeInfoComponent
+    RealtimeInfoComponent,
+    TimeBoundMapComponent
   ],
   imports: [
     BrowserModule,
@@ -38,7 +41,8 @@ import { RealtimeInfoComponent } from './realtime-info/realtime-info.component';
     AppRoutingModule,
     HttpModule,
     CalendarModule,
-    ChartModule
+    ChartModule,
+    SliderModule
   ],
   providers: [AnalyticsService, ConfigService],
   bootstrap: [AppComponent]

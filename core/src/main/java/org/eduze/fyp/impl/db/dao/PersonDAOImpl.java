@@ -57,7 +57,7 @@ public class PersonDAOImpl implements PersonDAO {
     @Override
     public List<Person> list(Date from, Date to) {
         Session session = this.sessionFactory.openSession();
-        Query query = session.createQuery("from Person P where P.timestamp between :startTime and :endTime")
+        Query query = session.createQuery("from Person P where P.timestamp between :startTime and :endTime order by P.id")
                 .setParameter("startTime", from, TemporalType.TIMESTAMP)
                 .setParameter("endTime", to, TemporalType.TIMESTAMP);
         List personList = query.list();
@@ -152,6 +152,7 @@ public class PersonDAOImpl implements PersonDAO {
         session.close();
         return crossList;
     }
+
 
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
