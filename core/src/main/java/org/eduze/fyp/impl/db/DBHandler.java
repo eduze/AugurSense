@@ -24,6 +24,7 @@ package org.eduze.fyp.impl.db;
 import org.eduze.fyp.api.annotations.AutoStart;
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
 import org.eduze.fyp.api.resources.PersonSnapshot;
+import org.eduze.fyp.impl.PhotoMapper;
 import org.eduze.fyp.impl.db.dao.CaptureStampDAO;
 import org.eduze.fyp.impl.db.dao.PersonDAO;
 import org.eduze.fyp.impl.db.dao.ZoneDAO;
@@ -43,6 +44,16 @@ public class DBHandler implements ProcessedMapListener {
     private PersonDAO personDAO;
 
     private ZoneDAO zoneDAO;
+
+    private PhotoMapper photoMapper = null;
+
+    public PhotoMapper getPhotoMapper() {
+        return photoMapper;
+    }
+
+    public void setPhotoMapper(PhotoMapper photoMapper) {
+        this.photoMapper = photoMapper;
+    }
 
     private CaptureStampDAO captureStampDAO;
 
@@ -82,14 +93,27 @@ public class DBHandler implements ProcessedMapListener {
                         pastPersistantZone = snapshot.getPastPersistantZone().getId();
 
                     String previousUuid = "";
-                    if(snapshotList.size() >= 2)
-                        previousUuid = snapshotList.get(1).getUuid();
+                    for(PersonSnapshot personSnapshot : snapshotList)
+                    {
+                        if(personSnapshot.isStored())
+                        {
+                            previousUuid = personSnapshot.getUuid();
+                            break;
+                        }
+                    }
+
+                    snapshot.markStored();
+
+                    if(this.photoMapper != null)
+                        photoMapper.onDBStore(snapshot);
+
                     return new Person(snapshot.getIds(),snapshot.getTimestamp(),snapshot.getX(),snapshot.getY(),snapshot.getSitProbability(),snapshot.getStandProbability(), snapshot.getHeadDirectionX(),snapshot.getHeadDirectionY(),instantZone,persistantZone,pastPersistantZone, snapshot.getUuid(), previousUuid);
 
 
                 })
                 .forEach(person -> {
                     try {
+
                         personDAO.save(person);
                     } catch (Exception e) {
                         logger.error("Error saving person", e);

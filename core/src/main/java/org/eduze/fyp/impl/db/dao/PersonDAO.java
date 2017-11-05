@@ -28,6 +28,8 @@ public interface PersonDAO {
 
     void save(Person p);
 
+    List<Person> getPersonFromTrackingId(int id);
+
     List<Person> list();
 
     List<Person> list(Date from, Date to);

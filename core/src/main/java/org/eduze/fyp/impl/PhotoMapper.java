@@ -18,6 +18,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PhotoMapper {
     public Map<Integer, List<PersonCoordinate>> map = new ConcurrentHashMap<>();
+
+    public Map<Integer,List<PersonCoordinate>> unsavedPhotos = new ConcurrentHashMap<>();
+
     private static final Logger logger = LoggerFactory.getLogger(GlobalMap.class);
 
     private String photoSavePath = "";
@@ -32,6 +35,17 @@ public class PhotoMapper {
 
     public PhotoMapper(){
 
+    }
+
+    public void onDBStore(PersonSnapshot ps)
+    {
+        for(int id : ps.getIds())
+        {
+            if(unsavedPhotos.containsKey(id)){
+                List<PersonCoordinate> pcs = unsavedPhotos.remove(id);
+                pcs.forEach(pc -> saveSnapshot(pc,ps));
+            }
+        }
     }
 
     private void saveSnapshot(PersonCoordinate pc, PersonSnapshot ps){
@@ -56,8 +70,16 @@ public class PhotoMapper {
                 map.put(id,new ArrayList<>());
                 map.get(id).add(personCoordinate);
             }
+
+            if(unsavedPhotos.containsKey(id)){
+                unsavedPhotos.get(id).add(personCoordinate);
+            }
+            else{
+                unsavedPhotos.put(id,new ArrayList<>());
+                unsavedPhotos.get(id).add(personCoordinate);
+            }
         }
-        saveSnapshot(personCoordinate, ps);
+
     }
 
     public void removeSnapshots(Set<Integer> ids){

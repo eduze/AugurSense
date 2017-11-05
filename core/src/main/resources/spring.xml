@@ -85,6 +85,7 @@
         <property name="personDAO" ref="personDAO"/>
         <property name="zoneDAO" ref="zoneDAO"/>
         <property name="captureStampDAO" ref="captureStampDAO"/>
+        <property name="photoMapper" ref="photo-mapper" />
     </bean>
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">

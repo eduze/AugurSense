@@ -20,6 +20,7 @@
 package org.eduze.fyp.rest.services;
 
 import org.eduze.fyp.api.ConfigurationManager;
+import org.eduze.fyp.api.State;
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
 import org.eduze.fyp.api.resources.PersonCoordinate;
 import org.eduze.fyp.api.resources.PersonSnapshot;
@@ -34,7 +35,12 @@ import org.eduze.fyp.rest.util.ImageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.*;
 import java.util.ArrayList;
@@ -112,9 +118,48 @@ public class AnalyticsService implements ProcessedMapListener {
         return new ArrayList<List<Person>>(trackedCandidates.values());
     }
 
-    public List<PersonCoordinate> getPhotos(int trackingId){
+    public List<PersonCoordinate> getPastPhotos(int trackingId){
+        File dir = new File(photoMapper.getPhotoSavePath());
+        dir.mkdirs();
+
+        Map<String,File> fileMap = new HashMap<>();
+
+        File[] snaps = dir.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".png");
+            }
+        });
+
+        for(File snap: snaps){
+            fileMap.put(snap.getName().replaceFirst("[.][^.]+$", ""),snap);
+        }
+
+        List<PersonCoordinate> results = new LinkedList<>();
+
+        List<Person> candidates = personDAO.getPersonFromTrackingId(trackingId);
+        for(Person p : candidates){
+            if(fileMap.containsKey(p.getUuid())){
+                try {
+                    byte[] bytes = ImageUtils.bufferedImageToByteArray(ImageIO.read(fileMap.get(p.getUuid())));
+                    PersonCoordinate result = new PersonCoordinate(p,bytes);
+                    results.add(result);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }
+
+        return results;
+
+    }
+
+
+    public List<PersonCoordinate> getRealtimePhotos(int trackingId){
         return photoMapper.getSnapshots(trackingId);
     }
+
 
     public Map<String, byte[]> getMap() throws IOException {
         BufferedImage map = configurationManager.getMap();

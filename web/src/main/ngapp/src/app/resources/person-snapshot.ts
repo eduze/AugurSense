@@ -29,6 +29,8 @@ export class PersonSnapshot {
   sitProbability: number;
   headDirectionX: number;
   headDirectionY: number;
+  uuid: string;
+  previousUuid: string;
 
   colour: string;
   standSitColour: string;

@@ -57,6 +57,12 @@ public class PersonSnapshot extends Coordinate {
         this.uuid = System.currentTimeMillis() + "_" + Math.abs(idGenerator.nextInt());
     }
 
+    private boolean stored = false;
+
+    public boolean isStored() {
+        return stored;
+    }
+
     public void setPastPersistantZone(Zone pastPersistantZone) {
         this.pastPersistantZone = pastPersistantZone;
     }
@@ -87,5 +93,9 @@ public class PersonSnapshot extends Coordinate {
 
     public void setIds(Set<Integer> ids) {
         this.ids = ids;
+    }
+
+    public void markStored() {
+        this.stored = true;
     }
 }

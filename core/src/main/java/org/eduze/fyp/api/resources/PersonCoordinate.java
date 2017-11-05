@@ -19,6 +19,8 @@
 
 package org.eduze.fyp.api.resources;
 
+import org.eduze.fyp.impl.db.model.Person;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
@@ -32,7 +34,8 @@ public class PersonCoordinate extends Coordinate {
     public PersonCoordinate() {
     }
 
-    public PersonCoordinate(byte[] image) {
+    public PersonCoordinate(Person p, byte[] image) {
+        super(p.getX(),p.getY(),p.getTimestamp().getTime(),p.getStandProbability(),p.getSitProbability(),p.getHeadDirectionX(),p.getHeadDirectionY());
         this.image = image;
     }
 

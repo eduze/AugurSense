@@ -12,6 +12,9 @@ export class RealtimeInfoComponent implements OnInit {
 
   private _id : number;
 
+  @Input()
+  private useRealtimeEndpoint: boolean = true;
+
   private personImages : PersonImage[] = null;
 
   get id(): number{
@@ -28,10 +31,20 @@ export class RealtimeInfoComponent implements OnInit {
       this.personImages = null;
       return;
     }
-    this.analyticsService.getRealtimeInfo(this.id).then((pi) => {
-      this.personImages = pi;
-      console.log(pi);
-    });
+    if(this.useRealtimeEndpoint)
+    {
+      this.analyticsService.getRealtimeInfo(this.id).then((pi) => {
+        this.personImages = pi;
+        console.log(pi);
+      });
+    }
+    else{
+      this.analyticsService.getPastInfo(this.id).then((pi) => {
+        this.personImages = pi;
+        console.log(pi);
+      });
+    }
+
 
   }
 

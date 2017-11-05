@@ -117,10 +117,21 @@ public class AnalyticsController {
     }
 
     @GET
+    @Path("/trackingSnaps/{id}")
+    public Response getTrackingSnaps(@PathParam("id") int id) {
+        try {
+            return Response.ok(analyticsService.getPastPhotos(id)).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining real time map. {}", e);
+            return Response.status(500).build();
+        }
+    }
+
+    @GET
     @Path("/realTimeMap/{id}")
     public Response getRealTimeInfo(@PathParam("id") int id) {
         try {
-            return Response.ok(analyticsService.getPhotos(id)).build();
+            return Response.ok(analyticsService.getRealtimePhotos(id)).build();
         } catch (Exception e) {
             logger.error("Error occurred when obtaining real time map. {}", e);
             return Response.status(500).build();

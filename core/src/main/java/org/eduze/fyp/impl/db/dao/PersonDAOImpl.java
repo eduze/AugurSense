@@ -25,6 +25,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.hibernate.type.DoubleType;
+import org.hibernate.type.StringType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +45,15 @@ public class PersonDAOImpl implements PersonDAO {
         session.persist(p);
         tx.commit();
         session.close();
+    }
+
+    @Override
+    public List<Person> getPersonFromTrackingId(int id) {
+        String ids = String.valueOf(id);
+        Session session = this.sessionFactory.openSession();
+        List<Person> personList = session.createQuery("from Person P where P.ids=:ids").setParameter("ids",ids, StringType.INSTANCE).list();
+        session.close();
+        return personList;
     }
 
     @Override

@@ -68,8 +68,10 @@ export class ZonesComponent implements OnInit {
 
     this.analyticsService.getZoneStatistics(this.fromDate.getTime(), this.toDate.getTime()).then((zs) => {
       this.zoneStatistics = zs;
-
-      this.totalPeople = this.zoneStatistics.map((item) => item.averagePersonCount).reduce((r1,r2)=> r1+ r2);
+      if(this.zoneStatistics.length > 0)
+        this.totalPeople = this.zoneStatistics.map((item) => item.averagePersonCount).reduce((r1,r2)=> r1+ r2);
+      else
+        this.totalPeople = 0;
 
       this.polygons.map((item) => {
         item.outgoingMap.length = 0;
