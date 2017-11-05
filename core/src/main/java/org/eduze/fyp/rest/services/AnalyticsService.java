@@ -52,6 +52,8 @@ public class AnalyticsService implements ProcessedMapListener {
 
     private ZoneDAO zoneDAO;
 
+    private int timeInterval = 10; //Every 10ms
+
     private CaptureStampDAO captureStampDAO;
 
     private ConfigurationManager configurationManager;
@@ -141,20 +143,19 @@ public class AnalyticsService implements ProcessedMapListener {
                 heatmap[y][x] += 1;
             }
         });
-
         return heatmap;
     }
 
 
-    public List<Object[]> getCrossCount(long fromTimestamp, long toTimestamp){
+    public List<Object[]> getCrossCount(long fromTimestamp, long toTimestamp) {
 
         Date from = new Date(fromTimestamp);
         Date to = new Date(toTimestamp);
 
-        return personDAO.getCrossCounts(from,to);
+        return personDAO.getCrossCounts(from, to);
     }
 
-    public long getTimestampCount(long fromTimestamp, long toTimestamp){
+    public long getTimestampCount(long fromTimestamp, long toTimestamp) {
 
         Date from = new Date(fromTimestamp);
         Date to = new Date(toTimestamp);
@@ -181,7 +182,7 @@ public class AnalyticsService implements ProcessedMapListener {
             while (iter.hasNext()) {                                      // Go through all the rows
                 Person person = iter.next();
                 if (person.getIds().iterator().next() == id) {            // Select relevant rows to relevant ids
-                    temp.add(person);                                     // Add rows to relevant id temp array
+                    temp.add(person);                                     // Add rows to relevant id to temp array
                 }
             }
             //Add stop points to a common list
@@ -191,13 +192,18 @@ public class AnalyticsService implements ProcessedMapListener {
                 double y = temp.get(0).getY();
 
                 for (int i = 1; i < temp.size(); i++) {
-                    if ((Math.abs(temp.get(i).getX() - temp.get(i - 1).getX()) < 10) &&
-                            (Math.abs(temp.get(i).getY() - temp.get(i - 1).getY()) < 10)) {
-                        local.add(temp.get(i));
-                        x = x + temp.get(i).getX();
-                        y = y + temp.get(i).getY();
+                    if ((Math.abs(temp.get(i).getX() - temp.get(i - 1).getX()) < r) &&
+                            (Math.abs(temp.get(i).getY() - temp.get(i - 1).getY()) < r)) {
+//
+//                        if (local.size() > 0 && (Math.abs(temp.get(i).getX() - local.get(0).getX()) < 10) &&
+//                                (Math.abs(temp.get(i).getY() - local.get(0).getY()) < 10)) {
+                            local.add(temp.get(i));
+                            x = x + temp.get(i).getX();
+                            y = y + temp.get(i).getY();
+//                        }
+
                     } else {
-                        if (local.size() > 10) {
+                        if (local.size() > t) {
                             int k = local.size();
                             int[] add = {((int) x) / k, ((int) y) / k, k};
                             stopPoints.add(add);
@@ -214,21 +220,21 @@ public class AnalyticsService implements ProcessedMapListener {
             Arrays.fill(canvas[k], 0);
         }
 
-        int threshold=5;
+        int threshold = 5;
         for (int j = 0; j < stopPoints.size(); j++) {
             double xx = stopPoints.get(j)[0];
             double yy = stopPoints.get(j)[1];
             int dd = stopPoints.get(j)[2];
             int xxx = (int) (xx / threshold);
             int yyy = (int) (yy / threshold);
-            if (xx % threshold > threshold/2)
+            if (xx % threshold > threshold / 2)
                 xxx++;
-            if (yy % threshold > threshold/2)
+            if (yy % threshold > threshold / 2)
                 yyy++;
 
-            if (canvas[xxx][yyy] < dd) {
-                canvas[xxx][yyy] = dd;
-            }
+//            if (canvas[xxx][yyy] < dd) {
+                canvas[xxx][yyy] = canvas[xxx][yyy]+ dd;
+//            }
         }
         return canvas;
     }
@@ -285,68 +291,68 @@ public class AnalyticsService implements ProcessedMapListener {
         List<Object[]> zoneCounts = personDAO.getZoneCounts(from, to);
 
         List<Object[]> zoneStandCounts = personDAO.getZoneStandCounts(from, to, 1);
-        List<Object[]> zoneSitCounts = personDAO.getZoneSitCounts(from,to,1);
+        List<Object[]> zoneSitCounts = personDAO.getZoneSitCounts(from, to, 1);
 
-        List<Object[]> zoneUnclassifiedPoseCounts = personDAO.getZoneUnclassifiedCounts(from,to,1,1);
+        List<Object[]> zoneUnclassifiedPoseCounts = personDAO.getZoneUnclassifiedCounts(from, to, 1, 1);
 
         Map<Integer, Long> zoneCountMap = new LinkedHashMap<>();
-        zoneCounts.forEach(items->{
-            zoneCountMap.put((Integer)items[0],(Long)items[1]);
+        zoneCounts.forEach(items -> {
+            zoneCountMap.put((Integer) items[0], (Long) items[1]);
         });
 
         Map<Integer, Long> zoneStandCountMap = new LinkedHashMap<>();
-        zoneStandCounts.forEach(items->{
-            zoneStandCountMap.put((Integer)items[0],(Long)items[1]);
+        zoneStandCounts.forEach(items -> {
+            zoneStandCountMap.put((Integer) items[0], (Long) items[1]);
         });
 
         Map<Integer, Long> zoneSitCountMap = new LinkedHashMap<>();
-        zoneSitCounts.forEach(items->{
-            zoneSitCountMap.put((Integer)items[0],(Long)items[1]);
+        zoneSitCounts.forEach(items -> {
+            zoneSitCountMap.put((Integer) items[0], (Long) items[1]);
         });
 
         Map<Integer, Long> zoneUnclassifiedCountMap = new LinkedHashMap<>();
-        zoneUnclassifiedPoseCounts.forEach(items->{
-            zoneUnclassifiedCountMap.put((Integer)items[0],(Long)items[1]);
+        zoneUnclassifiedPoseCounts.forEach(items -> {
+            zoneUnclassifiedCountMap.put((Integer) items[0], (Long) items[1]);
         });
 
-        List<Object[]> crossCounts = personDAO.getCrossCounts(from,to);
+        List<Object[]> crossCounts = personDAO.getCrossCounts(from, to);
 
 
         List<ZoneStatistics> results = new ArrayList<>();
-        for(Zone zone: zones){
-            ZoneStatistics statistic = new ZoneStatistics(zone.getId(),zone.getZoneName(),fromTimestamp,toTimestamp);
-            if(zoneCountMap.containsKey(zone.getId()))
-                statistic.setAveragePersonCount((double)zoneCountMap.get(zone.getId())/(double)timeStampCount);
+        for (Zone zone : zones) {
+            ZoneStatistics statistic = new ZoneStatistics(zone.getId(), zone.getZoneName(), fromTimestamp, toTimestamp);
+            if (zoneCountMap.containsKey(zone.getId()))
+                statistic.setAveragePersonCount((double) zoneCountMap.get(zone.getId()) / (double) timeStampCount);
 
-            if(zoneSitCountMap.containsKey(zone.getId()))
-                statistic.setAverageSittingCount((double)zoneSitCountMap.get(zone.getId())/(double)timeStampCount);
+            if (zoneSitCountMap.containsKey(zone.getId()))
+                statistic.setAverageSittingCount((double) zoneSitCountMap.get(zone.getId()) / (double) timeStampCount);
 
-            if(zoneStandCountMap.containsKey(zone.getId()))
-                statistic.setAverageStandingCount((double)zoneStandCountMap.get(zone.getId())/(double)timeStampCount);
+            if (zoneStandCountMap.containsKey(zone.getId()))
+                statistic.setAverageStandingCount((double) zoneStandCountMap.get(zone.getId()) / (double) timeStampCount);
 
-            if(zoneUnclassifiedCountMap.containsKey(zone.getId()))
-                statistic.setAverageUnclassifiedPoseCount((double)zoneUnclassifiedCountMap.get(zone.getId())/(double)timeStampCount);
+            if (zoneUnclassifiedCountMap.containsKey(zone.getId()))
+                statistic.setAverageUnclassifiedPoseCount((double) zoneUnclassifiedCountMap.get(zone.getId()) / (double) timeStampCount);
 
             final long[] totalOutgoing = {0};
             Map<Integer, Long> outgoingCounts = new HashMap<>();
-            crossCounts.stream().filter(crossing -> crossing[0] != null && (int)crossing[0] == zone.getId() && crossing[0] != crossing[1]).forEach(crossing -> {
-                totalOutgoing[0] += (long)crossing[2];
-                if(crossing[1] != null)
-                    outgoingCounts.put((int)crossing[1],(long)crossing[2]);
+            crossCounts.stream().filter(crossing -> crossing[0] != null && (int) crossing[0] == zone.getId() && crossing[0] != crossing[1]).forEach(crossing -> {
+                totalOutgoing[0] += (long) crossing[2];
+                if (crossing[1] != null)
+                    outgoingCounts.put((int) crossing[1], (long) crossing[2]);
                 else
-                    outgoingCounts.put(-1, (long)crossing[2]);
+                    outgoingCounts.put(-1, (long) crossing[2]);
             });
 
             statistic.setOutgoingMap(outgoingCounts);
 
             final long[] totalIncomming = {0};
             Map<Integer, Long> incommingCounts = new HashMap<>();
-            crossCounts.stream().filter(crossing -> crossing[1] != null && (int)crossing[1] == zone.getId() && crossing[0] != crossing[1]).forEach(crossing -> {
-                totalIncomming[0] += (long)crossing[2];
-                if(crossing[0] != null)
-                    incommingCounts.put((int)crossing[0],(long)crossing[2]);
+            crossCounts.stream().filter(crossing -> crossing[1] != null && (int) crossing[1] == zone.getId() && crossing[0] != crossing[1]).forEach(crossing -> {
+                totalIncomming[0] += (long) crossing[2];
+                if (crossing[0] != null)
+                    incommingCounts.put((int) crossing[0], (long) crossing[2]);
                 else
-                    incommingCounts.put(-1,(long)crossing[2]);
+                    incommingCounts.put(-1, (long) crossing[2]);
             });
 
             statistic.setIncomingMap(incommingCounts);

@@ -118,7 +118,7 @@ export class AnalyticsService {
   }
 
   getStopPoints(from: number, to: number, radius: number, time: number, height: number, width: number): Promise<number[][]> {
-    return this.http.get(this.baseUrl + "analytics/stoppoints/" + from + "/" + to + "/" + radius + "/" + time + "/"
+    return this.http.get(this.baseUrl + "stoppoints/" + from + "/" + to + "/" + radius + "/" + time + "/"
       + height + "/" + width)
       .toPromise().then(
         response => {
