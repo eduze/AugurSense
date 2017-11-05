@@ -23,16 +23,11 @@ import org.apache.commons.math3.util.Pair;
 import org.eduze.fyp.Constants;
 import org.eduze.fyp.impl.PhotoMapper;
 import org.eduze.fyp.impl.ZoneMapper;
+import org.eduze.fyp.impl.util.AccuracyTester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -49,6 +44,9 @@ public class GlobalMap {
 
     private PhotoMapper photoMapper = null;
     private ZoneMapper zoneMapper = null;
+    private AccuracyTester accuracyTester;
+
+    private Random idGenerator = new Random();
 
     public void setZoneMapper(ZoneMapper zoneMapper) {
         this.zoneMapper = zoneMapper;
@@ -62,6 +60,10 @@ public class GlobalMap {
         return personLocations.stream()
                 .map(PersonLocation::getSnapshots)
                 .collect(Collectors.toList());
+    }
+
+    private int nextID(){
+        return Math.abs(this.idGenerator.nextInt());
     }
 
     public synchronized void update(LocalMap localMap) {
@@ -81,25 +83,37 @@ public class GlobalMap {
         Set<PersonLocation> newPeople = new HashSet<>();
         tuples.forEach(pair -> {
             if (!usedKNew.contains(pair.getKey()) && !usedVPL.contains(pair.getValue()) && pair.distance() < Constants.DISTANCE_THRESHOLD) {
+
+                if(this.accuracyTester != null)
+                    this.accuracyTester.reportPointDeviation(pair.getKey(),pair.getValue(), localMap.getCameraId(), localMap.getTimestamp());
+
+                usedKNew.add(pair.getKey());
+                usedVPL.add(pair.getValue());
+                PersonSnapshot ps = pair.getValue().addPoint(localMap.getCameraId(), pair.getKey().toCoordinate());
+
                 if (pair.getKey().getImage() != null) {
                     logger.debug("Found an image for person {}", pair.getValue().getIds());
                     // TODO: 10/3/17 Do the re-id part here
-                    photoMapper.addSnapshot(pair.getKey(),pair.getValue().getIds());
+
+                    photoMapper.addSnapshot(pair.getKey(),pair.getValue().getIds(), ps);
                 }
-                usedKNew.add(pair.getKey());
-                usedVPL.add(pair.getValue());
-                pair.getValue().addPoint(localMap.getCameraId(), pair.getKey().toCoordinate());
+
             } else if (!usedKNew.contains(pair.getKey()) && pair.getValue() == null) {
-                if (pair.getKey().getImage() != null) {
-                    logger.debug("Found a new person with image");
-                    photoMapper.addSnapshot(pair.getKey(),pair.getValue().getIds());
-                    // TODO: 10/3/17 DO the re-id part here
-                }
-                int id = this.id++;
+                int id = nextID();
+                Set<Integer> idd = new HashSet<>();
+                idd.add(id);
+
+
                 PersonLocation newPL = new PersonLocation(id);
-                newPL.addPoint(localMap.getCameraId(), pair.getKey().toCoordinate());
+                PersonSnapshot ps = newPL.addPoint(localMap.getCameraId(), pair.getKey().toCoordinate());
                 newPeople.add(newPL);
                 usedKNew.add(pair.getKey());
+
+                if (pair.getKey().getImage() != null) {
+                    logger.debug("Found a new person with image");
+                    photoMapper.addSnapshot(pair.getKey(),idd, ps);
+                    // TODO: 10/3/17 DO the re-id part here
+                }
             }
         });
 
@@ -136,6 +150,14 @@ public class GlobalMap {
 
     public void setPhotoMapper(PhotoMapper photoMapper) {
         this.photoMapper = photoMapper;
+    }
+
+    public AccuracyTester getAccuracyTester() {
+        return accuracyTester;
+    }
+
+    public void setAccuracyTester(AccuracyTester accuracyTester) {
+        this.accuracyTester = accuracyTester;
     }
 
     private class LocationPair extends Pair<PersonCoordinate, PersonLocation> implements Comparable<LocationPair> {

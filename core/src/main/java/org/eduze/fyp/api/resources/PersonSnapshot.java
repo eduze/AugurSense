@@ -22,6 +22,7 @@ package org.eduze.fyp.api.resources;
 import org.eduze.fyp.impl.db.model.Zone;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 public class PersonSnapshot extends Coordinate {
@@ -32,6 +33,14 @@ public class PersonSnapshot extends Coordinate {
     private Zone persistantZone;
 
     private Zone pastPersistantZone;
+
+    private static Random idGenerator = new Random();
+
+    private String uuid;
+
+    public String getUuid() {
+        return uuid;
+    }
 
     public PersonSnapshot() { }
 
@@ -45,6 +54,7 @@ public class PersonSnapshot extends Coordinate {
         this.instanceZone = instanceZone;
         this.persistantZone = persistantZone;
         this.pastPersistantZone = pastPersistantZone;
+        this.uuid = System.currentTimeMillis() + "_" + Math.abs(idGenerator.nextInt());
     }
 
     public void setPastPersistantZone(Zone pastPersistantZone) {

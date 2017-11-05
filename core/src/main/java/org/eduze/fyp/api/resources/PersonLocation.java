@@ -44,18 +44,19 @@ public class PersonLocation {
         ids.add(id);
     }
 
-    public void addPoint(int cameraId, Coordinate coordinate) {
+    public PersonSnapshot addPoint(int cameraId, Coordinate coordinate) {
         Coordinate p = contributingCoordinates.get(cameraId);
         if (p == null) {
             contributingCoordinates.put(cameraId, coordinate);
-            updateSnapshot(coordinate);
+            return updateSnapshot(coordinate);
         } else if (p.getTimestamp() < coordinate.getTimestamp()) {
             contributingCoordinates.put(cameraId, coordinate);
-            updateSnapshot(coordinate);
+            return updateSnapshot(coordinate);
         }
+        return null;
     }
 
-    private void updateSnapshot(Coordinate original) {
+    private PersonSnapshot updateSnapshot(Coordinate original) {
         long timestamp;
         if (snapshots.isEmpty()) {
             timestamp = original.getTimestamp();
@@ -97,12 +98,15 @@ public class PersonLocation {
 
         // TODO: 9/21/17 All have the same reference to IDs
 
+        PersonSnapshot result = null;
         if(snapshots.size() > 0){
-            snapshots.addFirst(new PersonSnapshot(ids, coordinate,null,snapshots.get(0).getPersistantZone(),snapshots.get(0).getPersistantZone()));
-        }else{
-            snapshots.addFirst(new PersonSnapshot(ids, coordinate,null,null, null));
-        }
+            result = new PersonSnapshot(ids, coordinate,null,snapshots.get(0).getPersistantZone(),snapshots.get(0).getPersistantZone());
 
+        }else{
+            result = new PersonSnapshot(ids, coordinate,null,null, null);
+        }
+        snapshots.addFirst(result);
+        return result;
     }
 
     public void addId(int id) {

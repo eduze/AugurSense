@@ -142,7 +142,11 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
                 }
 
                 cameraNotifiers.values()
-                        .forEach(notifier -> executorService.submit(() -> notifier.notifyCamera(currentTimestamp)));
+                        .forEach(notifier -> {
+                            executorService.submit(() -> {
+                                notifier.notifyCamera(currentTimestamp);
+                            });
+                        });
             }
         }
 

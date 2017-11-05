@@ -92,6 +92,16 @@ public class AnalyticsService implements ProcessedMapListener {
         Map<Integer,List<Person>> trackedCandidates = new HashMap<>();
 
         for(Person p : candidates){
+//            List<Person> target = null;
+//            if(!trackedCandidates.containsKey(p.getPreviousUuid())){
+//                target = new ArrayList<>();
+//            }
+//            else{
+//                target = trackedCandidates.remove(p.getPreviousUuid());
+//            }
+//            target.add(p);
+//
+//            trackedCandidates.put(p.getUuid(),target);
             for(int id: p.getIds()){
                 if(!trackedCandidates.containsKey(id)) {
                     trackedCandidates.put(id, new ArrayList<>());

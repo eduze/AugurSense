@@ -31,6 +31,7 @@ import org.eduze.fyp.api.resources.GlobalMap;
 import org.eduze.fyp.api.resources.LocalMap;
 import org.eduze.fyp.api.resources.PersonSnapshot;
 import org.eduze.fyp.api.util.Args;
+import org.eduze.fyp.impl.util.AccuracyTester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +53,16 @@ public class MapProcessorImpl implements MapProcessor {
     private CameraCoordinator cameraCoordinator;
     private Set<ProcessedMapListener> mapListeners = new HashSet<>();
     private ExecutorService processor;
+
+    private AccuracyTester accuracyTester = null;
+
+    public AccuracyTester getAccuracyTester() {
+        return accuracyTester;
+    }
+
+    public void setAccuracyTester(AccuracyTester accuracyTester) {
+        this.accuracyTester = accuracyTester;
+    }
 
     private ZoneMapper zoneMapper = null;
 
@@ -106,6 +117,7 @@ public class MapProcessorImpl implements MapProcessor {
 
         globalMap.setZoneMapper(zoneMapper);
         globalMap.setPhotoMapper(photoMapper);
+        globalMap.setAccuracyTester(accuracyTester);
 
         Args.notNull(cameraCoordinator, "cameraCoordinator");
 

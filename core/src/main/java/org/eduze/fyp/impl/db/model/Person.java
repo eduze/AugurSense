@@ -49,6 +49,9 @@ public class Person {
     @Column(name = "time_stamp")
     private Date timestamp;
 
+    private String uuid;
+    private String previousUuid;
+
     private double x;
     private double y;
     private int instantZoneId;
@@ -61,6 +64,18 @@ public class Person {
 
     private double headDirectionX;
     private double headDirectionY;
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getPreviousUuid() {
+        return previousUuid;
+    }
+
+    public void setPreviousUuid(String previousUuid) {
+        this.previousUuid = previousUuid;
+    }
 
     public void setHeadDirectionY(double headDirectionY) {
         this.headDirectionY = headDirectionY;
@@ -94,6 +109,9 @@ public class Person {
         return headDirectionX;
     }
 
+    public String getUuid() {
+        return uuid;
+    }
 
     @Convert(converter = PersonIdConverter.class)
     private Set<Integer> ids;
@@ -101,7 +119,7 @@ public class Person {
     protected Person() {
     }
 
-    public Person(Set<Integer> ids, long timestamp, double x, double y,double sitProbability, double standProbability, double headDirectionX, double headDirectionY, int instantZoneId, int persistantZoneId, int pastPersistantZoneId) {
+    public Person(Set<Integer> ids, long timestamp, double x, double y,double sitProbability, double standProbability, double headDirectionX, double headDirectionY, int instantZoneId, int persistantZoneId, int pastPersistantZoneId, String uuid, String previousUuid) {
         setIds(ids);
         this.timestamp = new Date(timestamp);
         this.x = x;
@@ -114,6 +132,8 @@ public class Person {
         this.standProbability = standProbability;
         this.headDirectionX = headDirectionX;
         this.headDirectionY = headDirectionY;
+        this.uuid = uuid;
+        this.previousUuid = previousUuid;
     }
 
     public int getInstantZoneId(){return instantZoneId;}

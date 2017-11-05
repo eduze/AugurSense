@@ -55,6 +55,7 @@
         </property>
         <property name="zoneMapper" ref="zone-mapper"/>
         <property name="photoMapper" ref="photo-mapper"/>
+        <property name="accuracyTester" ref="accuracy-tester"/>
     </bean>
 
     <bean id="zone-mapper" class="org.eduze.fyp.impl.ZoneMapper">
@@ -63,7 +64,9 @@
         <property name="zonePersistantThreshold" value="4"/>
     </bean>
 
-    <bean id="photo-mapper" class="org.eduze.fyp.impl.PhotoMapper"/>
+    <bean id="photo-mapper" class="org.eduze.fyp.impl.PhotoMapper">
+        <property name="photoSavePath" value="captures"/>
+    </bean>
 
     <bean id="camera-coordinator" class="org.eduze.fyp.impl.CentralizedCameraCoordinator">
         <constructor-arg ref="configuration-manager"/>
@@ -72,6 +75,9 @@
         <property name="mapProcessor" ref="map-processor"/>
     </bean>
 
+    <bean id="accuracy-tester" class="org.eduze.fyp.impl.util.AccuracyTester">
+        <property name="testMapMergeAccuracy" value="false"/>
+    </bean>
     <!-- ============================================================================ -->
     <!--                    Database Related Configuration                            -->
     <!-- ============================================================================ -->
