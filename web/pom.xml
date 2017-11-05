@@ -57,7 +57,7 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <workingDirectory>${project.basedir}/src/main/ngapp</workingDirectory>
-                            <executable>npm</executable>
+                            <executable>npm.cmd</executable>
                             <arguments>
                                 <argument>install</argument>
                             </arguments>
@@ -71,7 +71,7 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <workingDirectory>${project.basedir}/src/main/ngapp</workingDirectory>
-                            <executable>ng</executable>
+                            <executable>ng.cmd</executable>
                             <arguments>
                                 <argument>build</argument>
                                 <argument>--base-href=./</argument>

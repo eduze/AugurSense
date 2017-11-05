@@ -1,0 +1,19 @@
+<div class="container-fluid">
+  <div class="col-md-10">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <label>From</label>
+        <p-calendar [(ngModel)]="from" [showTime]="true"></p-calendar>
+        <label> To</label>
+        <p-calendar [(ngModel)]="to" [showTime]="true"></p-calendar>
+        Radius : <input [(ngModel)]="radius" type="number" name="r">
+        Time duration (minuets) :<input [(ngModel)]="time" type="number" name="t">
+        <button class="btn btn-info" (click)="getStopPoints()"> get points</button>
+      </div>
+      <div class="col-md-11" [hidden]="!stopPoints">
+        <h4>People on the map: <span class="label label-default">{{stopPoints}}</span></h4>
+      </div>
+      <canvas #canvas></canvas>
+    </div>
+  </div>
+</div>

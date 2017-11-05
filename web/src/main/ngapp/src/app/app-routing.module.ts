@@ -28,6 +28,7 @@ import {ZoneInfoComponent} from "./zone-info/zone-info.component";
 import {RealtimeMapComponent} from "./realtime-map/realtime-map.component";
 import {RealtimeInfoComponent} from "./realtime-info/realtime-info.component";
 import {TimeBoundMapComponent} from "./time-bound-map/time-bound-map.component";
+import {PersonStopPointsComponent} from "./person-stop-points/person-stop-points.component";
 
 const routes: Routes = [
   {
@@ -45,6 +46,10 @@ const routes: Routes = [
   {
     path: 'statistics',
     component: PeopleCountComponent
+  },
+  {
+    path: 'stoppoints',
+    component: PersonStopPointsComponent
   },
   {
     path: 'settings',
