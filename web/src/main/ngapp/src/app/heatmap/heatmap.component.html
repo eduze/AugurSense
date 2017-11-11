@@ -24,10 +24,12 @@
     <div class="panel panel-default">
       <div class="panel-heading">
         <button class="btn btn-info" (click)="generateHeatMap()">Generate Heat Map</button>
-        <p-calendar [showTime] = "true" [(ngModel)]="from"></p-calendar>
-        <p-calendar [showTime]="true" [(ngModel)]="to"></p-calendar>
+        <p-calendar [showTime] = "true" [(ngModel)]="startTime"></p-calendar>
+        <p-calendar [showTime]="true" [(ngModel)]="endTime"></p-calendar>
+        <span>{{startString}} to {{endString}} </span>
       </div>
-
+      <p-slider [(ngModel)]="secondRange" [range]="true" [min]="0" [max]="300" [step]="1"></p-slider>
+      <p-slider [(ngModel)]="offset" [min]="0" [max]="300" [step]="1"></p-slider>
       <div class="panel-body">
         <canvas #canvas class="center-block"></canvas>
       </div>

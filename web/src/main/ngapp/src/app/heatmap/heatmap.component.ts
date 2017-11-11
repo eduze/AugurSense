@@ -30,12 +30,72 @@ import {CanvasUtils} from "../lib/utils/canvas-utils";
 })
 
 export class HeatmapComponent implements AfterViewInit {
+  get offset(): number {
+    return this._offset;
+  }
+
+  set offset(value: number) {
+    this._offset = value;
+    this.generateHeatMap();
+  }
+  get secondRange(): number[] {
+    return this._secondRange;
+  }
+
+  private get startString() : string{
+    return new Date(this.from).toLocaleString();
+  }
+
+  private get endString() : string{
+    return new Date(this.from).toLocaleString();
+  }
+
+  set secondRange(value: number[]) {
+    this._secondRange = value;
+    this.generateHeatMap();
+  }
+  get endTime(): Date {
+    return this._endTime;
+  }
+
+  set endTime(value: Date) {
+    this._endTime = value;
+    this.generateHeatMap();
+  }
+  get startTime(): Date {
+    return this._startTime;
+  }
+
+  set startTime(value: Date) {
+    this._startTime = value;
+    this.generateHeatMap();
+  }
 
   mapImage: string;
   canvasConfigured: boolean = false;
   // Date picker for heat map range
-  from: Date = new Date(0);
-  to: Date = new Date();
+
+
+  private _startTime: Date = new Date(0);
+  private _endTime: Date = new Date(0);
+
+  private _offset : number = 0;
+  private _secondRange : number[] = [0,60];
+
+
+
+  private get from() : number{
+    if(this.startTime == null || this.secondRange[0] == null)
+      return null;
+    return this.startTime.getTime() + this.secondRange[0] * 1000 + this.offset * 1000;
+  }
+
+  private get to() : number{
+    if(this.endTime == null || this.secondRange[1] == null)
+      return null;
+    return this.endTime.getTime() + this.secondRange[1] * 1000 + this.offset * 1000;
+  }
+
 
   @ViewChild('canvas') private canvas: ElementRef;
   private cx: CanvasRenderingContext2D;
@@ -53,7 +113,7 @@ export class HeatmapComponent implements AfterViewInit {
    * Generates the heat map corresponding to time between {@link from} and {@link to}
    */
   generateHeatMap(): void {
-    if (!this.from || !this.to) {
+    if (this.from == null || this.to == null) {
       console.error("Dates are not set");
       return;
     }
@@ -63,7 +123,7 @@ export class HeatmapComponent implements AfterViewInit {
       return;
     }
 
-    this.analyticsService.getHeatMap(this.from.getTime(), this.to.getTime())
+    this.analyticsService.getHeatMap(this.from, this.to)
       .then(points => {
         let p = [];
         let max: number = 0;
