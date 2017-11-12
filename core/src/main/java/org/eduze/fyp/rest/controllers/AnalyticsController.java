@@ -19,7 +19,11 @@
 
 package org.eduze.fyp.rest.controllers;
 
+import org.eduze.fyp.api.resources.PersonCoordinate;
+import org.eduze.fyp.impl.db.model.Person;
+import org.eduze.fyp.rest.resources.ReIDStatus;
 import org.eduze.fyp.rest.services.AnalyticsService;
+import org.eduze.fyp.rest.services.ReIDSearchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +34,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Path("/analytics")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -40,6 +46,16 @@ public class AnalyticsController {
     private static final Logger logger = LoggerFactory.getLogger(AnalyticsController.class);
 
     private AnalyticsService analyticsService;
+
+    private ReIDSearchService reIDSearchService;
+
+    public void setReIDSearchService(ReIDSearchService reIDSearchService) {
+        this.reIDSearchService = reIDSearchService;
+    }
+
+    public ReIDSearchService getReIDSearchService() {
+        return reIDSearchService;
+    }
 
     @GET
     @Path("/timestampCount/{from}/{to}")
@@ -53,6 +69,66 @@ public class AnalyticsController {
         }
 
     }
+
+    @GET
+    @Path("/re_id/invoke/{from}/{to}/{uuid}")
+    public Response invokeReIdSearch(@PathParam("from") long from, @PathParam("to") long to,@PathParam("uuid") String uuid){
+        try {
+            reIDSearchService.invokeSearch(uuid,new Date(from),new Date(to));
+            return Response.ok(true).build();
+        }
+        catch (Exception e) {
+            logger.error("Error occurred when obtaining map. {}", e);
+            return Response.status(500).build();
+        }
+
+    }
+
+    @GET
+    @Path("/re_id/results/{from}/{to}/{uuid}")
+    public Response obtainResults(@PathParam("from") long from, @PathParam("to") long to,@PathParam("uuid") String uuid){
+        try {
+            ReIDStatus reIDStatus = null;
+
+            if(!reIDSearchService.verify(uuid,new Date(from), new Date(to)))
+            {
+                reIDStatus = new ReIDStatus(new ArrayList<>(),false,false,true);
+            }
+            else{
+                List<PersonCoordinate> results = reIDSearchService.obtainSearchResults(uuid,new Date(from), new Date(to));
+
+                if(results == null)
+                {
+                    reIDStatus = new ReIDStatus(new ArrayList<>(),true,false,false);
+                }
+                else{
+                    reIDStatus = new ReIDStatus(results,false,true,false);
+                }
+
+            }
+
+            return Response.ok(reIDStatus).build();
+        }
+        catch (Exception e) {
+            logger.error("Error occurred when obtaining map. {}", e);
+            return Response.status(500).build();
+        }
+
+    }
+
+    @GET
+    @Path("/profile/{uuid}")
+    public Response obtainResults(@PathParam("uuid") String uuid){
+        try {
+            return Response.ok(analyticsService.getProfile(uuid)).build();
+        }
+        catch (Exception e) {
+            logger.error("Error occurred when obtaining map. {}", e);
+            return Response.status(500).build();
+        }
+
+    }
+
 
     @GET
     @Path("/zoneStatistics/{from}/{to}")

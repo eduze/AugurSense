@@ -8,6 +8,7 @@ export class PersonImage {
   headDirectionY: number;
   image: string;
 
+
   height: number;
   width: number;
 }

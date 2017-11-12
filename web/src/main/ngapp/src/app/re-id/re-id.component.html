@@ -1,0 +1,50 @@
+<div>
+
+  <div class="col-md-4">
+    <div class="panel panel-default col-md-12"  *ngIf="person != null">
+      <div class="panel-heading">{{ getDateString(person.timestamp) }}</div>
+
+      <div class="panel col-lg-3" style="height: 250px; padding: 0px;">
+
+        <div class="panel-body" style="height:80%; width: 100%; text-align: center;">
+          <img [src]="person.image" style="width: 100%; height: 95%; max-width: 100%; max-height: 100%; object-fit: contain;"/>
+        </div>
+
+      </div>
+
+      <div class="panel col-lg-9" style="height: 250px; padding: 0px;" *ngIf="person != null">
+        <p-calendar [showTime] = "true" [(ngModel)]="startTime"></p-calendar>
+        <p-calendar [showTime]="true" [(ngModel)]="endTime"></p-calendar> <br>
+        <button class="btn btn-info" (click)="triggerReId()">Search</button>
+        <button class="btn btn-info" (click)="getReIdResults()">Refresh Results</button>
+      </div>
+
+
+
+    </div>
+    <div class="col-md-12">
+      <div class="col-md-12" *ngIf="matchedPersons != null">
+        <div class="panel panel-default col-lg-2" style="height: 300px; padding: 0px;" *ngFor="let matchedPerson of matchedPersons">
+          <div class="panel-heading" style="width: 100%;">{{ getDateString(matchedPerson.timestamp) }}</div>
+
+          <div class="panel-body" style="height:80%; width: 100%; text-align: center;">
+            <img [src]="matchedPerson.image" style="width: 100%; height: 95%; max-width: 100%; max-height: 100%; object-fit: contain;"/>
+          </div>
+
+        </div>
+      </div>
+      <div *ngIf="matchedPersons == null" style="display: flex;">
+        Click search to trigger re-id
+      </div>
+    </div>
+
+
+
+
+  </div>
+
+
+
+
+
+</div>

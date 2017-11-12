@@ -120,6 +120,18 @@ public class AnalyticsService implements ProcessedMapListener {
         return new ArrayList<List<Person>>(trackedCandidates.values());
     }
 
+    public PersonCoordinate getProfile(String uuid) throws IOException {
+        Person p = personDAO.getPerson(uuid);
+        File f  = new File(photoMapper.getPhotoSavePath() + "/" + uuid + ".jpg");
+        byte[] bytes = null;
+        if(f.exists()){
+            bytes = ImageUtils.bufferedImageToByteArray(ImageIO.read(f));
+        }
+
+        PersonCoordinate result = new PersonCoordinate(p,bytes);
+        return result;
+    }
+
     public List<PersonCoordinate> getPastPhotos(int trackingId){
         File dir = new File(photoMapper.getPhotoSavePath());
         dir.mkdirs();
@@ -129,7 +141,7 @@ public class AnalyticsService implements ProcessedMapListener {
         File[] snaps = dir.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return name.endsWith(".png");
+                return name.endsWith(".jpg");
             }
         });
 

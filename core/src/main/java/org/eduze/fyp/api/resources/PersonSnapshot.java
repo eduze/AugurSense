@@ -54,7 +54,7 @@ public class PersonSnapshot extends Coordinate {
         this.instanceZone = instanceZone;
         this.persistantZone = persistantZone;
         this.pastPersistantZone = pastPersistantZone;
-        this.uuid = System.currentTimeMillis() + "_" + Math.abs(idGenerator.nextInt());
+        this.uuid = String.valueOf(System.currentTimeMillis() % (1000000)) + "_" + (Math.abs(idGenerator.nextInt())%100);
     }
 
     private boolean stored = false;

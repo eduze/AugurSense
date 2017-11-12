@@ -65,6 +65,14 @@ public class PersonDAOImpl implements PersonDAO {
     }
 
     @Override
+    public Person getPerson(String uuid) {
+        Session session = this.sessionFactory.openSession();
+        List<Person> personList = session.createQuery("from Person P where P.uuid=:uuid").setParameter("uuid",uuid,StringType.INSTANCE).list();
+        session.close();
+        return personList.get(0);
+    }
+
+    @Override
     public List<Person> list(Date from, Date to) {
         Session session = this.sessionFactory.openSession();
         Query query = session.createQuery("from Person P where P.timestamp between :startTime and :endTime order by P.id")

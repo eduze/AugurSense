@@ -29,6 +29,7 @@ import {RealtimeMapComponent} from "./realtime-map/realtime-map.component";
 import {RealtimeInfoComponent} from "./realtime-info/realtime-info.component";
 import {TimeBoundMapComponent} from "./time-bound-map/time-bound-map.component";
 import {PersonStopPointsComponent} from "./person-stop-points/person-stop-points.component";
+import {ReIdComponent} from "./re-id/re-id.component";
 
 const routes: Routes = [
   {
@@ -67,6 +68,10 @@ const routes: Routes = [
   {
     path :'time-bound-map',
     component: TimeBoundMapComponent
+  },
+  {
+    path :':id',
+    component: ReIdComponent
   }
 ];
 
