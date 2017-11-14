@@ -7,7 +7,7 @@ export class PersonImage {
   headDirectionX: number;
   headDirectionY: number;
   image: string;
-
+  uuid: string;
 
   height: number;
   width: number;

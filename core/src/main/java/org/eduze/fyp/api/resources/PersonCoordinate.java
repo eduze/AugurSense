@@ -28,7 +28,7 @@ public class PersonCoordinate extends Coordinate {
 
     private byte[] image;
 
-
+    private String uuid;
 
 
     public PersonCoordinate() {
@@ -37,6 +37,7 @@ public class PersonCoordinate extends Coordinate {
     public PersonCoordinate(Person p, byte[] image) {
         super(p.getX(),p.getY(),p.getTimestamp().getTime(),p.getStandProbability(),p.getSitProbability(),p.getHeadDirectionX(),p.getHeadDirectionY());
         this.image = image;
+        this.uuid = p.getUuid();
     }
 
     public PersonCoordinate(double x, double y, long timestamp, double sitProbability, double standProbability, double headDirectionX, double headDirectionY, byte[] image) {
@@ -45,6 +46,13 @@ public class PersonCoordinate extends Coordinate {
     }
 
 
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
 
     public byte[] getImage() {
         return image;

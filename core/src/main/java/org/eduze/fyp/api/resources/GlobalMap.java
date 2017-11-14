@@ -91,6 +91,8 @@ public class GlobalMap {
                 usedVPL.add(pair.getValue());
                 PersonSnapshot ps = pair.getValue().addPoint(localMap.getCameraId(), pair.getKey().toCoordinate());
 
+                pair.getKey().setUuid(ps.getUuid()); //passing uuid into personCoordinate
+
                 if (pair.getKey().getImage() != null) {
                     logger.debug("Found an image for person {}", pair.getValue().getIds());
                     // TODO: 10/3/17 Do the re-id part here
@@ -109,8 +111,11 @@ public class GlobalMap {
                 newPeople.add(newPL);
                 usedKNew.add(pair.getKey());
 
+                pair.getKey().setUuid(ps.getUuid()); //passing uuid into person coordinate
+
                 if (pair.getKey().getImage() != null) {
                     logger.debug("Found a new person with image");
+
                     photoMapper.addSnapshot(pair.getKey(),idd, ps);
                     // TODO: 10/3/17 DO the re-id part here
                 }
