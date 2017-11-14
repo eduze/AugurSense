@@ -71,6 +71,19 @@ public class AnalyticsController {
     }
 
     @GET
+    @Path("/route/{from}/{to}/{uuid}")
+    public Response getTimestampCount(@PathParam("from") long from, @PathParam("to") long to, @PathParam("uuid") String uuid){
+        try {
+            return Response.ok(analyticsService.getTrackingRouteFromUUID(new Date(from),new Date(to),uuid)).build();
+        }
+        catch (Exception e) {
+            logger.error("Error occurred when obtaining map. {}", e);
+            return Response.status(500).build();
+        }
+
+    }
+
+    @GET
     @Path("/re_id/invoke/{from}/{to}/{uuid}")
     public Response invokeReIdSearch(@PathParam("from") long from, @PathParam("to") long to,@PathParam("uuid") String uuid){
         try {

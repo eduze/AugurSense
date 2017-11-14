@@ -22,6 +22,7 @@ package org.eduze.fyp.api.resources;
 import org.eduze.fyp.impl.db.model.Person;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Set;
 
 @XmlRootElement
 public class PersonCoordinate extends Coordinate {
@@ -30,6 +31,7 @@ public class PersonCoordinate extends Coordinate {
 
     private String uuid;
 
+    private Set<Integer> ids;
 
     public PersonCoordinate() {
     }
@@ -38,6 +40,7 @@ public class PersonCoordinate extends Coordinate {
         super(p.getX(),p.getY(),p.getTimestamp().getTime(),p.getStandProbability(),p.getSitProbability(),p.getHeadDirectionX(),p.getHeadDirectionY());
         this.image = image;
         this.uuid = p.getUuid();
+        this.ids = p.getIds();
     }
 
     public PersonCoordinate(double x, double y, long timestamp, double sitProbability, double standProbability, double headDirectionX, double headDirectionY, byte[] image) {
@@ -45,6 +48,13 @@ public class PersonCoordinate extends Coordinate {
         this.image = image;
     }
 
+    public void setIds(Set<Integer> ids) {
+        this.ids = ids;
+    }
+
+    public Set<Integer> getIds() {
+        return ids;
+    }
 
     public String getUuid() {
         return uuid;

@@ -95,6 +95,22 @@ public class AnalyticsService implements ProcessedMapListener {
     public AnalyticsService() {
     }
 
+    public List<Person> getTrackingRouteFromUUID(Date start, Date end, String uuid)
+    {
+        Person target = personDAO.getPerson(uuid);
+        List<Person> candidates = personDAO.list(start,end);
+        final ArrayList<Person> result = new ArrayList<>();
+
+        for(int trackId : target.getIds())
+        {
+            candidates.stream()
+                    .filter((person -> person.getIds().contains(trackId)))
+                    .forEach(result::add);
+        }
+        return result;
+
+
+    }
     public List<List<Person>> getTimeBoundMovements(Date start,Date end){
         List<Person> candidates = personDAO.list(start,end);
         Map<Integer,List<Person>> trackedCandidates = new HashMap<>();

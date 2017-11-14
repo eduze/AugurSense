@@ -228,4 +228,12 @@ export class AnalyticsService {
       .catch(AnalyticsService.handleError);
   }
 
+  getTrackFromUUID(startTime: number, endTime: number, uuid: string) {
+    return this.http.get(this.baseUrl + "route/" + startTime + "/" + endTime + "/" + uuid)
+      .toPromise()
+      .then(response => {
+        return response.json() as PersonSnapshot[];
+      })
+      .catch(AnalyticsService.handleError);
+  }
 }
