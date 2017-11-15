@@ -48,6 +48,17 @@ public class PersonCoordinate extends Coordinate {
         this.image = image;
     }
 
+    public boolean isSnapshotSaved() {
+        return snapshotSaved;
+    }
+
+    public void markSnapshotSaved(){
+        this.snapshotSaved = true;
+    }
+
+    private boolean snapshotSaved = false;
+
+
     public void setIds(Set<Integer> ids) {
         this.ids = ids;
     }

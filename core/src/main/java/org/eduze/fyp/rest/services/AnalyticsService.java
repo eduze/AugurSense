@@ -186,6 +186,19 @@ public class AnalyticsService implements ProcessedMapListener {
     }
 
 
+    public List<PersonCoordinate> getRealtimePhotosAll(){
+
+        //TODO: Need to identify dead trackers here
+
+//        final ArrayList<PersonCoordinate> results = new ArrayList<>();
+//        photoMapper.getLatestSnapshots().stream().filter((pin)->
+//            snapshots.stream().filter((hay)->
+//                hay.get(0).getIds().stream().findFirst().equals(pin.getIds().stream().findFirst())
+//            ).count()>0
+//        ).forEach(results::add);
+        return photoMapper.getLatestSnapshots();
+    }
+
     public List<PersonCoordinate> getRealtimePhotos(int trackingId){
         return photoMapper.getSnapshots(trackingId);
     }

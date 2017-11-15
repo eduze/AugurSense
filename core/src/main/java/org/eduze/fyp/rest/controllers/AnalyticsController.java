@@ -222,7 +222,18 @@ public class AnalyticsController {
         try {
             return Response.ok(analyticsService.getRealtimePhotos(id)).build();
         } catch (Exception e) {
-            logger.error("Error occurred when obtaining real time map. {}", e);
+            logger.error("Error occurred when obtaining real time info of track. {}", e);
+            return Response.status(500).build();
+        }
+    }
+
+    @GET
+    @Path("/realTimeMap/all")
+    public Response getRealTimeInfoAll() {
+        try {
+            return Response.ok(analyticsService.getRealtimePhotosAll()).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining real time info of all. {}", e);
             return Response.status(500).build();
         }
     }

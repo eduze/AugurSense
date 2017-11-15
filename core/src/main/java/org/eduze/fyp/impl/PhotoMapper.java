@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PhotoMapper {
     public Map<Integer, List<PersonCoordinate>> map = new ConcurrentHashMap<>();
 
-    public Map<Integer,List<PersonCoordinate>> unsavedPhotos = new ConcurrentHashMap<>();
+    public Map<Integer,List<PersonCoordinate>> unsavedPhotos = new ConcurrentHashMap<>(); //separate list kept in memory for storage purpose
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalMap.class);
 
@@ -55,6 +55,7 @@ public class PhotoMapper {
             BufferedImage view = ImageUtils.byteArrayToBufferedImage(pc.getImage());
             File outputfile = new File(photoSavePath + "/" + ps.getUuid() + ".jpg"); // TODO: Wont this replace images of same person?
             ImageIO.write(view,"jpg", outputfile);
+            pc.markSnapshotSaved();
             logger.info("Saved " + outputfile.getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
@@ -91,5 +92,11 @@ public class PhotoMapper {
         if(!map.containsKey(id))
             return new ArrayList<>();
         return map.get(id);
+    }
+
+    public List<PersonCoordinate> getLatestSnapshots(){
+        final ArrayList<PersonCoordinate> results = new ArrayList<>();
+        this.map.values().forEach((v)->{results.add(v.get(0));});
+        return results;
     }
 }

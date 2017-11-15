@@ -4,6 +4,7 @@ import {AnalyticsService} from "../services/analytics.service";
 import {ConfigService} from "../services/config.service";
 import {PersonSnapshot} from "../resources/person-snapshot";
 import {Observable} from "rxjs/Observable";
+import {PersonImage} from "../resources/person-image";
 
 @Component({
   selector: 'app-realtime-map',
@@ -13,6 +14,9 @@ import {Observable} from "rxjs/Observable";
 export class RealtimeMapComponent implements OnInit {
 
   constructor(private analyticsService: AnalyticsService, private configService: ConfigService) { }
+
+  updateToggle: boolean = false;
+  showAllInInfo: boolean = true;
 
   globalMap: GlobalMap;
 
@@ -31,13 +35,24 @@ export class RealtimeMapComponent implements OnInit {
     return "rgb("+standCol.toString()+", " +sitCol.toString() + ",255 )";
   }
 
+  personClicked(person: PersonImage) : void {
+    if(person.ids.length > 0) {
+      this.selectedTrackIndex = person.ids[0];
+      this.showAllInInfo = false;
+    }
+    console.log("Person clicked" + person.ids[0].toString());
+  }
+
   private backgroundClicked() : void{
     this.selectedTrackIndex = -1;
+    this.showAllInInfo = true;
   }
 
   private trackClicked(track:PersonSnapshot[]): void{
-    if(track[0].ids.length > 0)
+    if(track[0].ids.length > 0) {
       this.selectedTrackIndex = track[0].ids[0];
+      this.showAllInInfo = false;
+    }
     console.log("Track clicked" + track[0].ids[0].toString());
     console.log(track);
   }
@@ -52,6 +67,8 @@ export class RealtimeMapComponent implements OnInit {
             item[0]["colour"] = this.getColour(item[0].ids[0]);
             item[0]["standSitColour"] = this.getStandSitColour(item[0]);
           });
+          this.updateToggle = !this.updateToggle;
+          console.log(this.updateToggle);
           console.log(this.personSnapshots);
           //this.drawOnCanvas(personSnapshots);
         })

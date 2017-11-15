@@ -25,7 +25,7 @@ public class Constants {
     private Constants() { }
 
     /** Interval in which we ask from cameras to process a new frame */
-    public static final long FRAME_PROCESSING_INTERVAL = 8000;
+    public static final long FRAME_PROCESSING_INTERVAL = 3000;
     /** The suffix in the URL to which we notify to start processing a new frame */
     public static final String CAMERA_NOTIFICATION_PATH_PATTERN = "/getMap/%d";
     public static final String CAMERA_NOTIFICATION_PATH = "/getMap/";

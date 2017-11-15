@@ -163,8 +163,8 @@
     </bean>
 
     <bean id="reID-search-service" class="org.eduze.fyp.rest.services.ReIDSearchService">
+        <constructor-arg value="CRAMP_re_id"/>
         <property name="personDAO" ref="personDAO"/>
-        <property name="reIDPath" value="CRAMP_re_id/"/>
         <property name="photoMapper" ref="photo-mapper"/>
     </bean>
 

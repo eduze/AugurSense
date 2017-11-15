@@ -25,6 +25,8 @@ public class ReIDSearchService {
 
     private PhotoMapper photoMapper = null;
 
+
+
     public void setPhotoMapper(PhotoMapper photoMapper) {
         this.photoMapper = photoMapper;
     }
@@ -37,8 +39,9 @@ public class ReIDSearchService {
     private Date toDate = null;
     private String candidateUUID = null;
 
-    public ReIDSearchService(){
+    public ReIDSearchService(String reIdPath){
         try {
+            setReIDPath(reIdPath);
             init();
         } catch (IOException e) {
             e.printStackTrace();
@@ -57,6 +60,8 @@ public class ReIDSearchService {
 
     public void setReIDPath(String re_id_path) {
         this.reIdPath = re_id_path;
+        if(!this.reIdPath.endsWith("/"))
+            this.reIdPath += "/";
     }
 
     public boolean verify(String uuid, Date fromDate, Date toDate)

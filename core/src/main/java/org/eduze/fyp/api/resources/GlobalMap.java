@@ -92,6 +92,7 @@ public class GlobalMap {
                 PersonSnapshot ps = pair.getValue().addPoint(localMap.getCameraId(), pair.getKey().toCoordinate());
 
                 pair.getKey().setUuid(ps.getUuid()); //passing uuid into personCoordinate
+                pair.getKey().setIds(pair.getValue().getIds());
 
                 if (pair.getKey().getImage() != null) {
                     logger.debug("Found an image for person {}", pair.getValue().getIds());
@@ -112,6 +113,7 @@ public class GlobalMap {
                 usedKNew.add(pair.getKey());
 
                 pair.getKey().setUuid(ps.getUuid()); //passing uuid into person coordinate
+                pair.getKey().setIds(idd);
 
                 if (pair.getKey().getImage() != null) {
                     logger.debug("Found a new person with image");
@@ -139,11 +141,14 @@ public class GlobalMap {
             List<Integer> toRemove = coordinates.keySet().stream()
                     .filter(id -> coordinates.get(id).getTimestamp() < minTimestamp)
                     .collect(Collectors.toList());
+
             toRemove.forEach(coordinates::remove);
 
             if (personLocation.getContributingCoordinates().size() == 0) {
                 logger.debug("Removing outdated person location {}", personLocation);
-
+                if(photoMapper != null){
+                    photoMapper.removeSnapshots(personLocation.getIds());
+                }
                 iterator.remove();
             }
         }
