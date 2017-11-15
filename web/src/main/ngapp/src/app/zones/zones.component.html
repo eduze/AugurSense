@@ -21,21 +21,21 @@
               <g *ngFor="let poly of polygons; let i = index">
                 <polygon class="zone" [attr.points]="poly.polygon" (click)="zoneClicked(i);" [class.zone-selected]="i === selectedZoneIndex"></polygon>
 
-                <text [attr.x] = "poly.midX" [attr.y] = "poly.midY-30"  font-size="15" text-anchor="middle">
+                <text [attr.x] = "poly.midX" [attr.y] = "poly.midY-30" fill="yellow" font-size="15" text-anchor="middle">
                   {{ poly.zone.name }}
                 </text>
 
-                <text [attr.x] = "poly.midX" [attr.y] = "poly.midY"  font-size="15" text-anchor="middle" *ngIf="poly.zoneStatistic != null && (selectedZoneIndex < 0 || selectedZoneIndex == i)">
-                  {{ poly.zoneStatistic.averagePersonCount }} People
+                <text [attr.x] = "poly.midX" [attr.y] = "poly.midY"  fill="yellow" font-size="15" text-anchor="middle" *ngIf="poly.zoneStatistic != null && (selectedZoneIndex < 0 || selectedZoneIndex == i)">
+                  {{ poly.zoneStatistic.averagePersonCount | number : '1.2-2'}} People
                 </text>
 
                 <g *ngIf="selectedZoneIndex == i && poly.zoneStatistic != null">
-                  <text [attr.x] = "neighbour.midX" [attr.y] = "neighbour.midY - 10" *ngFor="let neighbour of poly.outgoingMap" font-size="15" text-anchor="middle">
-                    + {{ neighbour.count * 100 }}%
+                  <text [attr.x] = "neighbour.midX"  fill="red" [attr.y] = "neighbour.midY - 10" *ngFor="let neighbour of poly.outgoingMap" font-size="15" text-anchor="middle">
+                    + {{ neighbour.count * 100 | number : '1.2-2' }}%
                   </text>
 
-                  <text [attr.x] = "neighbour.midX" [attr.y] = "neighbour.midY + 10" *ngFor="let neighbour of poly.incomingMap" font-size="15" text-anchor="middle">
-                    - {{ neighbour.count * 100 }}%
+                  <text [attr.x] = "neighbour.midX" fill="red" [attr.y] = "neighbour.midY + 10" *ngFor="let neighbour of poly.incomingMap" font-size="15" text-anchor="middle">
+                    - {{ neighbour.count * 100 | number : '1.2-2'}}%
                   </text>
 
                 </g>
