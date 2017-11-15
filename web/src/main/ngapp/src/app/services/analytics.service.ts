@@ -24,6 +24,7 @@ import 'rxjs/add/operator/toPromise';
 import {PersonSnapshot} from "../resources/person-snapshot";
 import {ZoneStatistic} from "../resources/zone-statistic";
 import {PersonImage} from "../resources/person-image";
+import {ReIdStatus} from "../resources/re-id-status";
 
 @Injectable()
 export class AnalyticsService {
@@ -33,11 +34,79 @@ export class AnalyticsService {
   constructor(private http: Http) {
   }
 
+  getProfile(uuid: String): Promise<PersonImage> {
+    return this.http.get(this.baseUrl + "profile/" + uuid)
+      .toPromise()
+      .then(response => {
+
+        let personImage = response.json();
+
+        let base64: string = "data:image/JPEG;base64," + personImage["image"];
+
+        let obj = personImage;
+        let img = new Image();
+        img.onload = function () {
+          obj["height"] = img.height;
+          obj["width"] = img.width;
+          console.log(obj);
+        };
+        img.src = base64;
+        obj["image"] = base64;
+
+        return personImage;
+      })
+      .catch(AnalyticsService.handleError);
+  }
+
   getRealTimeMap(): Promise<PersonSnapshot[][]> {
     return this.http.get(this.baseUrl + "realTimeMap")
       .toPromise()
       .then(response => {
         return response.json() as PersonSnapshot[][]
+      })
+      .catch(AnalyticsService.handleError);
+  }
+
+  invokeReId(uuid: String, from: number, to: number) : Promise<boolean> {
+    return this.http.get(this.baseUrl + "re_id/invoke/" + from +"/"  + to + "/" + uuid)
+      .toPromise()
+      .then(response => {
+        console.log(response.json());
+        return response.json();
+      })
+      .catch(AnalyticsService.handleError);
+  }
+
+  getReIdResults(uuid: String, from: number, to: number) : Promise<ReIdStatus> {
+    return this.http.get(this.baseUrl + "re_id/results/" + from +"/"  + to + "/" + uuid)
+      .toPromise()
+      .then(response => {
+        console.log(response.json());
+
+        let status = response.json() as ReIdStatus;
+
+        if(status.completed)
+        {
+          let results = status.results;
+
+          results.forEach((personImage) => {
+            let base64: string = "data:image/JPEG;base64," + personImage["image"];
+
+            let obj = personImage;
+            let img = new Image();
+            img.onload = function () {
+              obj["height"] = img.height;
+              obj["width"] = img.width;
+              console.log(obj);
+            };
+            img.src = base64;
+            obj["image"] = base64;
+
+          });
+
+        }
+        return status;
+
       })
       .catch(AnalyticsService.handleError);
   }
@@ -159,4 +228,12 @@ export class AnalyticsService {
       .catch(AnalyticsService.handleError);
   }
 
+  getTrackFromUUID(startTime: number, endTime: number, uuid: string) {
+    return this.http.get(this.baseUrl + "route/" + startTime + "/" + endTime + "/" + uuid)
+      .toPromise()
+      .then(response => {
+        return response.json() as PersonSnapshot[];
+      })
+      .catch(AnalyticsService.handleError);
+  }
 }

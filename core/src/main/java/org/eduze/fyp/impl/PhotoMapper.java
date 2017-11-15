@@ -53,8 +53,8 @@ public class PhotoMapper {
             new File(photoSavePath).mkdirs();
 
             BufferedImage view = ImageUtils.byteArrayToBufferedImage(pc.getImage());
-            File outputfile = new File(photoSavePath + "/" + ps.getUuid() + ".png");
-            ImageIO.write(view,"png", outputfile);
+            File outputfile = new File(photoSavePath + "/" + ps.getUuid() + ".jpg"); // TODO: Wont this replace images of same person?
+            ImageIO.write(view,"jpg", outputfile);
             logger.info("Saved " + outputfile.getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();

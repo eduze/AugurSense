@@ -65,7 +65,7 @@
     </bean>
 
     <bean id="photo-mapper" class="org.eduze.fyp.impl.PhotoMapper">
-        <property name="photoSavePath" value="captures"/>
+        <property name="photoSavePath" value="CRAMP_re_id/gallery"/>
     </bean>
 
     <bean id="camera-coordinator" class="org.eduze.fyp.impl.CentralizedCameraCoordinator">
@@ -151,6 +151,7 @@
     <!-- Analytics Controller -->
     <bean id="analytics-controller" class="org.eduze.fyp.rest.controllers.AnalyticsController">
         <constructor-arg ref="analytics-service"/>
+        <property name="reIDSearchService" ref="reID-search-service"/>
     </bean>
 
     <bean id="analytics-service" class="org.eduze.fyp.rest.services.AnalyticsService">
@@ -158,6 +159,12 @@
         <property name="zoneDAO" ref="zoneDAO" />
         <property name="captureStampDAO" ref="captureStampDAO"/>
         <property name="configurationManager" ref="configuration-manager"/>
+        <property name="photoMapper" ref="photo-mapper"/>
+    </bean>
+
+    <bean id="reID-search-service" class="org.eduze.fyp.rest.services.ReIDSearchService">
+        <property name="personDAO" ref="personDAO"/>
+        <property name="reIDPath" value="CRAMP_re_id/"/>
         <property name="photoMapper" ref="photo-mapper"/>
     </bean>
 
