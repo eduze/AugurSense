@@ -1,5 +1,8 @@
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {AnalyticsService} from "../services/analytics.service";
+import {ConfigService} from "../services/config.service";
+import {GlobalMap} from "../resources/global-map";
+import {CanvasUtils} from "../lib/utils/canvas-utils";
 
 @Component({
   selector: 'app-person-stop-points',
@@ -12,13 +15,15 @@ export class PersonStopPointsComponent implements OnInit, AfterViewInit {
   private cx: CanvasRenderingContext2D;
 
   // Date picker for heat map range
-  from: Date;
-  to: Date;
-  radius: number;
-  time: number; // Time duration min
+  from: Date = new Date(0);
+  to: Date = new Date();
+  radius: number = 10;
+  time: number = 1; // Time duration min
   stopPoints: number[][];
 
-  constructor(private analyticsService: AnalyticsService) {
+  globalMap : GlobalMap;
+
+  constructor(private analyticsService: AnalyticsService, private configService : ConfigService) {
   }
 
   ngOnInit() {
@@ -46,7 +51,14 @@ export class PersonStopPointsComponent implements OnInit, AfterViewInit {
       .then(stopPoints => {
         // set the width and height
         canvasEl.width = height;
-        canvasEl.height = width
+        canvasEl.height = width;
+
+        this.cx.fillStyle = 'white';
+        this.cx.globalAlpha = 0.8;
+        this.cx.fillRect(0,0,1000,1000);
+        this.cx.globalAlpha = 1;
+        this.cx.fillStyle="black";
+
         this.cx.strokeRect(0, 0, canvasEl.width, canvasEl.height);
 
         this.cx.strokeStyle = '#ff0000';
@@ -60,6 +72,16 @@ export class PersonStopPointsComponent implements OnInit, AfterViewInit {
       .catch(reason => console.log(reason));
   }
 
+  configureCanvas(canvasEl: HTMLCanvasElement): void {
+    this.cx = canvasEl.getContext('2d');
+
+    // set some default properties about the line
+    this.cx.lineWidth = 3;
+    this.cx.lineCap = 'round';
+
+    this.cx.strokeStyle = '#000';
+  }
+
   ngAfterViewInit(): void {
     const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
     this.cx = canvasEl.getContext('2d');
@@ -68,6 +90,13 @@ export class PersonStopPointsComponent implements OnInit, AfterViewInit {
     this.cx.lineWidth = 3;
     this.cx.lineCap = 'round';
     this.cx.strokeStyle = '#000000';
+
+    this.configService.getMap().then((globalMap) => {
+      this.globalMap = globalMap;
+      CanvasUtils.setBackgroundImage(this.canvas.nativeElement, this.globalMap.image, this.configureCanvas, this);
+
+      console.log(this.globalMap);
+    });
   }
 
   // generateHeatMap(): void {
