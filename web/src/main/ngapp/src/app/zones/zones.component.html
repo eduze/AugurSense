@@ -15,7 +15,7 @@
       <div class="row" *ngIf="globalMap">
         <div class="col-md-12 col-sm-12 col-xs-12">
 
-          <svg x="0" y="0" width="100%" height="700">
+          <svg x="0" y="0" width="100%" height="500">
             <g height="100%" width="100%">
               <image [attr.xlink:href]="globalMap.image" x="0" y="0" (click)="backgroundClicked();"></image>
               <g *ngFor="let poly of polygons; let i = index">
