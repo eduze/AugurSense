@@ -166,6 +166,32 @@ export class AnalyticsService {
       .catch(AnalyticsService.handleError);
   }
 
+  getTimeboundAllPhotos(from: number, to: number) : Promise<PersonImage[]> {
+    return this.http.get(this.baseUrl + "timeBoundMap/" + from + "/" + to + "/photos")
+      .toPromise()
+      .then(response => {
+        let results = response.json() as PersonImage[];
+
+        results.forEach((personImage) => {
+          let base64: string = "data:image/JPEG;base64," + personImage["image"];
+
+          let obj = personImage;
+          let img = new Image();
+          img.onload = function () {
+            obj["height"] = img.height;
+            obj["width"] = img.width;
+            console.log(obj);
+          };
+          img.src = base64;
+          obj["image"] = base64;
+
+        });
+
+        return results;
+      })
+      .catch(AnalyticsService.handleError);
+  }
+
   getRealtimeInfo(trackingId : number): Promise<PersonImage[]> {
     return this.http.get(this.baseUrl + "realTimeMap/" + trackingId)
       .toPromise()

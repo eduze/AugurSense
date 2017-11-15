@@ -206,12 +206,26 @@ public class AnalyticsController {
     }
 
     @GET
+    @Path("/timeBoundMap/{from}/{to}/photos")
+    public Response getTimeboundPhotos(@PathParam("from") long from, @PathParam("to") long to) {
+        try {
+            Date fromD = new Date(from);
+            Date toD = new Date(to);
+
+            return Response.ok(analyticsService.getAllPastPhotos(fromD,toD)).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining timebound photos. {}", e);
+            return Response.status(500).build();
+        }
+    }
+
+    @GET
     @Path("/trackingSnaps/{id}")
     public Response getTrackingSnaps(@PathParam("id") int id) {
         try {
             return Response.ok(analyticsService.getPastPhotos(id)).build();
         } catch (Exception e) {
-            logger.error("Error occurred when obtaining real time map. {}", e);
+            logger.error("Error occurred when obtaining tracking route snaps. {}", e);
             return Response.status(500).build();
         }
     }

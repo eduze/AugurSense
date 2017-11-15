@@ -3,6 +3,7 @@ import {PersonSnapshot} from "../resources/person-snapshot";
 import {GlobalMap} from "../resources/global-map";
 import {AnalyticsService} from "../services/analytics.service";
 import {ConfigService} from "../services/config.service";
+import {PersonImage} from "../resources/person-image";
 
 @Component({
   selector: 'app-time-bound-map',
@@ -116,6 +117,12 @@ export class TimeBoundMapComponent implements OnInit {
       })
       .catch(reason => console.log(reason));
 
+  }
+  personClicked(person: PersonImage) : void {
+    if(person.ids.length > 0) {
+      this.selectedTrackIndex = person.ids[0];
+    }
+    console.log("Person clicked" + person.ids[0].toString());
   }
 
   ngOnInit() {

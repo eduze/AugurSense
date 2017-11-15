@@ -1,5 +1,5 @@
 <div>
-  <div class="col-md-12" *ngIf="personImages != null">
+  <div class="col-md-12" *ngIf="personImages != null && personImages.length > 0">
       <div class="panel panel-default col-lg-2" style="height: 300px; padding: 0px;" *ngFor="let personImage of personImages">
         <div class="panel-heading" style="width: 100%;">{{ getDateString(personImage.timestamp) }}</div>
 
@@ -17,7 +17,10 @@
   <div *ngIf="personImages == null && showAll == false" style="display: flex;">
     No Track Selected
   </div>
-  <div *ngIf="personImages == null && showAll == true" style="display: flex;">
+  <div *ngIf="personImages != null && personImages.length == 0 && showAll == false" style="display: flex;">
+    No Track Selected
+  </div>
+  <div *ngIf="(personImages == null|| personImages.length == 0) && showAll == true" style="display: flex;">
     No Previews
   </div>
 

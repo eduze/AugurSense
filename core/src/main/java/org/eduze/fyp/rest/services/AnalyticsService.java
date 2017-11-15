@@ -186,6 +186,54 @@ public class AnalyticsService implements ProcessedMapListener {
     }
 
 
+    public List<PersonCoordinate> getAllPastPhotos(Date start, Date end){
+        File dir = new File(photoMapper.getPhotoSavePath());
+        dir.mkdirs();
+
+        Map<String,File> fileMap = new HashMap<>();
+
+        File[] snaps = dir.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".jpg");
+            }
+        });
+
+        for(File snap: snaps){
+            fileMap.put(snap.getName().replaceFirst("[.][^.]+$", ""),snap);
+        }
+
+
+        HashMap<Integer,Person> resultMap = new HashMap<>();
+        List<Person> candidates = personDAO.list(start,end);
+        for(Person p : candidates){
+            p.getIds().forEach((id)->{
+                if(fileMap.containsKey(p.getUuid())) {
+                    resultMap.put(id, p);
+                }
+            });
+        }
+
+        final List<PersonCoordinate> results = new LinkedList<>();
+
+        resultMap.values().forEach((p)->{
+            if(fileMap.containsKey(p.getUuid())){
+                try {
+                    byte[] bytes = ImageUtils.bufferedImageToByteArray(ImageIO.read(fileMap.get(p.getUuid())));
+                    PersonCoordinate result = new PersonCoordinate(p,bytes);
+                    results.add(result);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+        return results;
+
+    }
+
+
     public List<PersonCoordinate> getRealtimePhotosAll(){
 
         //TODO: Need to identify dead trackers here

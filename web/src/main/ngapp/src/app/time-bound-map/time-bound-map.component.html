@@ -61,7 +61,7 @@
       </h4>
     </div>
     <div class="panel-body">
-      <app-realtime-info [useRealtimeEndpoint] = "false" [showAll]="false" [refreshToggle]="false" [id]="selectedTrackIndex" [reIDOnClick]="true"></app-realtime-info>
+      <app-realtime-info [useRealtimeEndpoint] = "false" [showAll]="selectedTrackIndex==-1" [id]="selectedTrackIndex" [reIDOnClick]="selectedTrackIndex!=-1" [from]="from" [to]="to" (personClicked)="personClicked($event)" ></app-realtime-info>
     </div>
   </div>
 </div>

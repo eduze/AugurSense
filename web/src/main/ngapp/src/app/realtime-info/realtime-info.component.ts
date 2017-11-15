@@ -9,9 +9,30 @@ import {ConfigService} from "../services/config.service";
   styleUrls: ['./realtime-info.component.css']
 })
 export class RealtimeInfoComponent implements OnInit {
+  get to(): number {
+    return this._to;
+  }
+
+  @Input()
+  set to(value: number) {
+    this._to = value;
+    this.refresh();
+  }
+  get from(): number {
+    return this._from;
+  }
+
+  @Input()
+  set from(value: number) {
+    this._from = value;
+    this.refresh();
+  }
   get refreshToggle(): boolean {
     return this._refreshToggle;
   }
+
+  private _from : number = 0;
+  private _to : number = 0;
 
   @Input() set refreshToggle(value: boolean) {
     this._refreshToggle = value;
@@ -57,11 +78,13 @@ export class RealtimeInfoComponent implements OnInit {
 
   @Input() set id(value : number){
     this._id = value;
+    console.log("id" + value.toString());
     this.personImages = null;
     this.refresh();
   }
 
   refresh() : void{
+    console.debug("Refresh");
 
     if(this.useRealtimeEndpoint)
     {
@@ -71,28 +94,59 @@ export class RealtimeInfoComponent implements OnInit {
           this.personImages = null;
           return;
         }
-        this.analyticsService.getRealtimeInfo(this.id).then((pi) => {
-          this.personImages = pi;
-          console.log(pi);
-        });
+        else{
+          this.analyticsService.getRealtimeInfo(this.id).then((pi) => {
+            if(this.id<0 || this.useRealtimeEndpoint == false)
+              return;
+
+            this.personImages = pi;
+            console.log(pi);
+          });
+        }
+
       }
       else{
         this.analyticsService.getRealtimeAllInfo().then((pi) => {
+          if(this.useRealtimeEndpoint == false)
+            return;
+
           this.personImages = pi;
           console.log(pi);
         });
       }
 
     }
-    else{
-      if(this.id < 0){
-        this.personImages = null;
-        return;
-      }
-      this.analyticsService.getPastInfo(this.id).then((pi) => {
-        this.personImages = pi;
-        console.log(pi);
-      });
+    else
+      {
+        if(!this.showAll)
+        {
+          if(this.id < 0){
+            this.personImages = null;
+            console.log("cleared");
+            return;
+          }
+          else{
+            this.analyticsService.getPastInfo(this.id).then((pi) => {
+              if(this.id<0 || this.useRealtimeEndpoint == true)
+                return;
+              console.log("fetched " + this.id);
+              this.personImages = pi;
+              console.log(pi);
+            });
+          }
+        }
+        else{
+          console.debug("Requesting timebound photos");
+          this.analyticsService.getTimeboundAllPhotos(this.from,this.to).then((pi) => {
+            if(this.useRealtimeEndpoint == true)
+              return;
+
+            this.personImages = pi;
+            console.log(pi);
+          });
+        }
+
+
     }
 
 
