@@ -33,9 +33,27 @@ public class PersonLocation {
 
     private static final int HISTORY_SIZE = 20;
 
+    private int currentTrackSegmentIndex = 0;
+
     private final Set<Integer> ids = new HashSet<>();
     private Map<Integer, Coordinate> contributingCoordinates = new HashMap<>();
     private LinkedList<PersonSnapshot> snapshots = new LinkedList<>();
+
+    public int getCurrentTrackSegmentIndex() {
+        return currentTrackSegmentIndex;
+    }
+
+    public void incrementTrackSegmentIndex(){
+        this.currentTrackSegmentIndex++;
+        if(this.snapshots.size()>0)
+        {
+            snapshots.get(0).setTrackSegmentIndex(this.currentTrackSegmentIndex);
+        }
+    }
+
+    public void setCurrentTrackSegmentIndex(int currentTrackSegmentIndex) {
+        this.currentTrackSegmentIndex = currentTrackSegmentIndex;
+    }
 
     public PersonLocation() {
     }
@@ -100,10 +118,10 @@ public class PersonLocation {
 
         PersonSnapshot result = null;
         if(snapshots.size() > 0){
-            result = new PersonSnapshot(ids, coordinate,null,snapshots.get(0).getPersistantZone(),snapshots.get(0).getPersistantZone());
+            result = new PersonSnapshot(ids, coordinate,null,snapshots.get(0).getPersistantZone(),snapshots.get(0).getPersistantZone(),currentTrackSegmentIndex);
 
         }else{
-            result = new PersonSnapshot(ids, coordinate,null,null, null);
+            result = new PersonSnapshot(ids, coordinate,null,null, null,currentTrackSegmentIndex);
         }
         snapshots.addFirst(result);
         return result;

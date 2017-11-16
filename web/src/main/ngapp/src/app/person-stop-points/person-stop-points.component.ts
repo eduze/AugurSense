@@ -54,7 +54,7 @@ export class PersonStopPointsComponent implements OnInit, AfterViewInit {
         canvasEl.height = width;
 
         this.cx.fillStyle = 'white';
-        this.cx.globalAlpha = 0.8;
+        this.cx.globalAlpha = 0.8 ;
         this.cx.fillRect(0,0,1000,1000);
         this.cx.globalAlpha = 1;
         this.cx.fillStyle="black";

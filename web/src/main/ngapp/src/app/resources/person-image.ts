@@ -9,6 +9,7 @@ export class PersonImage {
   image: string;
   uuid: string;
   ids: number[];
+  trackSegmentIndex: number;
   height: number;
   width: number;
 }

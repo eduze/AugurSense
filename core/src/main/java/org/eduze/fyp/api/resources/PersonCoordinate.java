@@ -33,6 +33,16 @@ public class PersonCoordinate extends Coordinate {
 
     private Set<Integer> ids;
 
+    private int trackSegmentIndex;
+
+    public int getTrackSegmentIndex() {
+        return trackSegmentIndex;
+    }
+
+    public void setTrackSegmentIndex(int trackSegmentIndex) {
+        this.trackSegmentIndex = trackSegmentIndex;
+    }
+
     public PersonCoordinate() {
     }
 
@@ -41,6 +51,7 @@ public class PersonCoordinate extends Coordinate {
         this.image = image;
         this.uuid = p.getUuid();
         this.ids = p.getIds();
+        this.trackSegmentIndex = p.getTrackSegmentIndex();
     }
 
     public PersonCoordinate(double x, double y, long timestamp, double sitProbability, double standProbability, double headDirectionX, double headDirectionY, byte[] image) {

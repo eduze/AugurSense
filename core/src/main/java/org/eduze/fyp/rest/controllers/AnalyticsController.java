@@ -198,7 +198,20 @@ public class AnalyticsController {
             Date fromD = new Date(from);
             Date toD = new Date(to);
 
-            return Response.ok(analyticsService.getTimeBoundMovements(fromD,toD)).build();
+            return Response.ok(analyticsService.getTimeBoundMovements(fromD,toD,false)).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining real time map. {}", e);
+            return Response.status(500).build();
+        }
+    }
+    @GET
+    @Path("/timeBoundMap/{from}/{to}/trackSegmented")
+    public Response getTimeboundMapWithSegments(@PathParam("from") long from, @PathParam("to") long to) {
+        try {
+            Date fromD = new Date(from);
+            Date toD = new Date(to);
+
+            return Response.ok(analyticsService.getTimeBoundMovements(fromD,toD,true)).build();
         } catch (Exception e) {
             logger.error("Error occurred when obtaining real time map. {}", e);
             return Response.status(500).build();
@@ -223,7 +236,18 @@ public class AnalyticsController {
     @Path("/trackingSnaps/{id}")
     public Response getTrackingSnaps(@PathParam("id") int id) {
         try {
-            return Response.ok(analyticsService.getPastPhotos(id)).build();
+            return Response.ok(analyticsService.getPastPhotos(id,-1)).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining tracking route snaps. {}", e);
+            return Response.status(500).build();
+        }
+    }
+
+    @GET
+    @Path("/trackingSnaps/{id}/{segmentIndex}")
+    public Response getTrackingSnapsWithSegments(@PathParam("id") int id,@PathParam("segmentIndex") int segmentIndex) {
+        try {
+            return Response.ok(analyticsService.getPastPhotos(id,segmentIndex)).build();
         } catch (Exception e) {
             logger.error("Error occurred when obtaining tracking route snaps. {}", e);
             return Response.status(500).build();

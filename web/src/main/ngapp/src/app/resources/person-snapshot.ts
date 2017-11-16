@@ -31,6 +31,7 @@ export class PersonSnapshot {
   headDirectionY: number;
   uuid: string;
   previousUuid: string;
+  trackSegmentIndex : number;
 
   colour: string;
   standSitColour: string;

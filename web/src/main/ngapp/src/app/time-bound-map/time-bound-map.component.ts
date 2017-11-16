@@ -11,9 +11,29 @@ import {PersonImage} from "../resources/person-image";
   styleUrls: ['./time-bound-map.component.css']
 })
 export class TimeBoundMapComponent implements OnInit {
+  get selectedSegmentIndex(): number {
+    return this._selectedSegmentIndex;
+  }
+
+  set selectedSegmentIndex(value: number) {
+    this._selectedSegmentIndex = value;
+  }
+  get useTrackSegments(): boolean {
+    return this._useTrackSegments;
+  }
+
+  set useTrackSegments(value: boolean) {
+    this._useTrackSegments = value;
+    this.refresh();
+  }
   get selectedTrackIndex(): number {
     return this._selectedTrackIndex;
   }
+
+
+
+  private _useTrackSegments : boolean = false;
+
 
   set selectedTrackIndex(value: number) {
     this._selectedTrackIndex = value;
@@ -83,15 +103,31 @@ export class TimeBoundMapComponent implements OnInit {
   globalMap: GlobalMap;
 
   private _selectedTrackIndex : number = -1;
+  private _selectedSegmentIndex : number = -1;
+
 
 
   private backgroundClicked() : void{
     this.selectedTrackIndex = -1;
   }
 
+  private isSelected(p : PersonSnapshot) : boolean{
+    if(p.ids.length == 0)
+      return false;
+
+    if(!this.useTrackSegments){
+      return p.ids[0] == this.selectedTrackIndex;
+    }
+    else{
+      return p.ids[0] == this.selectedTrackIndex && p.trackSegmentIndex == this.selectedSegmentIndex;
+    }
+  }
+
   private trackClicked(track:PersonSnapshot[]): void{
-    if(track[0].ids.length > 0)
+    if(track[0].ids.length > 0) {
       this.selectedTrackIndex = track[0].ids[0];
+      this.selectedSegmentIndex = track[0].trackSegmentIndex;
+    }
     console.log("Track clicked" + track[0].ids[0].toString());
     console.log(track);
   }
@@ -104,7 +140,7 @@ export class TimeBoundMapComponent implements OnInit {
     if(this.endTime == null)
       return;
 
-    this.analyticsService.getTimeboundMap(this.from,this.to)
+    this.analyticsService.getTimeboundMap(this.from,this.to,this.useTrackSegments)
       .then(ps => {
         this.personSnapshots = ps;
         ps.forEach((item)=>{

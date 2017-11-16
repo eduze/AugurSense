@@ -49,6 +49,10 @@ public class Person {
     @Column(name = "time_stamp")
     private Date timestamp;
 
+    private int trackSegmentIndex;
+
+
+
     private String uuid;
     private String previousUuid;
 
@@ -119,7 +123,7 @@ public class Person {
     protected Person() {
     }
 
-    public Person(Set<Integer> ids, long timestamp, double x, double y,double sitProbability, double standProbability, double headDirectionX, double headDirectionY, int instantZoneId, int persistantZoneId, int pastPersistantZoneId, String uuid, String previousUuid) {
+    public Person(Set<Integer> ids, long timestamp, double x, double y,double sitProbability, double standProbability, double headDirectionX, double headDirectionY, int instantZoneId, int persistantZoneId, int pastPersistantZoneId, String uuid, String previousUuid, int trackSegmentIndex) {
         setIds(ids);
         this.timestamp = new Date(timestamp);
         this.x = x;
@@ -133,6 +137,7 @@ public class Person {
         this.headDirectionX = headDirectionX;
         this.headDirectionY = headDirectionY;
         this.uuid = uuid;
+        this.trackSegmentIndex = trackSegmentIndex;
         this.previousUuid = previousUuid;
     }
 
@@ -196,6 +201,14 @@ public class Person {
 
     public void setIds(Set<Integer> ids) {
         this.ids = new HashSet<>(ids);
+    }
+
+    public int getTrackSegmentIndex() {
+        return trackSegmentIndex;
+    }
+
+    public void setTrackSegmentIndex(int trackSegmentIndex) {
+        this.trackSegmentIndex = trackSegmentIndex;
     }
 }
 

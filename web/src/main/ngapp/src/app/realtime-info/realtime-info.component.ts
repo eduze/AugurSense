@@ -9,6 +9,24 @@ import {ConfigService} from "../services/config.service";
   styleUrls: ['./realtime-info.component.css']
 })
 export class RealtimeInfoComponent implements OnInit {
+  get segmentIndex(): number {
+    return this._segmentIndex;
+  }
+
+  @Input()
+  set segmentIndex(value: number) {
+    this._segmentIndex = value;
+    this.refresh();
+  }
+  get useTrackSegment(): boolean {
+    return this._useTrackSegment;
+  }
+
+  @Input()
+  set useTrackSegment(value: boolean) {
+    this._useTrackSegment = value;
+    this.refresh();
+  }
   get to(): number {
     return this._to;
   }
@@ -62,6 +80,10 @@ export class RealtimeInfoComponent implements OnInit {
 
   private _id : number = -1;
 
+  private _segmentIndex: number = -1;
+
+  private _useTrackSegment: boolean = false;
+
   private _showAll : boolean = false;
 
   private _refreshToggle: boolean = false;
@@ -107,7 +129,7 @@ export class RealtimeInfoComponent implements OnInit {
       }
       else{
         this.analyticsService.getRealtimeAllInfo().then((pi) => {
-          if(this.useRealtimeEndpoint == false)
+          if(this.useRealtimeEndpoint == false || this.id>=0)
             return;
 
           this.personImages = pi;
@@ -126,8 +148,8 @@ export class RealtimeInfoComponent implements OnInit {
             return;
           }
           else{
-            this.analyticsService.getPastInfo(this.id).then((pi) => {
-              if(this.id<0 || this.useRealtimeEndpoint == true)
+            this.analyticsService.getPastInfo(this.id,this.segmentIndex, this.useTrackSegment).then((pi) => {
+              if(this.id <0 || this.useRealtimeEndpoint == true)
                 return;
               console.log("fetched " + this.id);
               this.personImages = pi;
@@ -138,7 +160,7 @@ export class RealtimeInfoComponent implements OnInit {
         else{
           console.debug("Requesting timebound photos");
           this.analyticsService.getTimeboundAllPhotos(this.from,this.to).then((pi) => {
-            if(this.useRealtimeEndpoint == true)
+            if(this.useRealtimeEndpoint == true || this.id >= 0)
               return;
 
             this.personImages = pi;

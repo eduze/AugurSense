@@ -82,26 +82,45 @@ public class GlobalMap {
         Set<PersonLocation> usedVPL = new HashSet<>();
         Set<PersonLocation> newPeople = new HashSet<>();
         tuples.forEach(pair -> {
-            if (!usedKNew.contains(pair.getKey()) && !usedVPL.contains(pair.getValue()) && pair.distance() < Constants.DISTANCE_THRESHOLD) {
+            boolean added = false;
+            if (pair.distance() < Constants.DISTANCE_THRESHOLD) {
 
-                if(this.accuracyTester != null)
-                    this.accuracyTester.reportPointDeviation(pair.getKey(),pair.getValue(), localMap.getCameraId(), localMap.getTimestamp());
+                if(!usedKNew.contains(pair.getKey()) && !usedVPL.contains(pair.getValue()))
+                {
+                    if(this.accuracyTester != null)
+                        this.accuracyTester.reportPointDeviation(pair.getKey(),pair.getValue(), localMap.getCameraId(), localMap.getTimestamp());
 
-                usedKNew.add(pair.getKey());
-                usedVPL.add(pair.getValue());
-                PersonSnapshot ps = pair.getValue().addPoint(localMap.getCameraId(), pair.getKey().toCoordinate());
+                    usedKNew.add(pair.getKey());
+                    usedVPL.add(pair.getValue());
+                    PersonSnapshot ps = pair.getValue().addPoint(localMap.getCameraId(), pair.getKey().toCoordinate());
 
-                pair.getKey().setUuid(ps.getUuid()); //passing uuid into personCoordinate
-                pair.getKey().setIds(pair.getValue().getIds());
+                    pair.getKey().setUuid(ps.getUuid()); //passing uuid into personCoordinate
+                    pair.getKey().setIds(pair.getValue().getIds());
 
-                if (pair.getKey().getImage() != null) {
-                    logger.debug("Found an image for person {}", pair.getValue().getIds());
-                    // TODO: 10/3/17 Do the re-id part here
+                    if (pair.getKey().getImage() != null) {
+                        logger.debug("Found an image for person {}", pair.getValue().getIds());
+                        // TODO: 10/3/17 Do the re-id part here
 
-                    photoMapper.addSnapshot(pair.getKey(),pair.getValue().getIds(), ps);
+                        photoMapper.addSnapshot(pair.getKey(),pair.getValue().getIds(), ps);
+                    }
+
+                    added = true;
+                }
+                else if(usedVPL.contains(pair.getValue())){
+                    if(pair.distance() < Constants.DISTANCE_CONFLICT_THRESHOLD){
+                        //We have another point very close to an assigned pair. Increment segment index to break tracking
+                        pair.getValue().incrementTrackSegmentIndex();
+                    }
+                }
+                else if(usedKNew.contains(pair.getKey())){
+                    if(pair.distance() < Constants.DISTANCE_CONFLICT_THRESHOLD){
+                        //We have another point very close to an assigned pair. Increment segment index to break tracking
+                        pair.getValue().incrementTrackSegmentIndex();
+                    }
                 }
 
-            } else if (!usedKNew.contains(pair.getKey()) && pair.getValue() == null) {
+            }
+            if (!added && !usedKNew.contains(pair.getKey()) && pair.getValue() == null) {
                 int id = nextID();
                 Set<Integer> idd = new HashSet<>();
                 idd.add(id);

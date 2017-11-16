@@ -111,9 +111,9 @@ public class AnalyticsService implements ProcessedMapListener {
 
 
     }
-    public List<List<Person>> getTimeBoundMovements(Date start,Date end){
+    public List<List<Person>> getTimeBoundMovements(Date start,Date end, boolean useSegmentIndex){
         List<Person> candidates = personDAO.list(start,end);
-        Map<Integer,List<Person>> trackedCandidates = new HashMap<>();
+        Map<String,List<Person>> trackedCandidates = new HashMap<>();
 
         for(Person p : candidates){
 //            List<Person> target = null;
@@ -126,7 +126,10 @@ public class AnalyticsService implements ProcessedMapListener {
 //            target.add(p);
 //
 //            trackedCandidates.put(p.getUuid(),target);
-            for(int id: p.getIds()){
+            for(int _id: p.getIds()){
+                String id = String.valueOf(_id);
+                if(useSegmentIndex)
+                    id += "_" + p.getTrackSegmentIndex();
                 if(!trackedCandidates.containsKey(id)) {
                     trackedCandidates.put(id, new ArrayList<>());
                 }
@@ -148,7 +151,7 @@ public class AnalyticsService implements ProcessedMapListener {
         return result;
     }
 
-    public List<PersonCoordinate> getPastPhotos(int trackingId){
+    public List<PersonCoordinate> getPastPhotos(int trackingId, int segmentIndex){
         File dir = new File(photoMapper.getPhotoSavePath());
         dir.mkdirs();
 
@@ -169,6 +172,8 @@ public class AnalyticsService implements ProcessedMapListener {
 
         List<Person> candidates = personDAO.getPersonFromTrackingId(trackingId);
         for(Person p : candidates){
+            if(segmentIndex >= 0 && p.getTrackSegmentIndex() != segmentIndex)
+                continue;
             if(fileMap.containsKey(p.getUuid())){
                 try {
                     byte[] bytes = ImageUtils.bufferedImageToByteArray(ImageIO.read(fileMap.get(p.getUuid())));

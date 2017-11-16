@@ -111,8 +111,11 @@ export class AnalyticsService {
       .catch(AnalyticsService.handleError);
   }
 
-  getTimeboundMap(from: number, to:number): Promise<PersonSnapshot[][]> {
-    return this.http.get(this.baseUrl + "timeBoundMap/" + from + "/" + to)
+  getTimeboundMap(from: number, to:number, useTrackSegments:boolean): Promise<PersonSnapshot[][]> {
+    let url = this.baseUrl + "timeBoundMap/" + from + "/" + to;
+    if(useTrackSegments)
+      url += "/trackSegmented";
+    return this.http.get(url)
       .toPromise()
       .then(response => {
         return response.json() as PersonSnapshot[][]
@@ -254,8 +257,12 @@ export class AnalyticsService {
     return Promise.reject(error.message || error);
   }
 
-  getPastInfo(trackingId : number): Promise<PersonImage[]> {
-    return this.http.get(this.baseUrl + "trackingSnaps/" + trackingId)
+  getPastInfo(trackingId : number, segmentIndex: number, useSegmentIndex:boolean): Promise<PersonImage[]> {
+    let url = this.baseUrl + "trackingSnaps/" + trackingId;
+    if(useSegmentIndex){
+      url += "/" + segmentIndex;
+    }
+    return this.http.get(url)
       .toPromise()
       .then(response => {
         let results = response.json() as PersonImage[];

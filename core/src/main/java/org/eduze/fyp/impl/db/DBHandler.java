@@ -107,7 +107,7 @@ public class DBHandler implements ProcessedMapListener {
                     if(this.photoMapper != null)
                         photoMapper.onDBStore(snapshot);
 
-                    return new Person(snapshot.getIds(),snapshot.getTimestamp(),snapshot.getX(),snapshot.getY(),snapshot.getSitProbability(),snapshot.getStandProbability(), snapshot.getHeadDirectionX(),snapshot.getHeadDirectionY(),instantZone,persistantZone,pastPersistantZone, snapshot.getUuid(), previousUuid);
+                    return new Person(snapshot.getIds(),snapshot.getTimestamp(),snapshot.getX(),snapshot.getY(),snapshot.getSitProbability(),snapshot.getStandProbability(), snapshot.getHeadDirectionX(),snapshot.getHeadDirectionY(),instantZone,persistantZone,pastPersistantZone, snapshot.getUuid(), previousUuid, snapshot.getTrackSegmentIndex());
 
 
                 })

@@ -27,6 +27,7 @@ import java.util.Set;
 
 public class PersonSnapshot extends Coordinate {
 
+    private int trackSegmentIndex;
     private Set<Integer> ids = new HashSet<>();
     private Zone instanceZone;
 
@@ -44,17 +45,18 @@ public class PersonSnapshot extends Coordinate {
 
     public PersonSnapshot() { }
 
-    public PersonSnapshot(Set<Integer> ids, Coordinate coordinate, Zone instantZone, Zone persistantZone, Zone prevPersistantZone) {
-        this(coordinate.getX(), coordinate.getY(), coordinate.getTimestamp(),coordinate.getSitProbability(),coordinate.getStandProbability(),coordinate.getHeadDirectionX(),coordinate.getHeadDirectionY(), ids, instantZone,persistantZone, prevPersistantZone);
+    public PersonSnapshot(Set<Integer> ids, Coordinate coordinate, Zone instantZone, Zone persistantZone, Zone prevPersistantZone, int trackSegmentIndex) {
+        this(coordinate.getX(), coordinate.getY(), coordinate.getTimestamp(),coordinate.getSitProbability(),coordinate.getStandProbability(),coordinate.getHeadDirectionX(),coordinate.getHeadDirectionY(), ids, instantZone,persistantZone, prevPersistantZone, trackSegmentIndex);
     }
 
-    public PersonSnapshot(double x, double y, long timestamp, double sitProbaility, double standProbability, double headDirectionX, double headDirectionY, Set<Integer> ids, Zone instanceZone, Zone persistantZone, Zone pastPersistantZone) {
+    public PersonSnapshot(double x, double y, long timestamp, double sitProbaility, double standProbability, double headDirectionX, double headDirectionY, Set<Integer> ids, Zone instanceZone, Zone persistantZone, Zone pastPersistantZone, int trackSegmentIndex) {
         super(x, y, timestamp, sitProbaility, standProbability,headDirectionX,headDirectionY);
         this.ids = ids;
         this.instanceZone = instanceZone;
         this.persistantZone = persistantZone;
         this.pastPersistantZone = pastPersistantZone;
         this.uuid = String.valueOf(System.currentTimeMillis() % (1000000)) + "_" + (Math.abs(idGenerator.nextInt())%100);
+        this.trackSegmentIndex = trackSegmentIndex;
     }
 
     private boolean stored = false;
@@ -97,5 +99,13 @@ public class PersonSnapshot extends Coordinate {
 
     public void markStored() {
         this.stored = true;
+    }
+
+    public int getTrackSegmentIndex() {
+        return trackSegmentIndex;
+    }
+
+    public void setTrackSegmentIndex(int trackSegmentIndex) {
+        this.trackSegmentIndex = trackSegmentIndex;
     }
 }
