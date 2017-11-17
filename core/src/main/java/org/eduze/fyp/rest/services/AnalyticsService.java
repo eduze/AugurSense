@@ -95,7 +95,7 @@ public class AnalyticsService implements ProcessedMapListener {
     public AnalyticsService() {
     }
 
-    public List<Person> getTrackingRouteFromUUID(Date start, Date end, String uuid)
+    public List<Person> getTrackingRouteFromUUID(Date start, Date end, String uuid, boolean segmented)
     {
         Person target = personDAO.getPerson(uuid);
         List<Person> candidates = personDAO.list(start,end);
@@ -103,9 +103,19 @@ public class AnalyticsService implements ProcessedMapListener {
 
         for(int trackId : target.getIds())
         {
-            candidates.stream()
-                    .filter((person -> person.getIds().contains(trackId)))
-                    .forEach(result::add);
+            if(!segmented)
+            {
+                candidates.stream()
+                        .filter((person -> person.getIds().contains(trackId)))
+                        .forEach(result::add);
+            }
+            else{
+                candidates.stream()
+                        .filter((person -> person.getIds().contains(trackId) && person.getTrackSegmentIndex() == target.getTrackSegmentIndex()))
+                        .forEach(result::add);
+                System.out.println("Segmented");
+            }
+
         }
         return result;
 

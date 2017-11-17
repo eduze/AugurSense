@@ -39,6 +39,8 @@ public class ReIDSearchService {
     private Date toDate = null;
     private String candidateUUID = null;
 
+    private boolean segmented = false;
+
     public ReIDSearchService(String reIdPath){
         try {
             setReIDPath(reIdPath);
@@ -64,8 +66,11 @@ public class ReIDSearchService {
             this.reIdPath += "/";
     }
 
-    public boolean verify(String uuid, Date fromDate, Date toDate)
+    public boolean verify(String uuid, Date fromDate, Date toDate, boolean segmented)
     {
+        if(segmented != this.segmented)
+            return false;
+
         if(!fromDate.equals(this.fromDate)) {
             logger.warn("Unknown fromDate");
             return false;
@@ -110,8 +115,8 @@ public class ReIDSearchService {
 
     }
 
-    public List<PersonCoordinate> obtainSearchResults(String candidateUUID, Date fromDate, Date toDate) throws IOException {
-        if(!verify(candidateUUID,fromDate,toDate))
+    public List<PersonCoordinate> obtainSearchResults(String candidateUUID, Date fromDate, Date toDate, boolean segmented) throws IOException {
+        if(!verify(candidateUUID,fromDate,toDate,segmented))
             return null;
         File doneFile = new File(getReIDPath() + "communicator/.done");
         if(!doneFile.exists())
@@ -146,13 +151,13 @@ public class ReIDSearchService {
         return personResults;
     }
 
-    public void invokeSearch(String candidateUUID, Date startDate, Date endDate) throws IOException {
+    public void invokeSearch(String candidateUUID, Date startDate, Date endDate, boolean segmented) throws IOException {
         File doneFile = new File(getReIDPath() + "communicator/.done");
         if(doneFile.exists())
             doneFile.delete();
 
         updateProbeFile(candidateUUID);
-        int count = updateGalleryFile(startDate,endDate);
+        int count = updateGalleryFile(startDate,endDate, segmented);
 
         File flagFile = new File(getReIDPath() + "communicator/flag_file.txt");
 //        if(flagFile.exists())
@@ -171,6 +176,7 @@ public class ReIDSearchService {
         this.fromDate = startDate;
         this.toDate = endDate;
         this.candidateUUID = candidateUUID;
+        this.segmented = segmented;
     }
 
     public void updateProbeFile(String personUUID) throws IOException {
@@ -188,7 +194,7 @@ public class ReIDSearchService {
         bufferedWriter.close();
     }
 
-    public int updateGalleryFile(Date startDate, Date endDate) throws IOException {
+    public int updateGalleryFile(Date startDate, Date endDate, boolean segmented) throws IOException {
         List<Person> candidates = personDAO.list(startDate, endDate);
 
         this.pendingSearchCandidates =  new ArrayList<>();
@@ -203,7 +209,7 @@ public class ReIDSearchService {
         final boolean[] added = {false};
         final int[] addedCount = {0};
 
-        HashMap<Integer,Integer> addedTracks = new HashMap<>();
+        HashMap<String,Integer> addedTracks = new HashMap<>();
 
         candidates.forEach((candidate)->{
             File galleryFile = new File(getReIDPath() + "gallery/" + candidate.getUuid() + ".jpg");
@@ -213,15 +219,29 @@ public class ReIDSearchService {
                 boolean canAdd = true;
                 for(Integer id : candidate.getIds())
                 {
-                    if(addedTracks.containsKey(id)){
-                        if(addedTracks.get(id) > 3)
+                    if((!segmented && addedTracks.containsKey(String.valueOf(id))) || (segmented && addedTracks.containsKey(String.valueOf(id) + "_" + candidate.getTrackSegmentIndex()))){
+                        if((!segmented && addedTracks.get(String.valueOf(id)) > 3) || (segmented && addedTracks.get(String.valueOf(id) + "_"+ candidate.getTrackSegmentIndex()) > 3))
                         {
                             canAdd = false;
                         }
-                        addedTracks.put(id,addedTracks.get(id)+1);
+                        if(segmented)
+                        {
+                            addedTracks.put(id +"_" + candidate.getTrackSegmentIndex(),addedTracks.get(id + "_" + candidate.getTrackSegmentIndex())+1);
+                        }
+                        else{
+                            addedTracks.put(String.valueOf(id),addedTracks.get(String.valueOf(id))+1);
+                        }
+
                     }
                     else{
-                        addedTracks.put(id,1);
+                        if(segmented)
+                        {
+                            addedTracks.put(String.valueOf(id) + "_" + candidate.getTrackSegmentIndex(),1);
+                        }
+                        else{
+                            addedTracks.put(String.valueOf(id),1);
+                        }
+
                     }
                 }
                 if(canAdd)

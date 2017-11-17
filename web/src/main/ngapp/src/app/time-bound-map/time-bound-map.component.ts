@@ -157,6 +157,8 @@ export class TimeBoundMapComponent implements OnInit {
   personClicked(person: PersonImage) : void {
     if(person.ids.length > 0) {
       this.selectedTrackIndex = person.ids[0];
+      this.selectedSegmentIndex = person.trackSegmentIndex;
+      console.log("Track Segment Index: " + person.trackSegmentIndex)
     }
     console.log("Person clicked" + person.ids[0].toString());
   }

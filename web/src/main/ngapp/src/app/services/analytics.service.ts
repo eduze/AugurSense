@@ -67,8 +67,13 @@ export class AnalyticsService {
       .catch(AnalyticsService.handleError);
   }
 
-  invokeReId(uuid: String, from: number, to: number) : Promise<boolean> {
-    return this.http.get(this.baseUrl + "re_id/invoke/" + from +"/"  + to + "/" + uuid)
+  invokeReId(uuid: String, from: number, to: number, useTrackSegments:boolean) : Promise<boolean> {
+    let url = this.baseUrl + "re_id/invoke/" + from +"/"  + to + "/" + uuid;
+    if(useTrackSegments)
+    {
+      url = url + "/segmented";
+    }
+    return this.http.get(url)
       .toPromise()
       .then(response => {
         console.log(response.json());
@@ -77,8 +82,13 @@ export class AnalyticsService {
       .catch(AnalyticsService.handleError);
   }
 
-  getReIdResults(uuid: String, from: number, to: number) : Promise<ReIdStatus> {
-    return this.http.get(this.baseUrl + "re_id/results/" + from +"/"  + to + "/" + uuid)
+  getReIdResults(uuid: String, from: number, to: number, useTrackSegments:boolean) : Promise<ReIdStatus> {
+    let url = this.baseUrl + "re_id/results/" + from +"/"  + to + "/" + uuid;
+    if(useTrackSegments)
+    {
+      url = url + "/segmented";
+    }
+    return this.http.get(url)
       .toPromise()
       .then(response => {
         console.log(response.json());
@@ -287,8 +297,13 @@ export class AnalyticsService {
       .catch(AnalyticsService.handleError);
   }
 
-  getTrackFromUUID(startTime: number, endTime: number, uuid: string) {
-    return this.http.get(this.baseUrl + "route/" + startTime + "/" + endTime + "/" + uuid)
+  getTrackFromUUID(startTime: number, endTime: number, uuid: string, useSegments: boolean) {
+    let url = this.baseUrl + "route/" + startTime + "/" + endTime + "/" + uuid;
+    if(useSegments)
+    {
+      url = url + "/segmented";
+    }
+    return this.http.get(url)
       .toPromise()
       .then(response => {
         return response.json() as PersonSnapshot[];

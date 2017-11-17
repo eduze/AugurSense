@@ -72,9 +72,22 @@ public class AnalyticsController {
 
     @GET
     @Path("/route/{from}/{to}/{uuid}")
-    public Response getTimestampCount(@PathParam("from") long from, @PathParam("to") long to, @PathParam("uuid") String uuid){
+    public Response getTrackFromUUID(@PathParam("from") long from, @PathParam("to") long to, @PathParam("uuid") String uuid){
         try {
-            return Response.ok(analyticsService.getTrackingRouteFromUUID(new Date(from),new Date(to),uuid)).build();
+            return Response.ok(analyticsService.getTrackingRouteFromUUID(new Date(from),new Date(to),uuid,false)).build();
+        }
+        catch (Exception e) {
+            logger.error("Error occurred when obtaining map. {}", e);
+            return Response.status(500).build();
+        }
+
+    }
+
+    @GET
+    @Path("/route/{from}/{to}/{uuid}/segmented")
+    public Response getSegmentedTrackFromUUID(@PathParam("from") long from, @PathParam("to") long to, @PathParam("uuid") String uuid){
+        try {
+            return Response.ok(analyticsService.getTrackingRouteFromUUID(new Date(from),new Date(to),uuid, true)).build();
         }
         catch (Exception e) {
             logger.error("Error occurred when obtaining map. {}", e);
@@ -87,7 +100,7 @@ public class AnalyticsController {
     @Path("/re_id/invoke/{from}/{to}/{uuid}")
     public Response invokeReIdSearch(@PathParam("from") long from, @PathParam("to") long to,@PathParam("uuid") String uuid){
         try {
-            reIDSearchService.invokeSearch(uuid,new Date(from),new Date(to));
+            reIDSearchService.invokeSearch(uuid,new Date(from),new Date(to),false);
             return Response.ok(true).build();
         }
         catch (Exception e) {
@@ -98,17 +111,64 @@ public class AnalyticsController {
     }
 
     @GET
+    @Path("/re_id/invoke/{from}/{to}/{uuid}/segmented")
+    public Response invokeReIdSearchSegmented(@PathParam("from") long from, @PathParam("to") long to,@PathParam("uuid") String uuid){
+        try {
+            reIDSearchService.invokeSearch(uuid,new Date(from),new Date(to),true);
+            return Response.ok(true).build();
+        }
+        catch (Exception e) {
+            logger.error("Error occurred when obtaining map. {}", e);
+            return Response.status(500).build();
+        }
+
+    }
+
+
+    @GET
     @Path("/re_id/results/{from}/{to}/{uuid}")
-    public Response obtainResults(@PathParam("from") long from, @PathParam("to") long to,@PathParam("uuid") String uuid){
+    public Response obtainReIDResults(@PathParam("from") long from, @PathParam("to") long to,@PathParam("uuid") String uuid){
         try {
             ReIDStatus reIDStatus = null;
 
-            if(!reIDSearchService.verify(uuid,new Date(from), new Date(to)))
+            if(!reIDSearchService.verify(uuid,new Date(from), new Date(to),false))
             {
                 reIDStatus = new ReIDStatus(new ArrayList<>(),false,false,true);
             }
             else{
-                List<PersonCoordinate> results = reIDSearchService.obtainSearchResults(uuid,new Date(from), new Date(to));
+                List<PersonCoordinate> results = reIDSearchService.obtainSearchResults(uuid,new Date(from), new Date(to),false);
+
+                if(results == null)
+                {
+                    reIDStatus = new ReIDStatus(new ArrayList<>(),true,false,false);
+                }
+                else{
+                    reIDStatus = new ReIDStatus(results,false,true,false);
+                }
+
+            }
+
+            return Response.ok(reIDStatus).build();
+        }
+        catch (Exception e) {
+            logger.error("Error occurred when obtaining map. {}", e);
+            return Response.status(500).build();
+        }
+
+    }
+
+    @GET
+    @Path("/re_id/results/{from}/{to}/{uuid}/segmented")
+    public Response obtainReIDResultsSegmented(@PathParam("from") long from, @PathParam("to") long to,@PathParam("uuid") String uuid){
+        try {
+            ReIDStatus reIDStatus = null;
+
+            if(!reIDSearchService.verify(uuid,new Date(from), new Date(to),true))
+            {
+                reIDStatus = new ReIDStatus(new ArrayList<>(),false,false,true);
+            }
+            else{
+                List<PersonCoordinate> results = reIDSearchService.obtainSearchResults(uuid,new Date(from), new Date(to),true);
 
                 if(results == null)
                 {

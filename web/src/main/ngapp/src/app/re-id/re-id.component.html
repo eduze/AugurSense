@@ -38,7 +38,7 @@
           <div *ngIf="searchInvoked==false">
             <div class="col-md-12" *ngIf="matchedPersons != null">
               <div *ngFor="let matchedPerson of matchedPersons">
-                <div class="panel panel-success col-md-2" (click)="toggleSelection(matchedPerson)"  *ngIf="selectedIndices.includes(matchedPerson.ids[0])" style="height: 300px; padding: 0px;">
+                <div class="panel panel-success col-md-2" (click)="toggleSelection(matchedPerson)"  *ngIf="isImageSelected(matchedPerson)" style="height: 300px; padding: 0px;">
                   <div class="panel-heading" style="width: 100%;">{{ getDateString(matchedPerson.timestamp) }}</div>
 
                   <div class="panel-body" style="height:80%; width: 100%; text-align: center;">
@@ -46,7 +46,7 @@
                   </div>
 
                 </div>
-                <div class="panel panel-default col-md-2" (click)="toggleSelection(matchedPerson)"  *ngIf="!selectedIndices.includes(matchedPerson.ids[0])" style="height: 300px; padding: 0px;">
+                <div class="panel panel-default col-md-2" (click)="toggleSelection(matchedPerson)"  *ngIf="!isImageSelected(matchedPerson)" style="height: 300px; padding: 0px;">
                   <div class="panel-heading" style="width: 100%;">{{ getDateString(matchedPerson.timestamp) }}</div>
 
                   <div class="panel-body" style="height:80%; width: 100%; text-align: center;">
@@ -78,6 +78,8 @@
     <div class="panel panel-default">
       <div class="panel-heading">
         <h4 class="panel-title">Selection Count: <span class="label label-default">{{personSnapshots.length}}</span>
+          <p-checkbox [(ngModel)]="useTrackSegments" binary="true"  value="UseTrackSegments" label="Use Track Segments"></p-checkbox>
+
         </h4>
       </div>
 
@@ -98,17 +100,17 @@
               </g>
               <g *ngFor="let personTrack of personSnapshots" (click)="trackClicked(personTrack);">
                 <g *ngIf="personTrack[0] != null">
-                  <g *ngIf="personTrack[0].ids.length == 0 || personTrack[0].ids[0] != selectedTrackIndex">
+                  <g *ngIf="personTrack[0].ids.length == 0 || !isSelected(personTrack[0])">
                     <circle [attr.fill]="personTrack[0].colour" r="5" [attr.cx]="personTrack[0].x" [attr.cy]="personTrack[0].y" ></circle>
                   </g>
-                  <g *ngIf="personTrack[0].ids.length != 0 && personTrack[0].ids[0] == selectedTrackIndex">
+                  <g *ngIf="personTrack[0].ids.length != 0 && isSelected(personTrack[0])">
                     <circle fill="gold" r="5" [attr.cx]="personTrack[0].x" [attr.cy]="personTrack[0].y" ></circle>
                   </g>
 
-                  <g *ngIf="personTrack[0].ids.length == 0 || personTrack[0].ids[0] != selectedTrackIndex">
+                  <g *ngIf="personTrack[0].ids.length == 0 || !isSelected(personTrack[0])">
                     <line [attr.stroke]="personTrack[0].colour" stroke-width="2" *ngFor="let person of personTrack | slice : 1; let i = index" [attr.x1]="personTrack[i].x" [attr.y1]="personTrack[i].y" [attr.x2]="personTrack[i+1].x" [attr.y2]="personTrack[i+1].y"></line>
                   </g>
-                  <g *ngIf="personTrack[0].ids.length != 0 && personTrack[0].ids[0] == selectedTrackIndex">
+                  <g *ngIf="personTrack[0].ids.length != 0 && isSelected(personTrack[0])">
                     <line stroke="gold" stroke-width="2" *ngFor="let person of personTrack | slice : 1; let i = index" [attr.x1]="personTrack[i].x" [attr.y1]="personTrack[i].y" [attr.x2]="personTrack[i+1].x" [attr.y2]="personTrack[i+1].y"></line>
                   </g>
 
