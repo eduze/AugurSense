@@ -119,8 +119,10 @@ public class AnalyticsService implements ProcessedMapListener {
         }
         return result;
 
-
     }
+
+
+
     public List<List<Person>> getTimeBoundMovements(Date start,Date end, boolean useSegmentIndex){
         List<Person> candidates = personDAO.list(start,end);
         Map<String,List<Person>> trackedCandidates = new HashMap<>();

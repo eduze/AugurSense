@@ -30,7 +30,7 @@
 
             <g *ngFor="let personTrack of personSnapshots" (click)="trackClicked(personTrack);">
               <g *ngIf="personTrack[0] != null">
-                <g *ngIf="isSelected(personTrack[0])">
+                <g *ngIf="!isSelected(personTrack[0])">
                   <circle [attr.fill]="personTrack[0].colour" r="5" [attr.cx]="personTrack[0].x" [attr.cy]="personTrack[0].y" ></circle>
                 </g>
                 <g *ngIf="isSelected(personTrack[0])">
