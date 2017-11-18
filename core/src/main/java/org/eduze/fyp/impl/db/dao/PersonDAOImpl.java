@@ -222,9 +222,24 @@ public class PersonDAOImpl implements PersonDAO {
     }
 
     @Override
-    public List<Object[]> getPersonCountVariation(Date from, Date to, String additionalVariation) {
+    public List<Object[]> getZonePersonCountVariation(Date from, Date to, String additionalVariation) {
         Session session = this.sessionFactory.openSession();
         Query query = session.createQuery("select P.timestamp, P.instantZoneId, count(P.uuid) as p_count, (select count(T.timestamp) from CaptureStamp T where T.timestamp = P.timestamp) as t_count from Person P where P.timestamp between :startTime and :endTime " + additionalVariation + " group by P.instantZoneId, P.timestamp")
+                .setParameter("startTime", from, TemporalType.TIMESTAMP)
+                .setParameter("endTime", to, TemporalType.TIMESTAMP);
+//        Query query = session.createQuery("select p.pastPersistantZoneId as pastZone, p.persistantZoneId as currentZone, count(p.id) from Person p  where p.timestamp between :startTime and :endTime group by p.pastPersistantZoneId, p.persistantZoneId")
+//                .setParameter("startTime", from, TemporalType.TIMESTAMP)
+//                .setParameter("endTime", to, TemporalType.TIMESTAMP);
+
+        List crossList = query.list();
+        session.close();
+        return crossList;
+    }
+
+    @Override
+    public List<Object[]> getTotalPersonCountVariation(Date from, Date to, String additionalVariation) {
+        Session session = this.sessionFactory.openSession();
+        Query query = session.createQuery("select P.timestamp, count(P.uuid) as p_count, (select count(T.timestamp) from CaptureStamp T where T.timestamp = P.timestamp) as t_count from Person P where P.timestamp between :startTime and :endTime " + additionalVariation + " group by P.timestamp")
                 .setParameter("startTime", from, TemporalType.TIMESTAMP)
                 .setParameter("endTime", to, TemporalType.TIMESTAMP);
 //        Query query = session.createQuery("select p.pastPersistantZoneId as pastZone, p.persistantZoneId as currentZone, count(p.id) from Person p  where p.timestamp between :startTime and :endTime group by p.pastPersistantZoneId, p.persistantZoneId")

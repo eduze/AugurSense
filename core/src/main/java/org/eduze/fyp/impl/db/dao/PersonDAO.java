@@ -54,6 +54,8 @@ public interface PersonDAO {
 
     List<Person[]> getZoneOutflow(Date from, Date to, int zoneId, boolean useSegments);
 
-    List<Object[]> getPersonCountVariation(Date from, Date to, String additionalCondition);
+    List<Object[]> getZonePersonCountVariation(Date from, Date to, String additionalCondition);
+
+    List<Object[]> getTotalPersonCountVariation(Date from, Date to, String additionalCondition);
 
 }
