@@ -8,11 +8,25 @@ import {Zone} from "../resources/zone"
   styleUrls: ['./zone-info.component.css']
 })
 export class ZoneInfoComponent implements OnInit {
+  get activeView(): string {
+    return this._activeView;
+  }
+
+  set activeView(value: string) {
+    this._activeView = value;
+  }
 
   constructor() {
 
   }
 
+  getTotal() : number{
+    return this.zoneStatistics[this.selectedIndex].totalIncoming + this.zoneStatistics[this.selectedIndex].totalOutgoing;
+  }
+
+  private totalFlowView = "totalFlow";
+  private averagePeopleCountView = "averagePeopleCount";
+  private _activeView : string = this.averagePeopleCountView;
   private _zones : Zone[];
   private _zoneStatistics: ZoneStatistic[];
   private _selectedIndex: number = -1;
@@ -58,12 +72,22 @@ export class ZoneInfoComponent implements OnInit {
 
   private incomingData: any;
   private outgoingData: any;
+  private averageCountVariationData: any;
+  averageStandingCountView: String = "averageStandingCount";
+  averageStandingCountVariationData: any;
+  averageSittingCountView: String = "averageSittingCount";
+  averageSittingCountVariationData: any;
 
-  refreshData(){
-    if(this.zones == null)
+  switchView (newView: string) : void
+  {
+    this.activeView = newView;
+  }
+
+  refreshData() {
+    if (this.zones == null)
       return;
 
-    if(this.zoneStatistic == null)
+    if (this.zoneStatistic == null)
       return;
 
     this.fromTimestamp = new Date(this.zoneStatistic.fromTimestamp).toLocaleString();
@@ -74,8 +98,10 @@ export class ZoneInfoComponent implements OnInit {
     var incomingDataLabels = [];
     var incomingData = [];
 
-    for(var key in this.zoneStatistic.incomingMap) {
-      if(this.zoneStatistic.incomingMap.hasOwnProperty(key)) {
+
+
+    for (var key in this.zoneStatistic.incomingMap) {
+      if (this.zoneStatistic.incomingMap.hasOwnProperty(key)) {
         incomingDataLabels.push(this.zones.filter(value => {
           return value.id.toString() == key;
         })[0].name);
@@ -104,8 +130,8 @@ export class ZoneInfoComponent implements OnInit {
     var outgoingDataLabels = [];
     var outgoingData = [];
 
-    for(var key in this.zoneStatistic.outgoingMap) {
-      if(this.zoneStatistic.outgoingMap.hasOwnProperty(key)) {
+    for (var key in this.zoneStatistic.outgoingMap) {
+      if (this.zoneStatistic.outgoingMap.hasOwnProperty(key)) {
         outgoingDataLabels.push(this.zones.filter(value => {
           return value.id.toString() == key;
         })[0].name);
@@ -129,6 +155,73 @@ export class ZoneInfoComponent implements OnInit {
             "#FFCE56"
           ]
         }]
+    };
+
+    let averageCountVariationLabels: string[] = [];
+    let averageCountVariationValues: number[] = [];
+
+    for (let key in this.zoneStatistic.totalCountVariation) {
+      if (this.zoneStatistic.totalCountVariation.hasOwnProperty(key)) {
+        averageCountVariationLabels.push(new Date(parseInt(key)).toLocaleTimeString());
+        averageCountVariationValues.push(this.zoneStatistic.totalCountVariation[key]);
+      }
+    }
+
+    this.averageCountVariationData = {
+      labels: averageCountVariationLabels,
+      datasets: [
+        {
+          label: 'Average People Count',
+          data: averageCountVariationValues,
+          fill: false,
+          borderColor: '#4bc0c0'
+        },
+      ]
+    };
+
+
+    let averageSittingCountVariationLabels: string[] = [];
+    let averageSittingCountVariationValues: number[] = [];
+
+    for (let key in this.zoneStatistic.totalSittingCountVariation) {
+      if (this.zoneStatistic.totalSittingCountVariation.hasOwnProperty(key)) {
+        averageSittingCountVariationLabels.push(new Date(parseInt(key)).toLocaleTimeString());
+        averageSittingCountVariationValues.push(this.zoneStatistic.totalSittingCountVariation[key]);
+      }
+    }
+
+    this.averageSittingCountVariationData = {
+      labels: averageSittingCountVariationLabels,
+      datasets: [
+        {
+          label: 'Average Sitting People Count',
+          data: averageSittingCountVariationValues,
+          fill: false,
+          borderColor: '#00d01c'
+        },
+      ]
+    };
+
+    let averageStandingCountVariationLabels: string[] = [];
+    let averageStandingCountVariationValues: number[] = [];
+
+    for (let key in this.zoneStatistic.totalStandingCountVariation) {
+      if (this.zoneStatistic.totalStandingCountVariation.hasOwnProperty(key)) {
+        averageStandingCountVariationLabels.push(new Date(parseInt(key)).toLocaleTimeString());
+        averageStandingCountVariationValues.push(this.zoneStatistic.totalStandingCountVariation[key]);
+      }
+    }
+
+    this.averageStandingCountVariationData = {
+      labels: averageStandingCountVariationLabels,
+      datasets: [
+        {
+          label: 'Average Standing People Count',
+          data: averageStandingCountVariationValues,
+          fill: false,
+          borderColor: '#e92890'
+        },
+      ]
     };
   }
 

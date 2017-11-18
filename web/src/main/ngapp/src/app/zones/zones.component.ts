@@ -123,6 +123,8 @@ export class ZonesComponent implements OnInit {
 
   }
 
+
+
   ngOnInit() {
     this.configService.getZones().then((zones) => {
       this.zones = zones;

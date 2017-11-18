@@ -2,6 +2,7 @@ package org.eduze.fyp.rest.resources;
 
 import jdk.nashorn.internal.runtime.regexp.joni.constants.StringType;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,6 +11,12 @@ public class ZoneStatistics {
     private double averageSittingCount;
     private double averageStandingCount;
     private double averageUnclassifiedPoseCount;
+
+    private Map<Long,Double> totalCountVariation;
+
+    private Map<Long,Double> totalStandingCountVariation;
+
+    private Map<Long,Double> totalSittingCountVariation;
 
 
     private long fromTimestamp;
@@ -24,6 +31,29 @@ public class ZoneStatistics {
     private long totalOutgoing = 0;
     private long totalIncoming = 0;
 
+    public Map<Long, Double> getTotalCountVariation() {
+        return totalCountVariation;
+    }
+
+    public void setTotalCountVariation(Map<Long, Double> totalCountVariation) {
+        this.totalCountVariation = totalCountVariation;
+    }
+
+    public Map<Long, Double> getTotalSittingCountVariation() {
+        return totalSittingCountVariation;
+    }
+
+    public Map<Long, Double> getTotalStandingCountVariation() {
+        return totalStandingCountVariation;
+    }
+
+    public void setTotalSittingCountVariation(Map<Long, Double> totalSittingCountVariation) {
+        this.totalSittingCountVariation = totalSittingCountVariation;
+    }
+
+    public void setTotalStandingCountVariation(Map<Long, Double> totalStandingCountVariation) {
+        this.totalStandingCountVariation = totalStandingCountVariation;
+    }
 
     public double getAverageSittingCount() {
         return averageSittingCount;

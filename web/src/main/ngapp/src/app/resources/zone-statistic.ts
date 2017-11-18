@@ -10,4 +10,10 @@ export class ZoneStatistic{
   totalIncoming: number;
   outgoingMap: {[id:number] : number};
   incomingMap: {[id:number] : number};
+
+  totalCountVariation : {[id:number] : number};
+
+  totalStandingCountVariation : {[id:number] : number};
+  totalSittingCountVariation : {[id:number] : number};
+
 }
