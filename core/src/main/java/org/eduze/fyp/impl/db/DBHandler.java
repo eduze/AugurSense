@@ -100,6 +100,18 @@ public class DBHandler implements ProcessedMapListener {
                             previousUuid = personSnapshot.getUuid();
                             break;
                         }
+                        if(persistantZone == pastPersistantZone)
+                        {
+                            if(personSnapshot.getPastPersistantZone() != null)
+                            {
+                                if(pastPersistantZone != personSnapshot.getPastPersistantZone().getId())
+                                {
+                                    pastPersistantZone = personSnapshot.getPastPersistantZone().getId();
+                                }
+
+                            }
+                        }
+
 
                     }
 

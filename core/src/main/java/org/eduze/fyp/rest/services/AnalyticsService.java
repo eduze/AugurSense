@@ -223,8 +223,8 @@ public class AnalyticsService implements ProcessedMapListener {
             fileMap.put(snap.getName().replaceFirst("[.][^.]+$", ""),snap);
         }
 
-
-        HashMap<Integer,Person> resultMap = new HashMap<>();
+        HashMap<String,Person> resultContentMap = new HashMap<>();
+        HashMap<Integer,Person> resultImageMap = new HashMap<>();
         List<Person[]> candidates = new ArrayList<>();
         if(isInflow)
             candidates.addAll(personDAO.getZoneInflow(start,end,zoneId, useSegments));
@@ -239,18 +239,21 @@ public class AnalyticsService implements ProcessedMapListener {
             Person p = (Person) ps[0];
             p.getIds().forEach((id)->{
                 if(fileMap.containsKey(p.getUuid())) {
-                    resultMap.put(id, p);
+                    resultImageMap.put(id, p);
+                    resultContentMap.put(p.getUuid(),p2);
                 }
             });
         }
 
         final List<PersonCoordinate> results = new LinkedList<>();
 
-        resultMap.values().forEach((p)->{
+        resultImageMap.values().forEach((p)->{
             if(fileMap.containsKey(p.getUuid())){
                 try {
                     byte[] bytes = ImageUtils.bufferedImageToByteArray(ImageIO.read(fileMap.get(p.getUuid())));
-                    PersonCoordinate result = new PersonCoordinate(p,bytes);
+                    Person content = resultContentMap.get(p.getUuid());
+                    content.setUuid(p.getUuid()); //This is a hack undertaken to make re-id link work
+                    PersonCoordinate result = new PersonCoordinate(content,bytes);
                     results.add(result);
                 } catch (IOException e) {
                     e.printStackTrace();
