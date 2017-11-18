@@ -55,11 +55,11 @@ export class ZonesComponent implements OnInit {
     this.selectedZoneIndex = -1;
     console.log("Unselected");
 
-    this.zoneStatistics.forEach((v)=>{
-      if(v.zoneId == 0)
+    this.zones.forEach((v)=>{
+      if(v.id == 0)
       {
         //Rest of the world zone found
-        this.selectedZoneIndex = this.zoneStatistics.indexOf(v);
+        this.selectedZoneIndex = this.zones.indexOf(v);
       }
     });
 
@@ -167,6 +167,14 @@ export class ZonesComponent implements OnInit {
 
 
         this.polygons.push(poly);
+
+        this.zones.forEach((v)=>{
+          if(v.id == 0)
+          {
+            //Rest of the world zone found
+            this.selectedZoneIndex = this.zones.indexOf(v);
+          }
+        });
       }
     });
 
