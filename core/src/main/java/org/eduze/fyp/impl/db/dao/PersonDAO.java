@@ -50,6 +50,10 @@ public interface PersonDAO {
     List<Object[]> getCrossCounts(Date from, Date to);
 
 
+    List<Person[]> getZoneInflow(Date from, Date to, int zoneId, boolean useSegments);
+
+    List<Person[]> getZoneOutflow(Date from, Date to, int zoneId, boolean useSegments);
+
     List<Object[]> getPersonCountVariation(Date from, Date to, String additionalCondition);
 
 }

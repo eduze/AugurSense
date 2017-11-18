@@ -1,6 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {ZoneStatistic} from "../resources/zone-statistic";
 import {Zone} from "../resources/zone"
+import {PersonImage} from "../resources/person-image";
+import {AnalyticsService} from "../services/analytics.service";
 
 @Component({
   selector: 'app-zone-info',
@@ -8,15 +10,41 @@ import {Zone} from "../resources/zone"
   styleUrls: ['./zone-info.component.css']
 })
 export class ZoneInfoComponent implements OnInit {
+  get to(): Date {
+    return this._to;
+  }
+
+  @Input()
+  set to(value: Date) {
+    this._to = value;
+    this.inflowPersons = null;
+    this.outflowPersons = null;
+    this.refreshData();
+  }
+  get from(): Date {
+    return this._from;
+  }
+
+  @Input()
+  set from(value: Date) {
+    this._from = value;
+    this.inflowPersons = null;
+    this.outflowPersons = null;
+    this.refreshData();
+  }
   get activeView(): string {
     return this._activeView;
   }
 
   set activeView(value: string) {
+    this.inflowPersons = null;
+    this.outflowPersons = null;
+
     this._activeView = value;
+    this.refreshData();
   }
 
-  constructor() {
+  constructor(private analyticsService: AnalyticsService) {
 
   }
 
@@ -40,13 +68,22 @@ export class ZoneInfoComponent implements OnInit {
     return this._zones;
   }
 
+  private _from : Date;
+  private _to : Date;
+
   @Input() set zones(value: Zone[]){
     this._zones = value;
+    this.inflowPersons = null;
+    this.outflowPersons = null;
+
     this.refreshData();
   }
 
   @Input() set selectedIndex(index:number){
     this._selectedIndex = index;
+    this.inflowPersons = null;
+    this.outflowPersons = null;
+
     this.refreshData();
   }
 
@@ -73,10 +110,50 @@ export class ZoneInfoComponent implements OnInit {
   private incomingData: any;
   private outgoingData: any;
   private averageCountVariationData: any;
-  averageStandingCountView: String = "averageStandingCount";
+  averageStandingCountView: string = "averageStandingCount";
   averageStandingCountVariationData: any;
-  averageSittingCountView: String = "averageSittingCount";
+  averageSittingCountView: string = "averageSittingCount";
   averageSittingCountVariationData: any;
+
+  inflowView : string = "inflowView";
+  outflowView : string = "outflowView";
+  inflowPersons: PersonImage[] = null;
+  outflowPersons: PersonImage[] = null;
+
+
+  getDateString(timestamp: number) {
+    return new Date(timestamp).toLocaleString();
+  }
+
+
+
+  refreshInflowPersons(){
+    if(this.activeView != this.inflowView)
+      return;
+
+    if(this.selectedIndex < 0) {
+      this.inflowPersons = null;
+    }
+
+    this.analyticsService.getZoneInflowPhotos(this.from.getTime(),this.to.getTime(),this.zones[this.selectedIndex].id,true).then((pi) => {
+      this.inflowPersons = pi;
+      console.log(pi);
+    });
+  }
+
+  refreshOutflowPersons(){
+    if(this.activeView != this.outflowView)
+      return;
+
+    if(this.selectedIndex < 0) {
+      this.outflowPersons = null;
+    }
+
+    this.analyticsService.getZoneOutflowPhotos(this.from.getTime(),this.to.getTime(),this.zones[this.selectedIndex].id,true).then((pi) => {
+      this.outflowPersons = pi;
+      console.log(pi);
+    });
+  }
 
   switchView (newView: string) : void
   {
@@ -223,6 +300,9 @@ export class ZoneInfoComponent implements OnInit {
         },
       ]
     };
+
+    this.refreshInflowPersons();
+    this.refreshOutflowPersons();
   }
 
 

@@ -51,7 +51,7 @@
             {{ getTotal() }}
           </td>
         </tr>
-        <tr>
+        <tr [ngClass]="{active: activeView == inflowView}" (click)="switchView(inflowView)">
           <td style="padding-left: 20px;">
             Incoming
           </td>
@@ -59,7 +59,7 @@
             {{ zoneStatistic.totalIncoming }}
           </td>
         </tr>
-        <tr>
+        <tr [ngClass]="{active: activeView == outflowView}" (click)="switchView(outflowView)" >
           <td style="padding-left: 20px;">
             Outgoing
           </td>
@@ -101,5 +101,53 @@
   <div class="panel panel-default col-md-4" style="margin-left: 10px;" *ngIf="zoneStatistic != null && activeView == totalFlowView">
     <h4>Incomming Flow</h4>
     <p-chart type="pie" [options] = "chartOptions" [data]="incomingData"></p-chart>
+  </div>
+
+  <div class="col-md-8" *ngIf="zoneStatistic != null && activeView == inflowView">
+    <div class="col-md-12">
+
+      <div class="col-md-12" *ngIf="inflowPersons != null">
+        <div *ngFor="let inflowPerson of inflowPersons">
+          <div class="col-md-2" style="margin: 0px; padding: 0px;">
+            <div class="panel panel-default">
+              <div class="panel-heading">{{ getDateString(inflowPerson.timestamp) }}</div>
+
+              <div class="panel-body" style="height:200px; width: 100%; text-align: center;">
+                <a routerLink="/{{ inflowPerson.uuid }}" target="_blank">
+                  <img [src]="inflowPerson.image" style="width: 100%; height: 95%; max-width: 100%; max-height: 100%; object-fit: contain;"/>
+                </a>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-8" *ngIf="zoneStatistic != null && activeView == outflowView">
+    <div class="col-md-12">
+
+      <div class="col-md-12" *ngIf="outflowPersons != null">
+        <div *ngFor="let outflowPerson of outflowPersons">
+          <div class="col-md-2" style="margin: 0px; padding: 0px;">
+            <div class="panel panel-default">
+              <div class="panel-heading">{{ getDateString(outflowPerson.timestamp) }}</div>
+
+              <div class="panel-body" style="height:200px; width: 100%; text-align: center;">
+                <a routerLink="/{{ outflowPerson.uuid }}" target="_blank">
+                  <img [src]="outflowPerson.image" style="width: 100%; height: 95%; max-width: 100%; max-height: 100%; object-fit: contain;"/>
+                </a>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
   </div>
 </div>

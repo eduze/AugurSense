@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Objects;
 
 @Entity
 @Table(name = "zones")
@@ -38,6 +39,8 @@ public class Zone {
 
     private int[] getCoordinates(String coordinateField) {
 
+        if(Objects.equals(coordinateField, ""))
+            return new int[0];
         String[] strCoordinates = coordinateField.split(",");
         int[] coordinates = new int[strCoordinates.length];
         for (int i = 0; i < coordinates.length; i++)

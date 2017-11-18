@@ -217,6 +217,62 @@ public class AnalyticsController {
     }
 
     @GET
+    @Path("/zoneStatistics/{from}/{to}/{zoneId}/inflow")
+    public Response getZoneInflowPhotos(@PathParam("from") long from, @PathParam("to") long to, @PathParam("zoneId") long zoneId) {
+        try {
+            Date fromD = new Date(from);
+            Date toD = new Date(to);
+
+            return Response.ok(analyticsService.getAllPastPhotosOfZoneFlow(fromD,toD, (int) zoneId,true,false,false)).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining timebound photos. {}", e);
+            return Response.status(500).build();
+        }
+    }
+
+    @GET
+    @Path("/zoneStatistics/{from}/{to}/{zoneId}/outflow")
+    public Response getZoneOutflowPhotos(@PathParam("from") long from, @PathParam("to") long to, @PathParam("zoneId") long zoneId) {
+        try {
+            Date fromD = new Date(from);
+            Date toD = new Date(to);
+
+            return Response.ok(analyticsService.getAllPastPhotosOfZoneFlow(fromD,toD, (int) zoneId,false,true,false)).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining timebound photos. {}", e);
+            return Response.status(500).build();
+        }
+    }
+
+    @GET
+    @Path("/zoneStatistics/{from}/{to}/{zoneId}/inflow/segmented")
+    public Response getZoneInflowPhotosSegmented(@PathParam("from") long from, @PathParam("to") long to, @PathParam("zoneId") long zoneId) {
+        try {
+            Date fromD = new Date(from);
+            Date toD = new Date(to);
+
+            return Response.ok(analyticsService.getAllPastPhotosOfZoneFlow(fromD,toD, (int) zoneId,true,false,true)).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining timebound photos. {}", e);
+            return Response.status(500).build();
+        }
+    }
+
+    @GET
+    @Path("/zoneStatistics/{from}/{to}/{zoneId}/outflow/segmented")
+    public Response getZoneOutflowPhotosSegmented(@PathParam("from") long from, @PathParam("to") long to, @PathParam("zoneId") long zoneId) {
+        try {
+            Date fromD = new Date(from);
+            Date toD = new Date(to);
+
+            return Response.ok(analyticsService.getAllPastPhotosOfZoneFlow(fromD,toD, (int) zoneId,false,true,true)).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining timebound photos. {}", e);
+            return Response.status(500).build();
+        }
+    }
+
+    @GET
     @Path("/crossCounts/{from}/{to}")
     public Response getCrossCounts(@PathParam("from") long from, @PathParam("to") long to){
         try {
@@ -228,6 +284,7 @@ public class AnalyticsController {
         }
 
     }
+
 
     @GET
     @Path("/getMap")

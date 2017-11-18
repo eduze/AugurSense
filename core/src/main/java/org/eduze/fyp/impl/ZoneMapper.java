@@ -7,10 +7,8 @@ import org.eduze.fyp.impl.db.dao.ZoneDAO;
 import org.eduze.fyp.impl.db.model.Zone;
 
 import java.awt.*;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class ZoneMapper implements ConfigurationListener {
     private ZoneDAO zoneDAO = null;
@@ -69,8 +67,15 @@ public class ZoneMapper implements ConfigurationListener {
         initialize();
 
         personLocations.forEach(personLocation -> {
+            //TODO: identify rest of the world zone here! Its not contained in any of the polygons
+            //final Zone[] selectedZone = {null};
+            //final Polygon[] selectedPolygon = {null};
             zonePolygons.forEach((zone,polygon) -> {
                 if(polygon.contains(new Point((int)personLocation.getSnapshot().getX(),(int)personLocation.getSnapshot().getY()))){
+                    //selectedZone[0] = zone;
+                    //selectedPolygon[0] = polygon;
+
+                    //Zone zone = selectedZone[0];
                     personLocation.getSnapshot().setInstanceZone(zone);
                     // Obtain majority of last 5 zones
                     Map<Zone,Integer> polularityMap = new LinkedHashMap<>();
@@ -103,8 +108,20 @@ public class ZoneMapper implements ConfigurationListener {
                             personLocation.getSnapshot().setPersistantZone(mostPopularZone[0]);
                         }
                     }
+
                 }
             });
+
+//            if(selectedZone[0] == null)
+//            {
+//                // identify rest of the world zone here! Its not contained in any of the polygons
+//               zonesList.stream().filter(zone -> zone.getId() == 0).findFirst().ifPresent((c)->selectedZone[0]=c);
+//            }
+//
+//            if(selectedZone[0] != null)
+//            {
+//
+//            }
         });
     }
 

@@ -179,6 +179,68 @@ export class AnalyticsService {
       .catch(AnalyticsService.handleError);
   }
 
+  getZoneInflowPhotos(from: number, to: number, zoneId : number, useSegments: boolean) : Promise<PersonImage[]> {
+    let url = this.baseUrl + "zoneStatistics/"+ from +"/"+to+"/"+zoneId+"/inflow";
+    if(useSegments)
+    {
+      url = url + "/segmented";
+    }
+    return this.http.get(url)
+      .toPromise()
+      .then(response => {
+        let results = response.json() as PersonImage[];
+
+        results.forEach((personImage) => {
+          let base64: string = "data:image/JPEG;base64," + personImage["image"];
+
+          let obj = personImage;
+          let img = new Image();
+          img.onload = function () {
+            obj["height"] = img.height;
+            obj["width"] = img.width;
+            console.log(obj);
+          };
+          img.src = base64;
+          obj["image"] = base64;
+
+        });
+
+        return results;
+      })
+      .catch(AnalyticsService.handleError);
+  }
+
+  getZoneOutflowPhotos(from: number, to: number, zoneId : number, useSegments: boolean) : Promise<PersonImage[]> {
+    let url = this.baseUrl + "zoneStatistics/"+ from +"/"+to+"/"+zoneId+"/outflow";
+    if(useSegments)
+    {
+      url = url + "/segmented";
+    }
+    return this.http.get(url)
+      .toPromise()
+      .then(response => {
+        let results = response.json() as PersonImage[];
+
+        results.forEach((personImage) => {
+          let base64: string = "data:image/JPEG;base64," + personImage["image"];
+
+          let obj = personImage;
+          let img = new Image();
+          img.onload = function () {
+            obj["height"] = img.height;
+            obj["width"] = img.width;
+            console.log(obj);
+          };
+          img.src = base64;
+          obj["image"] = base64;
+
+        });
+
+        return results;
+      })
+      .catch(AnalyticsService.handleError);
+  }
+
   getTimeboundAllPhotos(from: number, to: number) : Promise<PersonImage[]> {
     return this.http.get(this.baseUrl + "timeBoundMap/" + from + "/" + to + "/photos")
       .toPromise()

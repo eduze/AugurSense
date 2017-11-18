@@ -25,6 +25,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.hibernate.type.DoubleType;
+import org.hibernate.type.IntegerType;
 import org.hibernate.type.StringType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,6 +161,55 @@ public class PersonDAOImpl implements PersonDAO {
     public List<Object[]> getCrossCounts(Date from, Date to) {
         Session session = this.sessionFactory.openSession();
         Query query = session.createQuery("select z1.id as pastZone, z2.id as currentZone, count(p.id) from Person p join Zone z1 on p.pastPersistantZoneId = z1 join Zone z2 on p.persistantZoneId = z2.id where p.timestamp between :startTime and :endTime group by z1.id, z2.id")
+                .setParameter("startTime", from, TemporalType.TIMESTAMP)
+                .setParameter("endTime", to, TemporalType.TIMESTAMP);
+//        Query query = session.createQuery("select p.pastPersistantZoneId as pastZone, p.persistantZoneId as currentZone, count(p.id) from Person p  where p.timestamp between :startTime and :endTime group by p.pastPersistantZoneId, p.persistantZoneId")
+//                .setParameter("startTime", from, TemporalType.TIMESTAMP)
+//                .setParameter("endTime", to, TemporalType.TIMESTAMP);
+
+        List crossList = query.list();
+        session.close();
+        return crossList;
+    }
+
+    @Override
+    public List<Person[]> getZoneInflow(Date from, Date to, int zoneId, boolean useSegments) {
+        Session session = this.sessionFactory.openSession();
+
+        Query query;
+        if(useSegments)
+        {
+            query = session.createQuery("from Person P1 join Person P2 on P1.ids = P2.ids and P1.trackSegmentIndex = P2.trackSegmentIndex where P2.pastPersistantZoneId != :zoneId and P2.persistantZoneId = :zoneId and P2.timestamp between :startTime and :endTime");
+        }
+        else{
+            query = session.createQuery("from Person P1 join Person P2 on P1.ids = P2.ids where P2.pastPersistantZoneId != :zoneId and P2.persistantZoneId = :zoneId and P2.timestamp between :startTime and :endTime");
+        }
+
+        query.setParameter("zoneId",zoneId, IntegerType.INSTANCE)
+        .setParameter("startTime", from, TemporalType.TIMESTAMP)
+        .setParameter("endTime", to, TemporalType.TIMESTAMP);
+//        Query query = session.createQuery("select p.pastPersistantZoneId as pastZone, p.persistantZoneId as currentZone, count(p.id) from Person p  where p.timestamp between :startTime and :endTime group by p.pastPersistantZoneId, p.persistantZoneId")
+//                .setParameter("startTime", from, TemporalType.TIMESTAMP)
+//                .setParameter("endTime", to, TemporalType.TIMESTAMP);
+
+        List crossList = query.list();
+        session.close();
+        return crossList;
+    }
+
+    @Override
+    public List<Person[]> getZoneOutflow(Date from, Date to, int zoneId, boolean useSegments) {
+        Session session = this.sessionFactory.openSession();
+        Query query = null;
+        if(useSegments)
+        {
+            query = session.createQuery("from Person P1 join Person P2 on P1.ids = P2.ids and P1.trackSegmentIndex = P2.trackSegmentIndex where P2.pastPersistantZoneId = :zoneId and P2.persistantZoneId != :zoneId and P2.timestamp between :startTime and :endTime");
+        }
+        else{
+            query = session.createQuery("from Person P1 join Person P2 on P1.ids = P2.ids where P2.pastPersistantZoneId = :zoneId and P2.persistantZoneId != :zoneId and P2.timestamp between :startTime and :endTime");
+        }
+
+        query.setParameter("zoneId",zoneId, IntegerType.INSTANCE)
                 .setParameter("startTime", from, TemporalType.TIMESTAMP)
                 .setParameter("endTime", to, TemporalType.TIMESTAMP);
 //        Query query = session.createQuery("select p.pastPersistantZoneId as pastZone, p.persistantZoneId as currentZone, count(p.id) from Person p  where p.timestamp between :startTime and :endTime group by p.pastPersistantZoneId, p.persistantZoneId")

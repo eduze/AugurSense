@@ -100,6 +100,7 @@ public class DBHandler implements ProcessedMapListener {
                             previousUuid = personSnapshot.getUuid();
                             break;
                         }
+
                     }
 
                     snapshot.markStored();
