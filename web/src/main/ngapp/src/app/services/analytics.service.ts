@@ -147,7 +147,9 @@ export class AnalyticsService {
 
 
   private static getZoneColour(index: number) : string{
-    return "rgb(" + Math.round(((index / 256 / 256) * 80) % 256).toString() + "," + Math.round(((index / 256) * 80) % 256).toString() + "," + Math.round((index * 80) % 256).toString() + ")";
+    //return "rgb(" + Math.round(((index / 256 / 256) * 80) % 256).toString() + "," + Math.round(((index / 256) * 80) % 256).toString() + "," + Math.round((index * 80) % 256).toString() + ")";
+    let colours = ["#c0392b","#f1c40f", "#16a085","#2980b9","#34495e","#9b59b5","#2cee91","#171796","#fec3fc","#8e44ad"];
+    return colours[index % colours.length];
   }
 
   getTimelineFromTrack(trackId: number, segmentId: number, segmented: boolean): Promise<TimelineTrack> {

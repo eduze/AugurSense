@@ -15,6 +15,7 @@ export class TimelineComponent implements OnInit {
   @Input()
   set tracks(value: TimelineTrack[]) {
     this._tracks = value;
+    console.log("Setted called");
     this.refresh();
   }
 
@@ -71,6 +72,7 @@ export class TimelineComponent implements OnInit {
       return;
     }
 
+    console.log("Reloading chart!");
     let dataLabels: string[] = [];
     let ds: any[] = [];
 

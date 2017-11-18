@@ -397,6 +397,13 @@ public class AnalyticsService implements ProcessedMapListener {
         Person lastPerson = personDAO.getTrackEnd(trackId,segmentId,useSegment);
         persons.add(lastPerson);
 
+        Person firstPerson = personDAO.getTrackStart(trackId,segmentId,useSegment);
+
+        System.out.println("First" + firstPerson.getUuid());
+        if(persons.stream().filter((t)-> Objects.equals(t.getUuid(), firstPerson.getUuid())).count() == 0){
+            persons.add(0,firstPerson);
+        }
+
         List<Zone> zones = zoneDAO.list();
 
         final HashMap<Integer,Zone> zoneMap = new LinkedHashMap<>();
@@ -404,14 +411,25 @@ public class AnalyticsService implements ProcessedMapListener {
 
         final List<TimelineZone> results = new ArrayList<>();
 
-        for(int i = 0; i < persons.size()-1;i++)
+        if(persons.size() > 1)
         {
-            Person prev = persons.get(i);
-            Person next = persons.get(i+1);
+            for(int i = 0; i < persons.size()-1;i++)
+            {
+                Person prev = persons.get(i);
+                Person next = persons.get(i+1);
 
-            TimelineZone timelineZone = new TimelineZone(next,zoneMap.get(prev.getPersistantZoneId()),prev.getTimestamp().getTime(),next.getTimestamp().getTime());
+                TimelineZone timelineZone = new TimelineZone(next,zoneMap.get(prev.getPersistantZoneId()),prev.getTimestamp().getTime(),next.getTimestamp().getTime());
+                results.add(timelineZone);
+            }
+        }
+        else{
+            Person prev = persons.get(0);
+            Person next = persons.get(0);
+
+            TimelineZone timelineZone = new TimelineZone(next,zoneMap.get(prev.getPersistantZoneId()),prev.getTimestamp().getTime()-500,next.getTimestamp().getTime()+500);
             results.add(timelineZone);
         }
+
         return results;
 
     }

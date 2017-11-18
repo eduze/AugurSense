@@ -141,10 +141,14 @@ export class ReIdComponent implements OnInit {
         });
 
         this.timelineTracks.filter((t)=>t.person.ids[0]==p.ids[0] && t.person.trackSegmentIndex == p.trackSegmentIndex).forEach((t)=>{
+          if(this.mainTimeline == t)
+            return;
           let i2 = this.timelineTracks.indexOf(t);
           this.timelineTracks.splice(i2,1);
+          this.timelineTracksUI = this.timelineTracks.slice(0);
           console.log("Spliced");
         });
+
 
       }
       else{
@@ -163,10 +167,14 @@ export class ReIdComponent implements OnInit {
         });
 
         this.timelineTracks.filter((t)=>t.person.ids[0]==p.ids[0]).forEach((t)=>{
+          if(this.mainTimeline == t)
+            return;
           let i2 = this.timelineTracks.indexOf(t);
           this.timelineTracks.splice(i2,1);
-          console.log("Spliced");
+          this.timelineTracksUI = this.timelineTracks.slice(0);
+          console.log("Spliced-NonSegment");
         });
+        this.loadMainTimeline();
       }
       else{
         this.selectedIndices.push([p.ids[0], p.trackSegmentIndex]);
@@ -237,6 +245,8 @@ export class ReIdComponent implements OnInit {
   }
 
   timelineTracks : TimelineTrack[] = [];
+
+  timelineTracksUI: TimelineTrack[] = [];
 
   private searchInvoked:boolean = false;
 
@@ -361,7 +371,8 @@ export class ReIdComponent implements OnInit {
       this.loadedMainTimelineId = this.person.ids[0];
       this.loadedMainTimelineSegment = this.person.trackSegmentIndex;
       this.loadedSegmented = this.useTrackSegments;
-      this.timelineTracks = [this.mainTimeline];
+      this.timelineTracks = [this.mainTimeline].concat(this.timelineTracks);
+      this.timelineTracksUI = this.timelineTracks.slice(0);
     });
   }
 
@@ -409,7 +420,7 @@ export class ReIdComponent implements OnInit {
   private addTimeline(p: PersonSnapshot): void{
     console.debug("Loading timeline for");
     console.debug(p);
-    this.analyticsService.getTimelineFromTrack(this.person.ids[0],this.person.trackSegmentIndex,this.useTrackSegments).then(result=>{
+    this.analyticsService.getTimelineFromTrack(p.ids[0],p.trackSegmentIndex,this.useTrackSegments).then(result=>{
       if(result.person == null)
       {
         console.debug("Received no person");
@@ -419,6 +430,7 @@ export class ReIdComponent implements OnInit {
       if(this.selectedIndices.filter((v) => (this.useTrackSegments && v[0] == result.person.ids[0] && v[1] == result.person.trackSegmentIndex) || (!this.useTrackSegments && v[0] == result.person.ids[0])).length > 0)
       {
         this.timelineTracks.push(result);
+        this.timelineTracksUI = this.timelineTracks.slice(0);
         console.log("Timeline Tracks:");
         console.log(this.timelineTracks);
       }

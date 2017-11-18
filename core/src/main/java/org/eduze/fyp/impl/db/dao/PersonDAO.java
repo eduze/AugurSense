@@ -60,5 +60,6 @@ public interface PersonDAO {
 
     List<Person> getZoneSwitchPersons(int ids, int segmentId, boolean useSegment);
     Person getTrackEnd(int ids, int segmentId, boolean useSegment);
+    Person getTrackStart(int ids, int segmentId, boolean useSegment);
 
 }
