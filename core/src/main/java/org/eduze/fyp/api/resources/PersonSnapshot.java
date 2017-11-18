@@ -31,6 +31,8 @@ public class PersonSnapshot extends Coordinate {
     private Set<Integer> ids = new HashSet<>();
     private Zone instanceZone;
 
+    private static int generatedStaticId = 0;
+
     private Zone persistantZone;
 
     private Zone pastPersistantZone;
@@ -55,7 +57,7 @@ public class PersonSnapshot extends Coordinate {
         this.instanceZone = instanceZone;
         this.persistantZone = persistantZone;
         this.pastPersistantZone = pastPersistantZone;
-        this.uuid = String.valueOf(System.currentTimeMillis() % (1000000)) + "_" + (Math.abs(idGenerator.nextInt())%100);
+        this.uuid = String.valueOf(System.currentTimeMillis() % (1000000)) + "_" + String.valueOf(generatedStaticId++);//(Math.abs(idGenerator.nextInt())%100000000);
         this.trackSegmentIndex = trackSegmentIndex;
     }
 

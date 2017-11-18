@@ -76,6 +76,7 @@ public class DBHandler implements ProcessedMapListener {
 
         snapshots.stream()
                 .filter(snapshotList -> snapshotList.size() > 0)
+                .filter(snapshotList->!snapshotList.get(0).isStored())
                 .map(snapshotList -> {
                     PersonSnapshot snapshot = snapshotList.get(0);
 
