@@ -251,6 +251,50 @@ public class PersonDAOImpl implements PersonDAO {
         return crossList;
     }
 
+    @Override
+    public List<Person> getZoneSwitchPersons(int id, int segmentId, boolean useSegment) {
+        String ids = String.valueOf(id);
+        Session session = this.sessionFactory.openSession();
+        Query query = null;
+        if(!useSegment)
+        {
+            query = session.createQuery("from Person P where P.pastPersistantZoneId != P.persistantZoneId and P.ids = :ids ORDER BY P.id")
+                .setParameter("ids",ids,StringType.INSTANCE);
+        }
+        else{
+            query = session.createQuery("from Person P where P.pastPersistantZoneId != P.persistantZoneId and P.ids = :ids and P.trackSegmentIndex = :trackSegmentIndex ORDER BY P.id")
+                    .setParameter("ids",ids,StringType.INSTANCE)
+                    .setParameter("trackSegmentIndex",segmentId,IntegerType.INSTANCE);
+        }
+
+
+        List<Person> personList = query.list();
+        session.close();
+        return personList;
+    }
+
+    @Override
+    public Person getTrackEnd(int id, int segmentId, boolean useSegment) {
+        String ids = String.valueOf(id);
+        Session session = this.sessionFactory.openSession();
+        Query query = null;
+        if(!useSegment)
+        {
+            query = session.createQuery("from Person P where P.ids = :ids order by P.id DESC")
+                    .setParameter("ids",ids,StringType.INSTANCE);
+        }
+        else{
+            query = session.createQuery("from Person P where P.ids = :ids and P.trackSegmentIndex = :trackSegmentIndex order by P.id DESC")
+                    .setParameter("ids",ids,StringType.INSTANCE)
+                    .setParameter("trackSegmentIndex",segmentId,IntegerType.INSTANCE);
+        }
+
+
+        List<Person> personList = query.setFirstResult(0).setMaxResults(1).list();
+        session.close();
+        return personList.get(0);
+    }
+
 
     public void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;

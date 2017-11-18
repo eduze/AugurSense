@@ -29,6 +29,7 @@ import org.eduze.fyp.impl.db.dao.PersonDAO;
 import org.eduze.fyp.impl.db.dao.ZoneDAO;
 import org.eduze.fyp.impl.db.model.Person;
 import org.eduze.fyp.impl.db.model.Zone;
+import org.eduze.fyp.rest.resources.TimelineZone;
 import org.eduze.fyp.rest.resources.ZoneStatistics;
 import org.eduze.fyp.rest.util.ImageUtils;
 import org.slf4j.Logger;
@@ -387,6 +388,32 @@ public class AnalyticsService implements ProcessedMapListener {
     public int getCount(long fromTimestamp, long toTimestamp) {
         List<Integer> ids = getPeopleIds(fromTimestamp, toTimestamp);
         return ids.size();
+    }
+
+    public List<TimelineZone> getTimelineZonesFromTrackId(int trackId, int segmentId, boolean useSegment)
+    {
+        List<Person> persons = personDAO.getZoneSwitchPersons(trackId,segmentId,useSegment);
+
+        Person lastPerson = personDAO.getTrackEnd(trackId,segmentId,useSegment);
+        persons.add(lastPerson);
+
+        List<Zone> zones = zoneDAO.list();
+
+        final HashMap<Integer,Zone> zoneMap = new LinkedHashMap<>();
+        zones.forEach((v)->zoneMap.put(v.getId(),v));
+
+        final List<TimelineZone> results = new ArrayList<>();
+
+        for(int i = 0; i < persons.size()-1;i++)
+        {
+            Person prev = persons.get(i);
+            Person next = persons.get(i+1);
+
+            TimelineZone timelineZone = new TimelineZone(next,zoneMap.get(prev.getPersistantZoneId()),prev.getTimestamp().getTime(),next.getTimestamp().getTime());
+            results.add(timelineZone);
+        }
+        return results;
+
     }
 
     public int[][] getStopPoints(long fromTimestamp, long toTimestamp, int r, int t, int height, int width) {

@@ -20,6 +20,7 @@
 export class Zone {
   id: number;
   name: string;
+  zoneName: string;
   xCoordinates: number[];
   yCoordinates: number[];
 
@@ -28,5 +29,6 @@ export class Zone {
     this.name = name;
     this.xCoordinates = xCoordinates;
     this.yCoordinates = yCoordinates;
+    this.zoneName = name;
   }
 }

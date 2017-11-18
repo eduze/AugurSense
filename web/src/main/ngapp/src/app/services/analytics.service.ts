@@ -25,6 +25,8 @@ import {PersonSnapshot} from "../resources/person-snapshot";
 import {ZoneStatistic} from "../resources/zone-statistic";
 import {PersonImage} from "../resources/person-image";
 import {ReIdStatus} from "../resources/re-id-status";
+import {TimelineZone} from "../resources/timeline-zone";
+import {TimelineTrack} from "../resources/timeline-track";
 
 @Injectable()
 export class AnalyticsService {
@@ -139,6 +141,40 @@ export class AnalyticsService {
       .then(response => {
         console.debug(response.json());
         return response.json() as ZoneStatistic[]
+      })
+      .catch(AnalyticsService.handleError);
+  }
+
+
+  private static getZoneColour(index: number) : string{
+    return "rgb(" + Math.round(((index / 256 / 256) * 80) % 256).toString() + "," + Math.round(((index / 256) * 80) % 256).toString() + "," + Math.round((index * 80) % 256).toString() + ")";
+  }
+
+  getTimelineFromTrack(trackId: number, segmentId: number, segmented: boolean): Promise<TimelineTrack> {
+    let url = this.baseUrl + "zoneTimeline/" + trackId;
+    if(segmented)
+      url = url + "/segmented/" + segmentId;
+
+    console.log(url);
+
+    return this.http.get(url)
+      .toPromise()
+      .then(response => {
+        console.debug(response.json());
+        let results = response.json() as TimelineZone[];
+        let result : TimelineTrack = new TimelineTrack();
+        results.forEach((r)=>{
+          r.colour = AnalyticsService.getZoneColour(r.zone.id);
+        });
+        result.timelineZones = results;
+        if(results.length > 0)
+        {
+          result.person = results[0].person;
+          result.label = results[0].person.ids[0].toString();
+        }
+
+
+        return result;
       })
       .catch(AnalyticsService.handleError);
   }

@@ -231,6 +231,28 @@ public class AnalyticsController {
     }
 
     @GET
+    @Path("/zoneTimeline/{trackId}")
+    public Response getZoneTimeline(@PathParam("trackId") int trackId) {
+        try {
+            return Response.ok(analyticsService.getTimelineZonesFromTrackId(trackId,0,false)).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining zoneTimeline. {}", e);
+            return Response.status(500).build();
+        }
+    }
+
+    @GET
+    @Path("/zoneTimeline/{trackId}/segmented/{segmentId}")
+    public Response getZoneTimeline(@PathParam("trackId") int trackId, @PathParam("segmentId") int segmentId) {
+        try {
+            return Response.ok(analyticsService.getTimelineZonesFromTrackId(trackId,segmentId,true)).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining zoneTimeline. {}", e);
+            return Response.status(500).build();
+        }
+    }
+
+    @GET
     @Path("/zoneStatistics/{from}/{to}/{zoneId}/outflow")
     public Response getZoneOutflowPhotos(@PathParam("from") long from, @PathParam("to") long to, @PathParam("zoneId") long zoneId) {
         try {

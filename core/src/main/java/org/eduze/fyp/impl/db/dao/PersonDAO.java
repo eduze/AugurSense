@@ -58,4 +58,7 @@ public interface PersonDAO {
 
     List<Object[]> getTotalPersonCountVariation(Date from, Date to, String additionalCondition);
 
+    List<Person> getZoneSwitchPersons(int ids, int segmentId, boolean useSegment);
+    Person getTrackEnd(int ids, int segmentId, boolean useSegment);
+
 }

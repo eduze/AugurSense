@@ -22,6 +22,7 @@ import { TimeBoundMapComponent } from './time-bound-map/time-bound-map.component
 import {SliderModule} from 'primeng/primeng';
 import {PersonStopPointsComponent} from "./person-stop-points/person-stop-points.component";
 import { ReIdComponent } from './re-id/re-id.component';
+import { TimelineComponent } from './timeline/timeline.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { ReIdComponent } from './re-id/re-id.component';
     RealtimeInfoComponent,
     PersonStopPointsComponent,
     TimeBoundMapComponent,
-    ReIdComponent
+    ReIdComponent,
+    TimelineComponent
   ],
   imports: [
     BrowserModule,

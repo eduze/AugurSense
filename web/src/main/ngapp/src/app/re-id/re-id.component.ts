@@ -6,6 +6,7 @@ import {PersonSnapshot} from "../resources/person-snapshot";
 import {PersonImage} from "../resources/person-image";
 import {Observable} from "rxjs/Observable";
 import {GlobalMap} from "../resources/global-map";
+import {TimelineTrack} from "../resources/timeline-track";
 
 @Component({
   selector: 'app-re-id',
@@ -35,7 +36,9 @@ export class ReIdComponent implements OnInit {
   set useTrackSegments(value: boolean) {
     this._useTrackSegments = value;
     this.selectedIndices.length = 0;
+    this.timelineTracks.length = 0;
     this.updateMapTracks();
+    this.loadMainTimeline();
   }
 
   globalMap: GlobalMap;
@@ -46,6 +49,8 @@ export class ReIdComponent implements OnInit {
 
   personSnapshots: PersonSnapshot[][] = [];
   currentPersonSnapshots : PersonSnapshot[] = [];
+
+  private mainTimeline : TimelineTrack = null;
 
 
   private isSelected(p : PersonSnapshot) : boolean{
@@ -129,14 +134,23 @@ export class ReIdComponent implements OnInit {
       if(this.selectedIndices.filter((v) => v[0] == p.ids[0] && v[1] == p.trackSegmentIndex).length > 0){
         let i = this.selectedIndices.indexOf(this.selectedIndices.filter((v) => v[0] == p.ids[0] && v[1] == p.trackSegmentIndex)[0]);
         this.selectedIndices.splice(i,1);
-        this.personSnapshots.filter((t)=>t[0].ids[0]==p.ids[0]).forEach((t)=>{
+
+        this.personSnapshots.filter((t)=>t[0].ids[0]==p.ids[0] && t[0].trackSegmentIndex == p.trackSegmentIndex).forEach((t)=>{
           let i2 = this.personSnapshots.indexOf(t);
           this.personSnapshots.splice(i2,1);
         });
+
+        this.timelineTracks.filter((t)=>t.person.ids[0]==p.ids[0] && t.person.trackSegmentIndex == p.trackSegmentIndex).forEach((t)=>{
+          let i2 = this.timelineTracks.indexOf(t);
+          this.timelineTracks.splice(i2,1);
+          console.log("Spliced");
+        });
+
       }
       else{
         this.selectedIndices.push([p.ids[0], p.trackSegmentIndex]);
         this.addMapTrack(p);
+        this.addTimeline(p);
       }
     }
     else{
@@ -147,10 +161,17 @@ export class ReIdComponent implements OnInit {
           let i2 = this.personSnapshots.indexOf(t);
           this.personSnapshots.splice(i2,1);
         });
+
+        this.timelineTracks.filter((t)=>t.person.ids[0]==p.ids[0]).forEach((t)=>{
+          let i2 = this.timelineTracks.indexOf(t);
+          this.timelineTracks.splice(i2,1);
+          console.log("Spliced");
+        });
       }
       else{
         this.selectedIndices.push([p.ids[0], p.trackSegmentIndex]);
         this.addMapTrack(p);
+        this.addTimeline(p);
       }
     }
 
@@ -179,6 +200,9 @@ export class ReIdComponent implements OnInit {
         this._person = person;
 
         console.log(this._person);
+
+        this.loadMainTimeline();
+
         //this.drawOnCanvas(personSnapshots);
       })
       .catch(reason => console.log(reason));
@@ -212,7 +236,79 @@ export class ReIdComponent implements OnInit {
 
   }
 
+  timelineTracks : TimelineTrack[] = [];
+
   private searchInvoked:boolean = false;
+
+  // loadedTimelineTracks: TimelineTrack[] = [
+  //   {
+  //     label: "Person1",
+  //     person: null,
+  //     timelineZones:[
+  //       {
+  //         zoneId: 1,
+  //         startTime: 100,
+  //         endTime: 200,
+  //         zoneName: "bottom",
+  //         person: null,
+  //         colour: "red"
+  //       },
+  //       {
+  //         zoneId: 2,
+  //         startTime: 200,
+  //         endTime: 220,
+  //         zoneName: "center",
+  //         person: null,
+  //         colour: "green"
+  //       }
+  //     ]
+  //   },
+  //   {
+  //     trackName: "Person2",
+  //     person: null,
+  //     timelineZones:[
+  //       {
+  //         zoneId: 1,
+  //         startTime: 50,
+  //         endTime: 200,
+  //         zoneName: "left",
+  //         person: null,
+  //         colour: "blue"
+  //       },
+  //       {
+  //         zoneId: 2,
+  //         startTime: 250,
+  //         endTime: 350,
+  //         zoneName: "right",
+  //         person: null,
+  //         colour: "yellow"
+  //       }
+  //     ]
+  //   },
+  //   {
+  //     trackName: "Person3",
+  //     person: null,
+  //     timelineZones:[
+  //       {
+  //         zoneId: 1,
+  //         startTime: 0,
+  //         endTime: 100,
+  //         zoneName: "in",
+  //         person: null,
+  //         colour: "orange"
+  //       },
+  //       {
+  //         zoneId: 2,
+  //         startTime: 150,
+  //         endTime: 350,
+  //         zoneName: "out",
+  //         person: null,
+  //         colour: "purple"
+  //       }
+  //     ]
+  //   }
+  // ];
+
   private startResultsLoop(): void {
     Observable.interval(2000).subscribe(x => {
       if(this.searchInvoked)
@@ -240,7 +336,35 @@ export class ReIdComponent implements OnInit {
     });
 
     this.startResultsLoop();
+
+
+
   }
+
+  loadedMainTimelineId : number = -1;
+  loadedMainTimelineSegment: number = -1;
+  loadedSegmented:boolean;
+  loadMainTimeline(): void{
+    if(this.loadedMainTimelineId == this.person.ids[0] && this.loadedMainTimelineSegment == this.person.trackSegmentIndex && this.loadedSegmented == this.useTrackSegments)
+      return;
+
+    if(this.timelineTracks.includes(this.mainTimeline)){
+      return;
+    }
+
+    console.log("Loading main timeline");
+    this.analyticsService.getTimelineFromTrack(this.person.ids[0],this.person.trackSegmentIndex,this.useTrackSegments).then(result=>{
+      this.mainTimeline = result;
+      this.mainTimeline.label = "Probe";
+      console.log("Main timeline:");
+      console.log(result);
+      this.loadedMainTimelineId = this.person.ids[0];
+      this.loadedMainTimelineSegment = this.person.trackSegmentIndex;
+      this.loadedSegmented = this.useTrackSegments;
+      this.timelineTracks = [this.mainTimeline];
+    });
+  }
+
 
   triggerReId() : void {
     this.analyticsService.invokeReId(this.uuid, this.startTime.getTime(), this.endTime.getTime(), this.useTrackSegments).then(result=>{
@@ -281,6 +405,27 @@ export class ReIdComponent implements OnInit {
     }
     return false;
   }
+
+  private addTimeline(p: PersonSnapshot): void{
+    console.debug("Loading timeline for");
+    console.debug(p);
+    this.analyticsService.getTimelineFromTrack(this.person.ids[0],this.person.trackSegmentIndex,this.useTrackSegments).then(result=>{
+      if(result.person == null)
+      {
+        console.debug("Received no person");
+        return;
+      }
+
+      if(this.selectedIndices.filter((v) => (this.useTrackSegments && v[0] == result.person.ids[0] && v[1] == result.person.trackSegmentIndex) || (!this.useTrackSegments && v[0] == result.person.ids[0])).length > 0)
+      {
+        this.timelineTracks.push(result);
+        console.log("Timeline Tracks:");
+        console.log(this.timelineTracks);
+      }
+    }).catch(reason => console.error(reason));
+  }
+
+
   private addMapTrack(p: PersonSnapshot) {
     console.debug("Requesting track for");
     console.debug(p);

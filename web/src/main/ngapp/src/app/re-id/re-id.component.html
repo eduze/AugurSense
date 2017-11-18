@@ -75,60 +75,75 @@
 
   </div>
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title">Selection Count: <span class="label label-default">{{personSnapshots.length}}</span>
-          <p-checkbox [(ngModel)]="useTrackSegments" binary="true"  value="UseTrackSegments" label="Use Track Segments"></p-checkbox>
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">Selection Count: <span class="label label-default">{{personSnapshots.length}}</span>
+            <p-checkbox [(ngModel)]="useTrackSegments" binary="true"  value="UseTrackSegments" label="Use Track Segments"></p-checkbox>
 
-        </h4>
-      </div>
+          </h4>
+        </div>
 
-      <div class="panel-body">
-        <div class="row" *ngIf="globalMap">
-          <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="panel-body">
+          <div class="row" *ngIf="globalMap">
+            <div class="col-md-12 col-sm-12 col-xs-12">
 
-            <svg x="0" y="0" width="100%" height="700">
-              <g height="100%" width="100%">
-                <image [attr.xlink:href]="globalMap.image" x="0" y="0" (click)="backgroundClicked();"></image>
-              </g>
-              <g *ngIf="person != null">
-                <circle fill="red" r="5" [attr.cx]="person.x" [attr.cy]="person.y" ></circle>
-
-                <g *ngIf="currentPersonSnapshots != null">
-                    <line stroke="red" stroke-width="2" *ngFor="let person of currentPersonSnapshots | slice : 1; let i = index" [attr.x1]="currentPersonSnapshots[i].x" [attr.y1]="currentPersonSnapshots[i].y" [attr.x2]="currentPersonSnapshots[i+1].x" [attr.y2]="currentPersonSnapshots[i+1].y"></line>
+              <svg x="0" y="0" width="100%" height="500">
+                <g height="100%" width="100%">
+                  <image [attr.xlink:href]="globalMap.image" x="0" y="0" (click)="backgroundClicked();"></image>
                 </g>
-              </g>
-              <g *ngFor="let personTrack of personSnapshots" (click)="trackClicked(personTrack);">
-                <g *ngIf="personTrack[0] != null">
-                  <g *ngIf="personTrack[0].ids.length == 0 || !isSelected(personTrack[0])">
-                    <circle [attr.fill]="personTrack[0].colour" r="5" [attr.cx]="personTrack[0].x" [attr.cy]="personTrack[0].y" ></circle>
-                  </g>
-                  <g *ngIf="personTrack[0].ids.length != 0 && isSelected(personTrack[0])">
-                    <circle fill="gold" r="5" [attr.cx]="personTrack[0].x" [attr.cy]="personTrack[0].y" ></circle>
-                  </g>
+                <g *ngIf="person != null">
+                  <circle fill="red" r="5" [attr.cx]="person.x" [attr.cy]="person.y" ></circle>
 
-                  <g *ngIf="personTrack[0].ids.length == 0 || !isSelected(personTrack[0])">
-                    <line [attr.stroke]="personTrack[0].colour" stroke-width="2" *ngFor="let person of personTrack | slice : 1; let i = index" [attr.x1]="personTrack[i].x" [attr.y1]="personTrack[i].y" [attr.x2]="personTrack[i+1].x" [attr.y2]="personTrack[i+1].y"></line>
+                  <g *ngIf="currentPersonSnapshots != null">
+                      <line stroke="red" stroke-width="2" *ngFor="let person of currentPersonSnapshots | slice : 1; let i = index" [attr.x1]="currentPersonSnapshots[i].x" [attr.y1]="currentPersonSnapshots[i].y" [attr.x2]="currentPersonSnapshots[i+1].x" [attr.y2]="currentPersonSnapshots[i+1].y"></line>
                   </g>
-                  <g *ngIf="personTrack[0].ids.length != 0 && isSelected(personTrack[0])">
-                    <line stroke="gold" stroke-width="2" *ngFor="let person of personTrack | slice : 1; let i = index" [attr.x1]="personTrack[i].x" [attr.y1]="personTrack[i].y" [attr.x2]="personTrack[i+1].x" [attr.y2]="personTrack[i+1].y"></line>
-                  </g>
-
-                  <line [attr.x1]="personTrack[0].x" [attr.y1] = "personTrack[0].y"
-                        [attr.x2]="personTrack[0].x + personTrack[0].headDirectionX * 10"
-                        [attr.y2]="personTrack[0].y + personTrack[0].headDirectionY * 10"
-                        [attr.stroke]="personTrack[0].standSitColour" stroke-width="2"
-                        *ngIf="personTrack[0]['headDirectionX'] != null && personTrack[0]['headDirectionY'] != null"></line>
-
                 </g>
-              </g>
+                <g *ngFor="let personTrack of personSnapshots" (click)="trackClicked(personTrack);">
+                  <g *ngIf="personTrack[0] != null">
+                    <g *ngIf="personTrack[0].ids.length == 0 || !isSelected(personTrack[0])">
+                      <circle [attr.fill]="personTrack[0].colour" r="5" [attr.cx]="personTrack[0].x" [attr.cy]="personTrack[0].y" ></circle>
+                    </g>
+                    <g *ngIf="personTrack[0].ids.length != 0 && isSelected(personTrack[0])">
+                      <circle fill="gold" r="5" [attr.cx]="personTrack[0].x" [attr.cy]="personTrack[0].y" ></circle>
+                    </g>
 
-            </svg>
+                    <g *ngIf="personTrack[0].ids.length == 0 || !isSelected(personTrack[0])">
+                      <line [attr.stroke]="personTrack[0].colour" stroke-width="2" *ngFor="let person of personTrack | slice : 1; let i = index" [attr.x1]="personTrack[i].x" [attr.y1]="personTrack[i].y" [attr.x2]="personTrack[i+1].x" [attr.y2]="personTrack[i+1].y"></line>
+                    </g>
+                    <g *ngIf="personTrack[0].ids.length != 0 && isSelected(personTrack[0])">
+                      <line stroke="gold" stroke-width="2" *ngFor="let person of personTrack | slice : 1; let i = index" [attr.x1]="personTrack[i].x" [attr.y1]="personTrack[i].y" [attr.x2]="personTrack[i+1].x" [attr.y2]="personTrack[i+1].y"></line>
+                    </g>
+
+                    <line [attr.x1]="personTrack[0].x" [attr.y1] = "personTrack[0].y"
+                          [attr.x2]="personTrack[0].x + personTrack[0].headDirectionX * 10"
+                          [attr.y2]="personTrack[0].y + personTrack[0].headDirectionY * 10"
+                          [attr.stroke]="personTrack[0].standSitColour" stroke-width="2"
+                          *ngIf="personTrack[0]['headDirectionX'] != null && personTrack[0]['headDirectionY'] != null"></line>
+
+                  </g>
+                </g>
+
+              </svg>
+            </div>
           </div>
         </div>
+
       </div>
     </div>
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <span>Timeline</span>
+        </div>
+        <div class="panel-body">
+          <app-timeline style="width:100%" [tracks]="timelineTracks" ></app-timeline>
+        </div>
+      </div>
+
+    </div>
   </div>
+
 
 
 
