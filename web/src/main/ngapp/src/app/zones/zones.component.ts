@@ -76,6 +76,7 @@ export class ZonesComponent implements OnInit {
 
     this.analyticsService.getZoneStatistics(this.fromDate.getTime(), this.toDate.getTime()).then((zs) => {
       this.zoneStatistics = zs;
+
       if(this.zoneStatistics.length > 0)
         this.totalPeople = this.zoneStatistics.map((item) => item.averagePersonCount).reduce((r1,r2)=> r1+ r2);
       else
@@ -118,14 +119,14 @@ export class ZonesComponent implements OnInit {
               }
             }
           }
-
         }
+
 
 
 
       });
       //this.selectedZoneStatistic = zs[0];
-      console.log(zs);
+
     });
 
 

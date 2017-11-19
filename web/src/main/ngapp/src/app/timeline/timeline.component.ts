@@ -54,7 +54,7 @@ export class TimelineComponent implements OnInit {
   };
 
   static epoch_to_hh_mm_ss(epoch) {
-    return new Date(epoch*1000).toISOString().substr(12, 7)
+    return new Date(epoch).toISOString().substr(12, 7)
   }
 
   constructor() {

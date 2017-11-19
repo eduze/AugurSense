@@ -117,6 +117,8 @@ export class ZoneInfoComponent implements OnInit {
 
   inflowView : string = "inflowView";
   outflowView : string = "outflowView";
+  movementSpeedView: string = "movementSpeedView";
+
   inflowPersons: PersonImage[] = null;
   outflowPersons: PersonImage[] = null;
 
@@ -125,6 +127,8 @@ export class ZoneInfoComponent implements OnInit {
     return new Date(timestamp).toLocaleString();
   }
 
+
+  useSegments : boolean = true;
 
 
   refreshInflowPersons(){
@@ -135,7 +139,7 @@ export class ZoneInfoComponent implements OnInit {
       this.inflowPersons = null;
     }
 
-    this.analyticsService.getZoneInflowPhotos(this.from.getTime(),this.to.getTime(),this.zones[this.selectedIndex].id,true).then((pi) => {
+    this.analyticsService.getZoneInflowPhotos(this.from.getTime(),this.to.getTime(),this.zones[this.selectedIndex].id,this.useSegments).then((pi) => {
       this.inflowPersons = pi;
       console.log(pi);
     });
@@ -149,7 +153,7 @@ export class ZoneInfoComponent implements OnInit {
       this.outflowPersons = null;
     }
 
-    this.analyticsService.getZoneOutflowPhotos(this.from.getTime(),this.to.getTime(),this.zones[this.selectedIndex].id,true).then((pi) => {
+    this.analyticsService.getZoneOutflowPhotos(this.from.getTime(),this.to.getTime(),this.zones[this.selectedIndex].id,this.useSegments).then((pi) => {
       this.outflowPersons = pi;
       console.log(pi);
     });
@@ -161,6 +165,7 @@ export class ZoneInfoComponent implements OnInit {
   }
 
   refreshData() {
+
     if (this.zones == null)
       return;
 
@@ -305,6 +310,7 @@ export class ZoneInfoComponent implements OnInit {
     this.refreshOutflowPersons();
   }
 
+  velocityMeasureTimeInterval : number = 1000;
 
 
   ngOnInit() {

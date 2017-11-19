@@ -32,9 +32,14 @@ public interface PersonDAO {
 
     List<Person> list();
 
+    List<Person> listTrackOrderedOverall(Date from, Date to, boolean segmented);
+
+    List<Person> listTrackOrderedInZone(Date from, Date to, int zoneId, boolean segmented);
+
     Person getPerson(String uuid);
 
     List<Person> list(Date from, Date to);
+
 
     List<Integer> personIDs(Date from, Date to);
     List<Person> getRows(int id,Date from, Date to);

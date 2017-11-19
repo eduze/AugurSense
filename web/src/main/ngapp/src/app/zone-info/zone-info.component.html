@@ -1,106 +1,176 @@
 <div class="col-md-12" style="display: flex;">
   <div class="col-md-5">
-    <h3 *ngIf="zoneStatistic != null">
-      {{ zoneStatistic.zoneName }}
-    </h3>
-    <span *ngIf="zoneStatistic != null">
-      {{fromTimestamp}} - {{ toTimestamp }}
-    </span>
-    <div class="col-md-12 panel panel-default" *ngIf="zoneStatistic != null">
-      <table class="table">
-        <thead>
-        <tr>
-          <th>
-            Statistics
-          </th>
-          <th>
-            #
-          </th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr [ngClass]="{active: activeView == averagePeopleCountView}" (click)="switchView(averagePeopleCountView)">
-          <td>
-            Average People Count
-          </td>
-          <td>
-            {{ zoneStatistic.averagePersonCount }}
-          </td>
-        </tr>
-        <tr [ngClass]="{active: activeView == averageStandingCountView}" (click)="switchView(averageStandingCountView)">
-          <td style="padding-left: 20px;">
-            Standing
-          </td>
-          <td>
-            {{ zoneStatistic.averageStandingCount }}
-          </td>
-        </tr>
-        <tr [ngClass]="{active: activeView == averageSittingCountView}" (click)="switchView(averageSittingCountView)">
-          <td style="padding-left: 20px;">
-            Sitting
-          </td>
-          <td>
-            {{ zoneStatistic.averageSittingCount }}
-          </td>
-        </tr>
-        <tr [ngClass]="{active: activeView == totalFlowView}" (click)="switchView(totalFlowView)">
-          <td>
-            Traffic Flow
-          </td>
-          <td>
-            {{ getTotal() }}
-          </td>
-        </tr>
-        <tr [ngClass]="{active: activeView == inflowView}" (click)="switchView(inflowView)">
-          <td style="padding-left: 20px;">
-            Incoming
-          </td>
-          <td>
-            {{ zoneStatistic.totalIncoming }}
-          </td>
-        </tr>
-        <tr [ngClass]="{active: activeView == outflowView}" (click)="switchView(outflowView)" >
-          <td style="padding-left: 20px;">
-            Outgoing
-          </td>
-          <td>
-            {{ zoneStatistic.totalOutgoing }}
-          </td>
-        </tr>
-        </tbody>
+    <div class="panel panel-primary" *ngIf="zoneStatistic != null">
+      <div class="panel-heading">
+        <h3 *ngIf="zoneStatistic != null">
+          {{ zoneStatistic.zoneName }}
+        </h3>
+        <span *ngIf="zoneStatistic != null">
+          {{fromTimestamp}} - {{ toTimestamp }}
+        </span>
+      </div>
+      <div class="panel-body">
 
-      </table>
+        <div *ngIf="zoneStatistic != null">
+          <table class="table">
+            <thead>
+            <tr>
+              <th>
+                Statistics
+              </th>
+              <th>
+                #
+              </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr [ngClass]="{active: activeView == averagePeopleCountView}" (click)="switchView(averagePeopleCountView)">
+              <td>
+                Average People Count
+              </td>
+              <td>
+                {{ zoneStatistic.averagePersonCount }}
+              </td>
+            </tr>
+            <tr [ngClass]="{active: activeView == averageStandingCountView}" (click)="switchView(averageStandingCountView)">
+              <td style="padding-left: 20px;">
+                Standing
+              </td>
+              <td>
+                {{ zoneStatistic.averageStandingCount }}
+              </td>
+            </tr>
+            <tr [ngClass]="{active: activeView == averageSittingCountView}" (click)="switchView(averageSittingCountView)">
+              <td style="padding-left: 20px;">
+                Sitting
+              </td>
+              <td>
+                {{ zoneStatistic.averageSittingCount }}
+              </td>
+            </tr>
+            <tr [ngClass]="{active: activeView == movementSpeedView}" (click)="switchView(movementSpeedView)">
+              <td>
+                Movement Speed
+              </td>
+              <td>
+                <span style="float:right;">&gt;&gt;</span>
+              </td>
+            </tr>
+            <tr [ngClass]="{active: activeView == totalFlowView}" (click)="switchView(totalFlowView)">
+              <td>
+                Traffic Flow
+              </td>
+              <td>
+                {{ getTotal() }}
+              </td>
+            </tr>
+            <tr [ngClass]="{active: activeView == inflowView}" (click)="switchView(inflowView)">
+              <td style="padding-left: 20px;">
+                Incoming
+              </td>
+              <td>
+                {{ zoneStatistic.totalIncoming }}
+              </td>
+            </tr>
+            <tr [ngClass]="{active: activeView == outflowView}" (click)="switchView(outflowView)" >
+              <td style="padding-left: 20px;">
+                Outgoing
+              </td>
+              <td>
+                {{ zoneStatistic.totalOutgoing }}
+              </td>
+            </tr>
+            </tbody>
+
+          </table>
+        </div>
+      </div>
     </div>
 
-  </div>
-  <div class="panel panel-default col-md-8" *ngIf="zoneStatistic != null && activeView == averagePeopleCountView">
-    <h4>Average People Count</h4>
-    <p-chart type="line" [data]="averageCountVariationData" [options] = "chartOptions"></p-chart>
+
+
 
   </div>
+  <div class="col-md-8" *ngIf="zoneStatistic != null && activeView == averagePeopleCountView">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4>Average People Count</h4>
+      </div>
+      <div class="panel-body">
+        <p-chart type="line" [data]="averageCountVariationData" [options] = "chartOptions"></p-chart>
 
-  <div class="panel panel-default col-md-8" *ngIf="zoneStatistic != null && activeView == averageStandingCountView">
-    <h4>Average Standing People Count</h4>
-    <p-chart type="line" [data]="averageStandingCountVariationData" [options] = "chartOptions"></p-chart>
-
+      </div>
+    </div>
   </div>
 
-  <div class="panel panel-default col-md-8" *ngIf="zoneStatistic != null && activeView == averageSittingCountView">
-    <h4>Average Sitting People Count</h4>
-    <p-chart type="line" [data]="averageSittingCountVariationData" [options] = "chartOptions"></p-chart>
+  <div class="col-md-8" *ngIf="zoneStatistic != null && activeView == averageStandingCountView">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4>Average Standing People Count</h4>
+      </div>
+      <div class="panel-body">
+        <p-chart type="line" [data]="averageStandingCountVariationData" [options] = "chartOptions"></p-chart>
+      </div>
+    </div>
+  </div>
 
+  <div class="col-md-8" *ngIf="zoneStatistic != null && activeView == averageSittingCountView">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4>Average Sitting People Count</h4>
+      </div>
+      <div class="panel-body">
+        <p-chart type="line" [data]="averageSittingCountVariationData" [options] = "chartOptions"></p-chart>
+      </div>
+    </div>
   </div>
 
 
-  <div class="panel panel-default col-md-4" *ngIf="zoneStatistic != null && activeView == totalFlowView">
-    <h4>Outgoing Flow</h4>
-    <p-chart type="pie" [data]="outgoingData" [options] = "chartOptions"></p-chart>
+  <div class="col-md-8" *ngIf="zoneStatistic != null && activeView == movementSpeedView">
+    <div class="col-md-12" >
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4>Time Velocity Distribution</h4>
+        </div>
+        <div class="panel-body">
+          <app-time-velocity-distribution [zoneId]="zones[selectedIndex].id" [segmented]="useSegments" [from]="from" [to]="to" [timeInterval]="velocityMeasureTimeInterval" [timeVelocityView]="true" [velocityFrequencyView]="false"></app-time-velocity-distribution>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4>Velocity Frequency Distribution</h4>
+          <span> {{fromTimestamp}} - {{ toTimestamp }}</span>
+        </div>
+        <div class="panel-body">
+          <app-time-velocity-distribution [zoneId]="zones[selectedIndex].id" [segmented]="useSegments" [from]="from" [to]="to" [timeInterval]="velocityMeasureTimeInterval" [timeVelocityView]="false" [velocityFrequencyView]="true"></app-time-velocity-distribution>
+        </div>
 
+      </div>
+    </div>
   </div>
 
-  <div class="panel panel-default col-md-4" style="margin-left: 10px;" *ngIf="zoneStatistic != null && activeView == totalFlowView">
-    <h4>Incomming Flow</h4>
-    <p-chart type="pie" [options] = "chartOptions" [data]="incomingData"></p-chart>
+  <div class="cold-md-4" *ngIf="zoneStatistic != null && activeView == totalFlowView">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4>Outgoing Flow</h4>
+      </div>
+      <div class="panel-body">
+        <p-chart type="pie" [data]="outgoingData" [options] = "chartOptions"></p-chart>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4" *ngIf="zoneStatistic != null && activeView == totalFlowView">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h4>Incoming Flow</h4>
+      </div>
+      <div class="panel-body">
+        <p-chart type="pie" [options] = "chartOptions" [data]="incomingData"></p-chart>
+      </div>
+    </div>
   </div>
 
   <div class="col-md-8" *ngIf="zoneStatistic != null && activeView == inflowView">

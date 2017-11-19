@@ -181,6 +181,41 @@ export class AnalyticsService {
       .catch(AnalyticsService.handleError);
   }
 
+
+  getZonedTimeVelocityDistribution(from: number, to: number, zoneId: number, interval:number, segmented:boolean): Promise<{ [id: number] : number[];} > {
+    let url = this.baseUrl + "zonedTimeVelocity/" + from + "/" + to + "/" + zoneId + "/" + interval;
+    if(segmented)
+      url = url + "/segmented";
+
+    console.log(url);
+
+    return this.http.get(url)
+      .toPromise()
+      .then(response => {
+        console.debug(response.json());
+
+        return response.json() as { [id: number] : number[]; };
+      })
+      .catch(AnalyticsService.handleError);
+  }
+
+  getZonedVelocityFrequencyDistribution(from: number, to: number, zoneId: number, interval:number, segmented:boolean): Promise<{ [id: number] : number;} > {
+    let url = this.baseUrl + "zonedVelocityFrequency/" + from + "/" + to + "/" + zoneId + "/" + interval;
+    if(segmented)
+      url = url + "/segmented";
+
+    console.log(url);
+
+    return this.http.get(url)
+      .toPromise()
+      .then(response => {
+        console.debug(response.json());
+
+        return response.json() as { [id: number] : number; };
+      })
+      .catch(AnalyticsService.handleError);
+  }
+
   getHeatMap(from: number, to: number): Promise<number[][]> {
     return this.http.get(this.baseUrl + "heatMap/" + from + "/" + to)
       .toPromise()

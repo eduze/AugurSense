@@ -1,0 +1,8 @@
+<div>
+  <div *ngIf="timeVelocityView" class="col-md-12">
+    <p-chart type="scatter" [options]="timeVelocityOptions" [data]="dataTV"></p-chart>
+  </div>
+  <div *ngIf="velocityFrequencyView" class="col-md-12">
+    <p-chart type="bar" [options]="velocityFrequencyOptions" [data]="dataVF"></p-chart>
+  </div>
+</div>

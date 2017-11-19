@@ -23,6 +23,7 @@ import {SliderModule} from 'primeng/primeng';
 import {PersonStopPointsComponent} from "./person-stop-points/person-stop-points.component";
 import { ReIdComponent } from './re-id/re-id.component';
 import { TimelineComponent } from './timeline/timeline.component';
+import { TimeVelocityDistributionComponent } from './time-velocity-distribution/time-velocity-distribution.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { TimelineComponent } from './timeline/timeline.component';
     PersonStopPointsComponent,
     TimeBoundMapComponent,
     ReIdComponent,
-    TimelineComponent
+    TimelineComponent,
+    TimeVelocityDistributionComponent
   ],
   imports: [
     BrowserModule,

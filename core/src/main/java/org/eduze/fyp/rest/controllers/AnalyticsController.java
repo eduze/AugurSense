@@ -241,6 +241,77 @@ public class AnalyticsController {
         }
     }
 
+
+    @GET
+    @Path("/zonedTimeVelocity/{from}/{to}/{zoneId}/{interval}")
+    public Response getZonedTimeVelocityDistribution(@PathParam("from") long from, @PathParam("to") long to,@PathParam("zoneId") int zoneId, @PathParam("interval") long interval) {
+        try {
+            Date fromD = new Date(from);
+            Date toD = new Date(to);
+            if(zoneId == 0)
+                return Response.ok(analyticsService.getOverallTimeVelocityDistribution(fromD,toD,interval,false,10)).build();
+            else
+                return Response.ok(analyticsService.getZonedTimeVelocityDistribution(fromD,toD,zoneId,interval,false,10)).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining getZonedTimeVelocityDistribution. {}", e);
+            return Response.status(500).build();
+        }
+    }
+
+
+    @GET
+    @Path("/zonedVelocityFrequency/{from}/{to}/{zoneId}/{interval}")
+    public Response getZonedVelocityFrequency(@PathParam("from") long from, @PathParam("to") long to, @PathParam("zoneId") int zoneId, @PathParam("interval") long interval) {
+        try {
+            Date fromD = new Date(from);
+            Date toD = new Date(to);
+            if(zoneId == 0)
+                return Response.ok(analyticsService.getOverallVelocityFrequency(fromD,toD, interval,false,10)).build();
+            else
+                return Response.ok(analyticsService.getZonedVelocityFrequency(fromD,toD,zoneId, interval,false,10)).build();
+
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining overallVelocityFrequency. {}", e);
+            return Response.status(500).build();
+        }
+    }
+
+    @GET
+    @Path("/zonedTimeVelocity/{from}/{to}/{zoneId}/{interval}/segmented")
+    public Response getZonedTimeVelocityDistributionSegmented(@PathParam("from") long from, @PathParam("to") long to,@PathParam("zoneId") int zoneId, @PathParam("interval") long interval) {
+        try {
+            Date fromD = new Date(from);
+            Date toD = new Date(to);
+
+            if(zoneId == 0)
+                return Response.ok(analyticsService.getOverallTimeVelocityDistribution(fromD,toD,interval,true,10)).build();
+            else
+                return Response.ok(analyticsService.getZonedTimeVelocityDistribution(fromD,toD,zoneId,interval,true,10)).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining getZonedTimeVelocityDistribution. {}", e);
+            return Response.status(500).build();
+        }
+    }
+
+
+    @GET
+    @Path("/zonedVelocityFrequency/{from}/{to}/{zoneId}/{interval}/segmented")
+    public Response getZonedVelocityFrequencySegmented(@PathParam("from") long from, @PathParam("to") long to, @PathParam("zoneId") int zoneId, @PathParam("interval") long interval) {
+        try {
+            Date fromD = new Date(from);
+            Date toD = new Date(to);
+
+            if(zoneId == 0)
+                return Response.ok(analyticsService.getOverallVelocityFrequency(fromD,toD,interval,true,10)).build();
+            else
+                return Response.ok(analyticsService.getZonedVelocityFrequency(fromD,toD,zoneId, interval,true,10)).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining overallVelocityFrequency. {}", e);
+            return Response.status(500).build();
+        }
+    }
+
+
     @GET
     @Path("/zoneTimeline/{trackId}/segmented/{segmentId}")
     public Response getZoneTimeline(@PathParam("trackId") int trackId, @PathParam("segmentId") int segmentId) {

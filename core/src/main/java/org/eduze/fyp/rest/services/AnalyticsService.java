@@ -19,6 +19,7 @@
 
 package org.eduze.fyp.rest.services;
 
+import org.eclipse.jetty.util.ArrayUtil;
 import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
 import org.eduze.fyp.api.resources.PersonCoordinate;
@@ -431,6 +432,167 @@ public class AnalyticsService implements ProcessedMapListener {
         }
 
         return results;
+
+    }
+
+    public HashMap<Double,Integer> getOverallVelocityFrequency(Date startDate, Date endDate, long timeInterval, boolean segmented, int basketCount)
+    {
+        List<Person> persons = personDAO.listTrackOrderedOverall(startDate,endDate,segmented);
+        HashMap<Long,List<Double>> timeVariation = getTimeVelocityDistribution(persons,0,persons.size(),1,false);
+        List<Double> flatVariation = new ArrayList<>();
+        timeVariation.values().forEach(flatVariation::addAll);
+        Collections.sort(flatVariation);
+
+        if(flatVariation.size() == 0)
+            return new HashMap<>();
+
+        double min = flatVariation.get(0);
+        double max = flatVariation.get(flatVariation.size()-1);
+        double basketWidth = (max-min)/basketCount;
+
+        HashMap<Double,Integer> resultBaskets = new LinkedHashMap<>();
+        flatVariation.forEach((v)->{
+            double offset = v % basketWidth;
+            double start = v - offset;
+            double end = v + basketWidth;
+            double mid = (start+end)/2;
+            mid = Math.round(mid);
+            resultBaskets.put(mid,resultBaskets.getOrDefault(mid,0)+1);
+        });
+        return resultBaskets;
+    }
+
+    public HashMap<Long,List<Double>> getOverallTimeVelocityDistribution(Date startDate, Date endDate, long timeInterval, boolean segmented, int basketCount)
+    {
+        List<Person> persons = personDAO.listTrackOrderedOverall(startDate,endDate,segmented);
+        HashMap<Long,List<Double>> timeVariation = getTimeVelocityDistribution(persons,0,persons.size(),1,false);
+
+        return timeVariation;
+    }
+
+    public HashMap<Long,List<Double>> getZonedTimeVelocityDistribution(Date startDate, Date endDate,int zoneId, long timeInterval, boolean segmented, int basketCount)
+    {
+        List<Person> persons = personDAO.listTrackOrderedInZone(startDate,endDate,zoneId,segmented);
+        HashMap<Long,List<Double>> timeVariation = getTimeVelocityDistribution(persons,0,persons.size(),1,false);
+
+        return timeVariation;
+    }
+
+    public HashMap<Double,Integer> getZonedVelocityFrequency(Date startDate, Date endDate, int zoneId, long timeInterval, boolean segmented, int basketCount)
+    {
+        List<Person> persons = personDAO.listTrackOrderedInZone(startDate,endDate,zoneId,segmented);
+        HashMap<Long,List<Double>> timeVariation = getTimeVelocityDistribution(persons,0,persons.size(),1,false);
+        List<Double> flatVariation = new ArrayList<>();
+        timeVariation.values().forEach(flatVariation::addAll);
+        Collections.sort(flatVariation);
+
+        if(flatVariation.size() == 0)
+            return new HashMap<>();
+
+        double min = flatVariation.get(0);
+        double max = flatVariation.get(flatVariation.size()-1);
+        double basketWidth = (max-min)/basketCount;
+
+        HashMap<Double,Integer> resultBaskets = new LinkedHashMap<>();
+        flatVariation.forEach((v)->{
+            double offset = v % basketWidth;
+            double start = v - offset;
+            double end = v + basketWidth;
+            double mid = (start+end)/2;
+            mid = Math.round(mid);
+            resultBaskets.put(mid,resultBaskets.getOrDefault(mid,0)+1);
+        });
+        return resultBaskets;
+    }
+
+    private HashMap<Long, List<Double>> getTimeVelocityDistribution(List<Person> persons, int startIndex, int stopIndex, long timeInterval, boolean segmented){
+        int i  = startIndex;
+        HashMap<Long,List<Double>> results = new LinkedHashMap<>();
+
+        while(i < stopIndex)
+        {
+            //find the bounds for time interval in each person
+            int i_p = i;
+            int personId = persons.get(i_p).getIds().iterator().next();
+            int segmentId = persons.get(i_p).getTrackSegmentIndex();
+            while((i_p < stopIndex) && (persons.get(i_p).getIds().iterator().next() == personId) && (!segmented || persons.get(i_p).getTrackSegmentIndex() == segmentId)){
+                long personStartTime = persons.get(i_p).getTimestamp().getTime();
+
+                int i_t_start = i_p;
+                //now identify the time intervals
+                while((i_t_start < stopIndex) && (persons.get(i_t_start).getIds().iterator().next() == personId) && (!segmented || persons.get(i_t_start).getTrackSegmentIndex() == segmentId))
+                {
+                    long frameStartTime = persons.get(i_t_start).getTimestamp().getTime();
+
+                    // identify time intervals bounds
+                    int i_t = i_t_start;
+                    while ((i_t < stopIndex) && (persons.get(i_t).getTimestamp().getTime() - frameStartTime < timeInterval) && (persons.get(i_t).getIds().iterator().next() == personId && (!segmented || persons.get(i_t).getTrackSegmentIndex() == segmentId)))
+                    {
+                        i_t++;
+                    }
+
+                    boolean addBack = false;
+                    if(i_t >= stopIndex) {
+                        i_t = stopIndex - 1;
+                        addBack = true;
+                    }
+                    int i_t_end = i_t;
+                    long frameEndTime = persons.get(i_t_end).getTimestamp().getTime();
+                    //continue;
+                    if(i_t_start < i_t_end)
+                    {
+                        double averageVelocity = getAverageVelocity(persons,i_t_start,i_t_end);
+                        List<Double> samples = results.getOrDefault(frameStartTime,new ArrayList<>());
+                        samples.add(averageVelocity);
+                        results.put(frameStartTime,samples);
+                    }
+
+                    if(addBack){
+                        i_t+=1;
+                        i_t_end = i_t;
+                    }
+
+                    i_t_start = i_t_end;
+                }
+
+                i_p = i_t_start;
+
+            }
+            i = i_p;
+        }
+        return results;
+    }
+
+    public double getAverageVelocity(List<Person> persons, int startIndex, int stopIndex){
+        double averageX = 0;
+        double averageY = 0;
+        int count = 0;
+        for (int i = startIndex; i < stopIndex; i++) {
+            Person person = persons.get(i);
+            averageX += person.getX();
+            averageY += person.getY();
+            count+=1;
+        }
+
+        averageX = averageX / count;
+        averageY = averageY / count;
+
+        double totalVelocity = 0;
+
+        for (int i = startIndex; i < stopIndex; i++) {
+            Person person = persons.get(i);
+            double xDif = averageX-person.getX();
+            double yDif = averageY-person.getY();
+            double vel = Math.sqrt(xDif*xDif + yDif*yDif);
+            totalVelocity += vel;
+        }
+
+        double result = totalVelocity / count;
+        if(Double.isNaN(result))
+        {
+            System.out.println("Nan");
+        }
+        return result;
 
     }
 

@@ -66,6 +66,40 @@ public class PersonDAOImpl implements PersonDAO {
     }
 
     @Override
+    public List<Person> listTrackOrderedOverall(Date from, Date to, boolean segmented){
+        Session session = this.sessionFactory.openSession();
+        Query q = null;
+        if(segmented)
+        {
+            q=session.createQuery("from Person P WHERE P.timestamp between :startTime and :endTime order by P.ids, P.trackSegmentIndex, P.id asc");
+        }
+        else{
+            q=q=session.createQuery("from Person P WHERE P.timestamp between :startTime and :endTime  order by P.ids, P.id asc");
+        }
+        q.setParameter("startTime", from, TemporalType.TIMESTAMP).setParameter("endTime", to, TemporalType.TIMESTAMP);
+        List<Person> personList = q.list();
+        session.close();
+        return personList;
+    }
+
+    @Override
+    public List<Person> listTrackOrderedInZone(Date from, Date to,int zoneId, boolean segmented){
+        Session session = this.sessionFactory.openSession();
+        Query q = null;
+        if(segmented)
+        {
+            q=session.createQuery("from Person P WHERE P.timestamp between :startTime and :endTime and persistantZoneId = :zoneId order by P.ids, P.trackSegmentIndex, P.id asc");
+        }
+        else{
+            q=q=session.createQuery("from Person P WHERE P.timestamp between :startTime and :endTime and persistantZoneId = :zoneId order by P.ids, P.id asc");
+        }
+        q.setParameter("startTime", from, TemporalType.TIMESTAMP).setParameter("endTime", to, TemporalType.TIMESTAMP)
+        .setParameter("zoneId",zoneId,IntegerType.INSTANCE);
+        List<Person> personList = q.list();
+        session.close();
+        return personList;
+    }
+    @Override
     public Person getPerson(String uuid) {
         Session session = this.sessionFactory.openSession();
         List<Person> personList = session.createQuery("from Person P where P.uuid=:uuid").setParameter("uuid",uuid,StringType.INSTANCE).list();
