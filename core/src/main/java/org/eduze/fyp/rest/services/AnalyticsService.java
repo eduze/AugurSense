@@ -112,7 +112,6 @@ public class AnalyticsService implements ProcessedMapListener {
                 candidates.stream()
                         .filter((person -> person.getIds().contains(trackId) && person.getTrackSegmentIndex() == target.getTrackSegmentIndex()))
                         .forEach(result::add);
-                System.out.println("Segmented");
             }
 
         }
@@ -400,7 +399,7 @@ public class AnalyticsService implements ProcessedMapListener {
 
         Person firstPerson = personDAO.getTrackStart(trackId,segmentId,useSegment);
 
-        System.out.println("First" + firstPerson.getUuid());
+        //System.out.println("First" + firstPerson.getUuid());
         if(persons.stream().filter((t)-> Objects.equals(t.getUuid(), firstPerson.getUuid())).count() == 0){
             persons.add(0,firstPerson);
         }
@@ -438,10 +437,11 @@ public class AnalyticsService implements ProcessedMapListener {
     public HashMap<Double,Integer> getOverallVelocityFrequency(Date startDate, Date endDate, long timeInterval, boolean segmented, int basketCount)
     {
         List<Person> persons = personDAO.listTrackOrderedOverall(startDate,endDate,segmented);
-        HashMap<Long,List<Double>> timeVariation = getTimeVelocityDistribution(persons,0,persons.size(),1,false);
+        HashMap<Long,List<Double>> timeVariation = getTimeVelocityDistribution(persons,0,persons.size(),timeInterval,false);
         List<Double> flatVariation = new ArrayList<>();
         timeVariation.values().forEach(flatVariation::addAll);
         Collections.sort(flatVariation);
+
 
         if(flatVariation.size() == 0)
             return new HashMap<>();
@@ -465,7 +465,7 @@ public class AnalyticsService implements ProcessedMapListener {
     public HashMap<Long,List<Double>> getOverallTimeVelocityDistribution(Date startDate, Date endDate, long timeInterval, boolean segmented, int basketCount)
     {
         List<Person> persons = personDAO.listTrackOrderedOverall(startDate,endDate,segmented);
-        HashMap<Long,List<Double>> timeVariation = getTimeVelocityDistribution(persons,0,persons.size(),1,false);
+        HashMap<Long,List<Double>> timeVariation = getTimeVelocityDistribution(persons,0,persons.size(),timeInterval,false);
 
         return timeVariation;
     }
@@ -473,7 +473,7 @@ public class AnalyticsService implements ProcessedMapListener {
     public HashMap<Long,List<Double>> getZonedTimeVelocityDistribution(Date startDate, Date endDate,int zoneId, long timeInterval, boolean segmented, int basketCount)
     {
         List<Person> persons = personDAO.listTrackOrderedInZone(startDate,endDate,zoneId,segmented);
-        HashMap<Long,List<Double>> timeVariation = getTimeVelocityDistribution(persons,0,persons.size(),1,false);
+        HashMap<Long,List<Double>> timeVariation = getTimeVelocityDistribution(persons,0,persons.size(),timeInterval,false);
 
         return timeVariation;
     }
@@ -481,7 +481,7 @@ public class AnalyticsService implements ProcessedMapListener {
     public HashMap<Double,Integer> getZonedVelocityFrequency(Date startDate, Date endDate, int zoneId, long timeInterval, boolean segmented, int basketCount)
     {
         List<Person> persons = personDAO.listTrackOrderedInZone(startDate,endDate,zoneId,segmented);
-        HashMap<Long,List<Double>> timeVariation = getTimeVelocityDistribution(persons,0,persons.size(),1,false);
+        HashMap<Long,List<Double>> timeVariation = getTimeVelocityDistribution(persons,0,persons.size(),timeInterval,false);
         List<Double> flatVariation = new ArrayList<>();
         timeVariation.values().forEach(flatVariation::addAll);
         Collections.sort(flatVariation);
@@ -526,9 +526,14 @@ public class AnalyticsService implements ProcessedMapListener {
 
                     // identify time intervals bounds
                     int i_t = i_t_start;
-                    while ((i_t < stopIndex) && (persons.get(i_t).getTimestamp().getTime() - frameStartTime < timeInterval) && (persons.get(i_t).getIds().iterator().next() == personId && (!segmented || persons.get(i_t).getTrackSegmentIndex() == segmentId)))
+                    while ((i_t < stopIndex) && (persons.get(i_t).getIds().iterator().next() == personId && (!segmented || persons.get(i_t).getTrackSegmentIndex() == segmentId)))
                     {
-                        i_t++;
+                        if(persons.get(i_t).getTimestamp().getTime() - frameStartTime < timeInterval){
+                            i_t++;
+                        }
+                        else{
+                            break;
+                        }
                     }
 
                     boolean addBack = false;
@@ -590,7 +595,8 @@ public class AnalyticsService implements ProcessedMapListener {
         double result = totalVelocity / count;
         if(Double.isNaN(result))
         {
-            System.out.println("Nan");
+            assert false;
+            //System.out.println("Nan");
         }
         return result;
 

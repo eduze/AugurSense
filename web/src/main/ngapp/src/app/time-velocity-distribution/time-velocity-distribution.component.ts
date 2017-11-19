@@ -33,6 +33,7 @@ export class TimeVelocityDistributionComponent implements OnInit {
   @Input()
   set timeInterval(value: number) {
     this._timeInterval = value;
+    console.log("Time Interval " + value);
     this.refresh();
   }
   get segmented(): boolean {

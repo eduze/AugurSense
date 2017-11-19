@@ -149,6 +149,15 @@
 
       </div>
     </div>
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <span>Sampling Interval <span style="float: right;">{{ velocityMeasureTimeInterval / 1000 }} seconds</span></span>
+          <p-slider [(ngModel)]="velocityMeasureTimeInterval" [min]="1000" [max]="60000" [step]="1000"></p-slider>
+        </div>
+
+      </div>
+    </div>
   </div>
 
   <div class="cold-md-4" *ngIf="zoneStatistic != null && activeView == totalFlowView">
