@@ -351,6 +351,17 @@ public class PersonDAOImpl implements PersonDAO {
         return personList.get(0);
     }
 
+    @Override
+    public List<Object[]> getTrackPairs(Date from, Date to) {
+        Session session = this.sessionFactory.openSession();
+        Query query = null;
+        query = session.createQuery("from Person P1 join Person P2 ON P2.previousUuid = P1.uuid where P1.timestamp between :startTime and :endTime")
+        .setParameter("startTime", from, TemporalType.TIMESTAMP).setParameter("endTime", to, TemporalType.TIMESTAMP);
+
+        List<Object[]> personList = query.list();
+        session.close();
+        return personList;
+    }
 
 
     public void setSessionFactory(SessionFactory sessionFactory) {

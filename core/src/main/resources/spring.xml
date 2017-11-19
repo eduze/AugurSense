@@ -152,6 +152,12 @@
     <bean id="analytics-controller" class="org.eduze.fyp.rest.controllers.AnalyticsController">
         <constructor-arg ref="analytics-service"/>
         <property name="reIDSearchService" ref="reID-search-service"/>
+        <property name="directionAnalyticsService" ref="direction-analytics-service"/>
+    </bean>
+
+    <bean id="direction-analytics-service" class="org.eduze.fyp.rest.services.DirectionAnalyticsService">
+        <constructor-arg ref="personDAO"/>
+        <constructor-arg ref="captureStampDAO"/>
     </bean>
 
     <bean id="analytics-service" class="org.eduze.fyp.rest.services.AnalyticsService">

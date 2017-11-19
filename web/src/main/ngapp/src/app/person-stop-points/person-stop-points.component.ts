@@ -80,6 +80,7 @@ export class PersonStopPointsComponent implements OnInit, AfterViewInit {
     this.cx.lineCap = 'round';
 
     this.cx.strokeStyle = '#000';
+
   }
 
   ngAfterViewInit(): void {

@@ -27,6 +27,7 @@ import {PersonImage} from "../resources/person-image";
 import {ReIdStatus} from "../resources/re-id-status";
 import {TimelineZone} from "../resources/timeline-zone";
 import {TimelineTrack} from "../resources/timeline-track";
+import {PointDirections} from "../resources/point-directions";
 
 @Injectable()
 export class AnalyticsService {
@@ -222,6 +223,17 @@ export class AnalyticsService {
       .then(response => {
         console.debug(response.json());
         return response.json() as number[][]
+      })
+      .catch(AnalyticsService.handleError);
+  }
+
+
+  getDirectionMap(from: number, to: number, cellSize: number, directionCount : number): Promise<PointDirections[]> {
+    return this.http.get(this.baseUrl + "directionMap/" + from + "/" + to + "/" + cellSize + "/" + directionCount)
+      .toPromise()
+      .then(response => {
+        console.debug(response.json());
+        return response.json() as PointDirections[]
       })
       .catch(AnalyticsService.handleError);
   }

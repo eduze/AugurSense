@@ -67,4 +67,6 @@ public interface PersonDAO {
     Person getTrackEnd(int ids, int segmentId, boolean useSegment);
     Person getTrackStart(int ids, int segmentId, boolean useSegment);
 
+    List<Object[]> getTrackPairs(Date from, Date to);
+
 }

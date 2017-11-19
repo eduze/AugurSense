@@ -3,7 +3,7 @@ import {FormsModule} from '@angular/forms';
 import {HttpModule} from '@angular/http';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
-import {CalendarModule, CheckboxModule} from 'primeng/primeng';
+import {CalendarModule, CheckboxModule, RadioButton} from 'primeng/primeng';
 
 import {AppComponent} from "./app.component";
 import {AppRoutingModule} from "./app-routing.module";
@@ -24,6 +24,8 @@ import {PersonStopPointsComponent} from "./person-stop-points/person-stop-points
 import { ReIdComponent } from './re-id/re-id.component';
 import { TimelineComponent } from './timeline/timeline.component';
 import { TimeVelocityDistributionComponent } from './time-velocity-distribution/time-velocity-distribution.component';
+import { DirectionRingComponent } from './direction-ring/direction-ring.component';
+import { MovementDirectionComponent } from './movement-direction/movement-direction.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +42,10 @@ import { TimeVelocityDistributionComponent } from './time-velocity-distribution/
     TimeBoundMapComponent,
     ReIdComponent,
     TimelineComponent,
-    TimeVelocityDistributionComponent
+    TimeVelocityDistributionComponent,
+    DirectionRingComponent,
+    MovementDirectionComponent,
+    RadioButton
   ],
   imports: [
     BrowserModule,

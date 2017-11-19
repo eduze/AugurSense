@@ -17,23 +17,28 @@
  * IN THE SOFTWARE.
  */
 
-export class CanvasUtils {
+export class PointDirections {
+  x: number;
+  y: number;
 
-  public static setBackgroundImage(canvas: HTMLCanvasElement,
-                                   base64Image: string,
-                                   callback: (canvas: HTMLCanvasElement) => void,
-                                   callbackObj: Object) {
-    const img: HTMLImageElement = new Image();
-    img.onload = function () {
-      console.debug("Background image loaded");
-      // set the width and height
-      canvas.width = img.width;
-      canvas.height = img.height;
-      canvas.style.backgroundImage = "url('" + base64Image + "')";
-      canvas.style.backgroundSize = img.width + "px " + img.height + "px";
-      canvas.style.backgroundRepeat = "no-repeat";
-      callback.apply(callbackObj, [canvas]);
-    };
-    img.src = base64Image;
+  directionCountList: number[];
+  directionVelocityList: number[];
+
+  normalizedDirectionCountList : number[];
+  normalizedDirectionVelocityList : number[];
+
+  headDirectionList : number[];
+
+  constructor(x:number,y:number,directionCountValues:number[], directionVelocityValues: number[], normalizedDirectionCountList: number[], normalizedDirectionVelocityList: number[], headDirectionList: number[])
+  {
+    this.x = x;
+    this.y = y;
+    this.directionCountList = directionCountValues;
+    this.directionVelocityList = directionVelocityValues;
+    this.normalizedDirectionCountList = normalizedDirectionCountList;
+    this.normalizedDirectionVelocityList = normalizedDirectionVelocityList;
+    this.headDirectionList = headDirectionList;
   }
 }
+
+

@@ -23,6 +23,7 @@ import org.eduze.fyp.api.resources.PersonCoordinate;
 import org.eduze.fyp.impl.db.model.Person;
 import org.eduze.fyp.rest.resources.ReIDStatus;
 import org.eduze.fyp.rest.services.AnalyticsService;
+import org.eduze.fyp.rest.services.DirectionAnalyticsService;
 import org.eduze.fyp.rest.services.ReIDSearchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,16 @@ public class AnalyticsController {
     private AnalyticsService analyticsService;
 
     private ReIDSearchService reIDSearchService;
+
+    private DirectionAnalyticsService directionAnalyticsService;
+
+    public DirectionAnalyticsService getDirectionAnalyticsService() {
+        return directionAnalyticsService;
+    }
+
+    public void setDirectionAnalyticsService(DirectionAnalyticsService directionAnalyticsService) {
+        this.directionAnalyticsService = directionAnalyticsService;
+    }
 
     public void setReIDSearchService(ReIDSearchService reIDSearchService) {
         this.reIDSearchService = reIDSearchService;
@@ -319,6 +330,19 @@ public class AnalyticsController {
             return Response.ok(analyticsService.getTimelineZonesFromTrackId(trackId,segmentId,true)).build();
         } catch (Exception e) {
             logger.error("Error occurred when obtaining zoneTimeline. {}", e);
+            return Response.status(500).build();
+        }
+    }
+
+    @GET
+    @Path("/directionMap/{from}/{to}/{cellSize}/{directionCount}")
+    public Response getZoneTimeline(@PathParam("from") long from, @PathParam("to") long to, @PathParam("cellSize") int cellSize, @PathParam("directionCount") int directionCount) {
+        try {
+            Date start = new Date(from);
+            Date end = new Date(to);
+            return Response.ok(directionAnalyticsService.getDirectionAnalytics(start,end,cellSize,directionCount).getPointDirections()).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining direction map. {}", e);
             return Response.status(500).build();
         }
     }

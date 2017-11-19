@@ -32,6 +32,8 @@ import {PersonStopPointsComponent} from "./person-stop-points/person-stop-points
 import {ReIdComponent} from "./re-id/re-id.component";
 import {TimelineComponent} from "./timeline/timeline.component";
 import {TimeVelocityDistributionComponent} from "./time-velocity-distribution/time-velocity-distribution.component";
+import {DirectionRingComponent} from "./direction-ring/direction-ring.component";
+import {MovementDirectionComponent} from "./movement-direction/movement-direction.component";
 
 const routes: Routes = [
   {
@@ -72,8 +74,8 @@ const routes: Routes = [
     component: TimeBoundMapComponent
   },
   {
-    path :'timeVelocity',
-    component: TimeVelocityDistributionComponent
+    path :'movement-direction',
+    component: MovementDirectionComponent
   },
   {
     path :':id',
