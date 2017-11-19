@@ -16,7 +16,7 @@
       </div>
       <div class="panel-body">
         <div class="col-md-7">
-          <app-direction-ring [dataPoints]="datePoints" [pointRadi]="cellSize/2" [width]="700" [drawPersonVelocity]="selectedView=='velocity'" [drawPersonCount]="selectedView == 'count'" [drawHeadDirection]="selectedView == 'head'" [height]="500" (selectionChanged)="selectedRingChanged($event)"></app-direction-ring>
+          <app-direction-ring [dataPoints]="datePoints" [pointRadi]="cellSize/2" [width]="700" [drawPersonVelocity]="selectedView=='velocity'" [drawPersonCount]="selectedView == 'count'" [drawHeadDirection]="selectedView == 'head'" [height]="600" (selectionChanged)="selectedRingChanged($event)"></app-direction-ring>
         </div>
         <div class="col-md-5" *ngIf="selectedDataPoint != null">
           <div class="panel-group">
@@ -40,12 +40,7 @@
 
         </div>
       </div>
-    </div>
-    <div class="panel panel-info">
-      <div class="panel-heading">
-        <span>Configure</span>
-      </div>
-      <div class="panel-body">
+      <div class="panel-footer">
         <form>
 
         </form>
