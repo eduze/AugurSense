@@ -91,24 +91,24 @@ public class ReIDSearchService {
     private void init() throws IOException {
         File rootPath = new File(getReIDPath());
         rootPath.mkdirs();
-        File communicatorRoot = new File(getReIDPath() + "communicator/");
+        File communicatorRoot = new File(getReIDPath() + "close_communicator/");
         communicatorRoot.mkdirs();
 
-        File doneFile = new File(getReIDPath() + "communicator/.done");
+        File doneFile = new File(getReIDPath() + "close_communicator/.done");
         if(doneFile.exists())
             doneFile.delete();
 
-        File flagFile = new File(getReIDPath() + "communicator/flag_file.txt");
+        File flagFile = new File(getReIDPath() + "close_communicator/flag_file.txt");
         if(flagFile.exists())
             flagFile.delete();
         flagFile.createNewFile();
 
-        File galleryImagesFile = new File(getReIDPath() + "communicator/gallery_images.txt");
+        File galleryImagesFile = new File(getReIDPath() + "close_communicator/gallery_images.txt");
         if(galleryImagesFile.exists())
             galleryImagesFile.delete();
         galleryImagesFile.createNewFile();
 
-        File probeImageFile = new File(getReIDPath() + "communicator/probe_image.txt");
+        File probeImageFile = new File(getReIDPath() + "close_communicator/probe_image.txt");
         if(probeImageFile.exists())
             probeImageFile.delete();
         probeImageFile.createNewFile();
@@ -118,11 +118,11 @@ public class ReIDSearchService {
     public List<PersonCoordinate> obtainSearchResults(String candidateUUID, Date fromDate, Date toDate, boolean segmented) throws IOException {
         if(!verify(candidateUUID,fromDate,toDate,segmented))
             return null;
-        File doneFile = new File(getReIDPath() + "communicator/.done");
+        File doneFile = new File(getReIDPath() + "close_communicator/.done");
         if(!doneFile.exists())
            return null;
 
-        File resultsFile = new File(getReIDPath() + "communicator/result.txt");
+        File resultsFile = new File(getReIDPath() + "close_communicator/result.txt");
         if(!resultsFile.exists())
             return null;
 
@@ -152,14 +152,14 @@ public class ReIDSearchService {
     }
 
     public void invokeSearch(String candidateUUID, Date startDate, Date endDate, boolean segmented) throws IOException {
-        File doneFile = new File(getReIDPath() + "communicator/.done");
+        File doneFile = new File(getReIDPath() + "close_communicator/.done");
         if(doneFile.exists())
             doneFile.delete();
 
         updateProbeFile(candidateUUID);
         int count = updateGalleryFile(startDate,endDate, segmented);
 
-        File flagFile = new File(getReIDPath() + "communicator/flag_file.txt");
+        File flagFile = new File(getReIDPath() + "close_communicator/flag_file.txt");
 //        if(flagFile.exists())
 //            flagFile.delete();
 
@@ -180,7 +180,7 @@ public class ReIDSearchService {
     }
 
     public void updateProbeFile(String personUUID) throws IOException {
-        File probeFile = new File(getReIDPath() + "communicator/probe_image.txt");
+        File probeFile = new File(getReIDPath() + "close_communicator/probe_image.txt");
 //        if(probeFile.exists())
 //            probeFile.delete();
         probeFile.createNewFile();
@@ -199,7 +199,7 @@ public class ReIDSearchService {
 
         this.pendingSearchCandidates =  new ArrayList<>();
 
-        File galleryImagesFile = new File(getReIDPath() + "communicator/gallery_images.txt");
+        File galleryImagesFile = new File(getReIDPath() + "close_communicator/gallery_images.txt");
 //        if(galleryImagesFile.exists())
 //            galleryImagesFile.delete();
         galleryImagesFile.createNewFile();

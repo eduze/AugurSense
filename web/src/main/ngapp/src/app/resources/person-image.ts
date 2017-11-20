@@ -12,4 +12,6 @@ export class PersonImage {
   trackSegmentIndex: number;
   height: number;
   width: number;
+  colour: string;
+  standSitColour: string;
 }

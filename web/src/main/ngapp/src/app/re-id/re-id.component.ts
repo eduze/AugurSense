@@ -392,10 +392,17 @@ export class ReIdComponent implements OnInit {
   getReIdResults() : void {
     this.analyticsService.getReIdResults(this.uuid, this.startTime.getTime(), this.endTime.getTime(), this.useTrackSegments).then(result=>{
       if(result.completed){
+        console.log("RE_ID_Results");
+        console.log(result.results);
         this.matchedPersons = result.results;
+
+        this.matchedPersons.forEach((v)=>{
+          v["colour"] = this.getColour(v.ids[0]);
+        });
+
         console.log("Completed");
         this.searchInvoked = false;
-        console.log(result.results);
+
       }
       else{
         console.log(result);
