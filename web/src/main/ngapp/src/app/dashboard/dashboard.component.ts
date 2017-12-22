@@ -92,29 +92,29 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         prev = snapshots[i];
       }
     });
-      personSnapshots.forEach(snapshots => {
-        let index = snapshots[0].ids[0];
+    personSnapshots.forEach(snapshots => {
+      let index = snapshots[0].ids[0];
+      this.cx.beginPath();
+      this.cx.fillStyle = "rgb(" + Math.round(((index / 256 / 256) * 40) % 256).toString() + "," + Math.round(((index / 256) * 40) % 256).toString() + "," + Math.round((index * 40) % 256).toString() + ")";
+      this.cx.ellipse(snapshots[0].x, snapshots[0].y, 5, 5, 0, 0, 360, false);
+      this.cx.fill();
+
+      if (snapshots[0].hasOwnProperty("headDirectionX") && snapshots[0].hasOwnProperty("headDirectionY")) {
+        console.info(snapshots[0]);
         this.cx.beginPath();
-        this.cx.fillStyle="rgb(" + Math.round(((index / 256 / 256) * 40) % 256).toString() + "," + Math.round(((index / 256) * 40) % 256).toString() + "," + Math.round((index * 40) % 256).toString() + ")";
-        this.cx.ellipse(snapshots[0].x,snapshots[0].y,5,5,0,0,360,false);
-        this.cx.fill();
+        this.cx.moveTo(snapshots[0].x, snapshots[0].y);
+        this.cx.lineTo(snapshots[0].x + snapshots[0].headDirectionX * 10, snapshots[0].y + snapshots[0].headDirectionY * 10);
+        this.cx.lineWidth = 3;
 
-        if(snapshots[0].hasOwnProperty("headDirectionX") && snapshots[0].hasOwnProperty("headDirectionY")){
-          console.info(snapshots[0]);
-          this.cx.beginPath();
-          this.cx.moveTo(snapshots[0].x,snapshots[0].y);
-          this.cx.lineTo(snapshots[0].x + snapshots[0].headDirectionX * 10, snapshots[0].y + snapshots[0].headDirectionY * 10);
-          this.cx.lineWidth = 3;
+        const standCol = Math.round(snapshots[0].standProbability * 255);
+        const sitCol = Math.round(snapshots[0].sitProbability * 255);
 
-          const standCol = Math.round(snapshots[0].standProbability * 255);
-          const sitCol = Math.round(snapshots[0].sitProbability * 255);
-
-          this.cx.strokeStyle = "rgb("+standCol.toString()+", " +sitCol.toString() + ",255 )";
-          this.cx.stroke();
-        }
+        this.cx.strokeStyle = "rgb(" + standCol.toString() + ", " + sitCol.toString() + ",255 )";
+        this.cx.stroke();
+      }
 
 
-      });
+    });
 
   }
 

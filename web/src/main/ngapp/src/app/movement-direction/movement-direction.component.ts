@@ -16,6 +16,7 @@ export class MovementDirectionComponent implements OnInit {
     this._selectedDataPoint = value;
     this.refreshDataPointInfo();
   }
+
   get selectedView(): string {
     return this._selectedView;
   }
@@ -23,6 +24,7 @@ export class MovementDirectionComponent implements OnInit {
   set selectedView(value: string) {
     this._selectedView = value;
   }
+
   get directionCount(): number {
     return this._directionCount;
   }
@@ -31,6 +33,7 @@ export class MovementDirectionComponent implements OnInit {
     this._directionCount = value;
     this.refresh();
   }
+
   get from(): Date {
     return this._from;
   }
@@ -50,6 +53,7 @@ export class MovementDirectionComponent implements OnInit {
     this._to = value;
     this.refresh();
   }
+
   get cellSize(): number {
     return this._cellSize;
   }
@@ -61,12 +65,13 @@ export class MovementDirectionComponent implements OnInit {
   }
 
 
-  constructor(private analyticsService: AnalyticsService) { }
+  constructor(private analyticsService: AnalyticsService) {
+  }
 
   private _directionCount = 16;
 
-  private _from : Date = new Date(0);
-  private _to : Date = new Date();
+  private _from: Date = new Date(0);
+  private _to: Date = new Date();
 
   private _cellSize: number = 15;
 
@@ -74,72 +79,70 @@ export class MovementDirectionComponent implements OnInit {
   private _selectedView: string = "count";
 
 
-
-  refresh(): void{
+  refresh(): void {
     let requestedCellSize = this.cellSize;
     let requestedDirectionCount = this.directionCount;
-    this.analyticsService.getDirectionMap(this.from.getTime(),this.to.getTime(),this.cellSize,this.directionCount)
+    this.analyticsService.getDirectionMap(this.from.getTime(), this.to.getTime(), this.cellSize, this.directionCount)
       .then(pds => {
-        if(this.cellSize != requestedCellSize){
+        if (this.cellSize != requestedCellSize) {
           return;
         }
-        if(this.directionCount != requestedDirectionCount)
+        if (this.directionCount != requestedDirectionCount)
           return;
         console.log("Direction map fetched:");
         console.log(pds);
-       this.datePoints = pds;
+        this.datePoints = pds;
       })
       .catch(reason => console.error(reason));
   }
+
   ngOnInit() {
     this.refresh();
   }
 
-  private _selectedDataPoint : PointDirections = null;
+  private _selectedDataPoint: PointDirections = null;
   dataRadarCount: any;
   dataRadarHeadDirectionAndVelocity: any;
 
   selectedRingChanged(event: number) {
-    if(event < 0)
-    {
+    if (event < 0) {
       this.selectedDataPoint = null;
       return;
     }
     this.selectedDataPoint = this.datePoints[event];
   }
 
-  chartNoLegendOptions : any = {
+  chartNoLegendOptions: any = {
     legend: {
       display: false
     }
   };
 
 
-  chartRightLegendOptions : any = {
+  chartRightLegendOptions: any = {
     legend: {
       position: 'right',
-      display:true
+      display: true
     }
   };
 
   private static rotate(input: any[]): any[] {
     let d = input.slice(0);
     let size = input.length;
-    for(let i = 0; i < size/4; i++)
-    {
+    for (let i = 0; i < size / 4; i++) {
       let l = d.pop();
       d = [l].concat(d);
     }
     return d;
   }
+
   private refreshDataPointInfo() {
-    if(this.selectedDataPoint == null)
+    if (this.selectedDataPoint == null)
       return;
 
-    let labels : string[] = [];
-    for(let i = 0; i < this.selectedDataPoint.directionCountList.length;i++)
-    {
-      let angle = i * 360/this.selectedDataPoint.directionCountList.length;
+    let labels: string[] = [];
+    for (let i = 0; i < this.selectedDataPoint.directionCountList.length; i++) {
+      let angle = i * 360 / this.selectedDataPoint.directionCountList.length;
       angle -= 90;
       angle = angle % 360;
       labels.push(angle.toString())

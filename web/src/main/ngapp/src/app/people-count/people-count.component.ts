@@ -29,5 +29,4 @@ export class PeopleCountComponent implements AfterViewInit {
       })
       .catch(reason => console.log(reason));
   }
-
 }

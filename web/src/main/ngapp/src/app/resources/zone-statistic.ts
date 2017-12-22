@@ -1,4 +1,4 @@
-export class ZoneStatistic{
+export class ZoneStatistic {
   zoneId: number;
   zoneName: string;
   averagePersonCount: number;
@@ -8,12 +8,11 @@ export class ZoneStatistic{
   toTimestamp: number;
   totalOutgoing: number;
   totalIncoming: number;
-  outgoingMap: {[id:number] : number};
-  incomingMap: {[id:number] : number};
+  outgoingMap: { [id: number]: number };
+  incomingMap: { [id: number]: number };
 
-  totalCountVariation : {[id:number] : number};
+  totalCountVariation: { [id: number]: number };
 
-  totalStandingCountVariation : {[id:number] : number};
-  totalSittingCountVariation : {[id:number] : number};
-
+  totalStandingCountVariation: { [id: number]: number };
+  totalSittingCountVariation: { [id: number]: number };
 }

@@ -3,6 +3,6 @@ import {TimelineZone} from "./timeline-zone";
 
 export class TimelineTrack {
   person: PersonSnapshot;
-  timelineZones : TimelineZone[];
+  timelineZones: TimelineZone[];
   label: string;
 }

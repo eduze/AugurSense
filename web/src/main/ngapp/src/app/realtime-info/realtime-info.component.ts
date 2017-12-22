@@ -18,6 +18,7 @@ export class RealtimeInfoComponent implements OnInit {
     this._segmentIndex = value;
     this.refresh();
   }
+
   get useTrackSegment(): boolean {
     return this._useTrackSegment;
   }
@@ -27,6 +28,7 @@ export class RealtimeInfoComponent implements OnInit {
     this._useTrackSegment = value;
     this.refresh();
   }
+
   get to(): number {
     return this._to;
   }
@@ -36,6 +38,7 @@ export class RealtimeInfoComponent implements OnInit {
     this._to = value;
     this.refresh();
   }
+
   get from(): number {
     return this._from;
   }
@@ -45,12 +48,13 @@ export class RealtimeInfoComponent implements OnInit {
     this._from = value;
     this.refresh();
   }
+
   get refreshToggle(): boolean {
     return this._refreshToggle;
   }
 
-  private _from : number = 0;
-  private _to : number = 0;
+  private _from: number = 0;
+  private _to: number = 0;
 
   @Input() set refreshToggle(value: boolean) {
     this._refreshToggle = value;
@@ -68,23 +72,23 @@ export class RealtimeInfoComponent implements OnInit {
   }
 
   @Input()
-  reIDOnClick : boolean = false;
+  reIDOnClick: boolean = false;
 
 
   @Output()
   personClicked: EventEmitter<PersonImage> = new EventEmitter<PersonImage>();
 
-  imageClicked(person: PersonImage) : void {
+  imageClicked(person: PersonImage): void {
     this.personClicked.emit(person);
   }
 
-  private _id : number = -1;
+  private _id: number = -1;
 
   private _segmentIndex: number = -1;
 
   private _useTrackSegment: boolean = false;
 
-  private _showAll : boolean = false;
+  private _showAll: boolean = false;
 
   private _refreshToggle: boolean = false;
 
@@ -92,33 +96,31 @@ export class RealtimeInfoComponent implements OnInit {
   @Input()
   private useRealtimeEndpoint: boolean = true;
 
-  private personImages : PersonImage[] = null;
+  private personImages: PersonImage[] = null;
 
-  get id(): number{
+  get id(): number {
     return this._id;
   }
 
-  @Input() set id(value : number){
+  @Input() set id(value: number) {
     this._id = value;
     console.log("id" + value.toString());
     this.personImages = null;
     this.refresh();
   }
 
-  refresh() : void{
+  refresh(): void {
     console.debug("Refresh");
 
-    if(this.useRealtimeEndpoint)
-    {
-      if(!this.showAll)
-      {
-        if(this.id < 0){
+    if (this.useRealtimeEndpoint) {
+      if (!this.showAll) {
+        if (this.id < 0) {
           this.personImages = null;
           return;
         }
-        else{
+        else {
           this.analyticsService.getRealtimeInfo(this.id).then((pi) => {
-            if(this.id<0 || this.useRealtimeEndpoint == false)
+            if (this.id < 0 || this.useRealtimeEndpoint == false)
               return;
 
             this.personImages = pi;
@@ -127,9 +129,9 @@ export class RealtimeInfoComponent implements OnInit {
         }
 
       }
-      else{
+      else {
         this.analyticsService.getRealtimeAllInfo().then((pi) => {
-          if(this.useRealtimeEndpoint == false || this.id>=0)
+          if (this.useRealtimeEndpoint == false || this.id >= 0)
             return;
 
           this.personImages = pi;
@@ -138,35 +140,33 @@ export class RealtimeInfoComponent implements OnInit {
       }
 
     }
-    else
-      {
-        if(!this.showAll)
-        {
-          if(this.id < 0){
-            this.personImages = null;
-            console.log("cleared");
-            return;
-          }
-          else{
-            this.analyticsService.getPastInfo(this.id,this.segmentIndex, this.useTrackSegment).then((pi) => {
-              if(this.id <0 || this.useRealtimeEndpoint == true)
-                return;
-              console.log("fetched " + this.id);
-              this.personImages = pi;
-              console.log(pi);
-            });
-          }
+    else {
+      if (!this.showAll) {
+        if (this.id < 0) {
+          this.personImages = null;
+          console.log("cleared");
+          return;
         }
-        else{
-          console.debug("Requesting timebound photos");
-          this.analyticsService.getTimeboundAllPhotos(this.from,this.to).then((pi) => {
-            if(this.useRealtimeEndpoint == true || this.id >= 0)
+        else {
+          this.analyticsService.getPastInfo(this.id, this.segmentIndex, this.useTrackSegment).then((pi) => {
+            if (this.id < 0 || this.useRealtimeEndpoint == true)
               return;
-
+            console.log("fetched " + this.id);
             this.personImages = pi;
             console.log(pi);
           });
         }
+      }
+      else {
+        console.debug("Requesting timebound photos");
+        this.analyticsService.getTimeboundAllPhotos(this.from, this.to).then((pi) => {
+          if (this.useRealtimeEndpoint == true || this.id >= 0)
+            return;
+
+          this.personImages = pi;
+          console.log(pi);
+        });
+      }
 
 
     }
@@ -174,7 +174,8 @@ export class RealtimeInfoComponent implements OnInit {
 
   }
 
-  constructor(private analyticsService: AnalyticsService, private configService: ConfigService) { }
+  constructor(private analyticsService: AnalyticsService, private configService: ConfigService) {
+  }
 
   ngOnInit() {
   }

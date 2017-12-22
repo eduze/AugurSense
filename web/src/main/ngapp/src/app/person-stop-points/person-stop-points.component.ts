@@ -21,9 +21,9 @@ export class PersonStopPointsComponent implements OnInit, AfterViewInit {
   time: number = 1; // Time duration min
   stopPoints: number[][];
 
-  globalMap : GlobalMap;
+  globalMap: GlobalMap;
 
-  constructor(private analyticsService: AnalyticsService, private configService : ConfigService) {
+  constructor(private analyticsService: AnalyticsService, private configService: ConfigService) {
   }
 
   ngOnInit() {
@@ -47,17 +47,17 @@ export class PersonStopPointsComponent implements OnInit, AfterViewInit {
     //   })
     //   .catch(reason => console.log(reason));
 
-    this.analyticsService.getStopPoints(this.from.getTime(), this.to.getTime(), this.radius, this.time,height,width )
+    this.analyticsService.getStopPoints(this.from.getTime(), this.to.getTime(), this.radius, this.time, height, width)
       .then(stopPoints => {
         // set the width and height
         canvasEl.width = height;
         canvasEl.height = width;
 
         this.cx.fillStyle = 'white';
-        this.cx.globalAlpha = 0.8 ;
-        this.cx.fillRect(0,0,1000,1000);
+        this.cx.globalAlpha = 0.8;
+        this.cx.fillRect(0, 0, 1000, 1000);
         this.cx.globalAlpha = 1;
-        this.cx.fillStyle="black";
+        this.cx.fillStyle = "black";
 
         this.cx.strokeRect(0, 0, canvasEl.width, canvasEl.height);
 

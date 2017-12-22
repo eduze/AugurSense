@@ -3,10 +3,10 @@
   <div class="panel panel-default">
     <div class="panel-heading">
       <b>Zone Map</b>
-        <span style="padding-left: 10px; padding-right: 2px;">
-          From <p-calendar [showTime] = "true" [(ngModel)]="fromDate"></p-calendar>
+      <span style="padding-left: 10px; padding-right: 2px;">
+          From <p-calendar [showTime]="true" [(ngModel)]="fromDate"></p-calendar>
         </span>
-        <span style="padding-left: 10px; padding-right: 2px;">
+      <span style="padding-left: 10px; padding-right: 2px;">
             To <p-calendar [showTime]="true" [(ngModel)]="toDate"></p-calendar>
         </span>
     </div>
@@ -19,22 +19,26 @@
             <g height="100%" width="100%">
               <image [attr.xlink:href]="globalMap.image" x="0" y="0" (click)="backgroundClicked();"></image>
               <g *ngFor="let poly of polygons; let i = index">
-                <polygon class="zone" [attr.points]="poly.polygon" (click)="zoneClicked(i);" [class.zone-selected]="i === selectedZoneIndex"></polygon>
+                <polygon class="zone" [attr.points]="poly.polygon" (click)="zoneClicked(i);"
+                         [class.zone-selected]="i === selectedZoneIndex"></polygon>
 
-                <text [attr.x] = "poly.midX" [attr.y] = "poly.midY-30" fill="yellow" font-size="15" text-anchor="middle">
+                <text [attr.x]="poly.midX" [attr.y]="poly.midY-30" fill="yellow" font-size="15" text-anchor="middle">
                   {{ poly.zone.name }}
                 </text>
 
-                <text [attr.x] = "poly.midX" [attr.y] = "poly.midY"  fill="yellow" font-size="15" text-anchor="middle" *ngIf="poly.zoneStatistic != null && (selectedZoneIndex < 0 || selectedZoneIndex == i)">
+                <text [attr.x]="poly.midX" [attr.y]="poly.midY" fill="yellow" font-size="15" text-anchor="middle"
+                      *ngIf="poly.zoneStatistic != null && (selectedZoneIndex < 0 || selectedZoneIndex == i)">
                   {{ poly.zoneStatistic.averagePersonCount | number : '1.2-2'}} People
                 </text>
 
                 <g *ngIf="selectedZoneIndex == i && poly.zoneStatistic != null">
-                  <text [attr.x] = "neighbour.midX"  fill="red" [attr.y] = "neighbour.midY - 10" *ngFor="let neighbour of poly.outgoingMap" font-size="15" text-anchor="middle">
+                  <text [attr.x]="neighbour.midX" fill="red" [attr.y]="neighbour.midY - 10"
+                        *ngFor="let neighbour of poly.outgoingMap" font-size="15" text-anchor="middle">
                     + {{ neighbour.count * 100 | number : '1.2-2' }}%
                   </text>
 
-                  <text [attr.x] = "neighbour.midX" fill="red" [attr.y] = "neighbour.midY + 10" *ngFor="let neighbour of poly.incomingMap" font-size="15" text-anchor="middle">
+                  <text [attr.x]="neighbour.midX" fill="red" [attr.y]="neighbour.midY + 10"
+                        *ngFor="let neighbour of poly.incomingMap" font-size="15" text-anchor="middle">
                     - {{ neighbour.count * 100 | number : '1.2-2'}}%
                   </text>
 
@@ -42,8 +46,6 @@
 
               </g>
             </g>
-
-
 
 
           </svg>
@@ -54,6 +56,7 @@
 
   </div>
   <div>
-      <app-zone-info [zones]="zones" [from]="fromDate" [to]="toDate" [zoneStatistics]="zoneStatistics" [selectedIndex]="selectedZoneIndex"></app-zone-info>
+    <app-zone-info [zones]="zones" [from]="fromDate" [to]="toDate" [zoneStatistics]="zoneStatistics"
+                   [selectedIndex]="selectedZoneIndex"></app-zone-info>
   </div>
 </div>

@@ -1,4 +1,4 @@
-import {ElementRef, OnInit} from '@angular/core';
+import {ElementRef} from '@angular/core';
 
 export class SimpleHeatMap {
   private _canvas: HTMLCanvasElement;

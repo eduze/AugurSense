@@ -3,7 +3,7 @@ import {Zone} from "./zone";
 
 export class TimelineZone {
   startTime: number;
-  endTime : number;
+  endTime: number;
   zone: Zone;
   person: PersonSnapshot;
   colour: string;

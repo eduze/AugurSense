@@ -38,15 +38,16 @@ export class HeatmapComponent implements AfterViewInit {
     this._offset = value;
     this.generateHeatMap();
   }
+
   get secondRange(): number[] {
     return this._secondRange;
   }
 
-  private get startString() : string{
+  private get startString(): string {
     return new Date(this.from).toLocaleString();
   }
 
-  private get endString() : string{
+  private get endString(): string {
     return new Date(this.from).toLocaleString();
   }
 
@@ -54,6 +55,7 @@ export class HeatmapComponent implements AfterViewInit {
     this._secondRange = value;
     this.generateHeatMap();
   }
+
   get endTime(): Date {
     return this._endTime;
   }
@@ -62,6 +64,7 @@ export class HeatmapComponent implements AfterViewInit {
     this._endTime = value;
     this.generateHeatMap();
   }
+
   get startTime(): Date {
     return this._startTime;
   }
@@ -79,19 +82,18 @@ export class HeatmapComponent implements AfterViewInit {
   private _startTime: Date = new Date(0);
   private _endTime: Date = new Date(0);
 
-  private _offset : number = 0;
-  private _secondRange : number[] = [0,60];
+  private _offset: number = 0;
+  private _secondRange: number[] = [0, 60];
 
 
-
-  private get from() : number{
-    if(this.startTime == null || this.secondRange[0] == null)
+  private get from(): number {
+    if (this.startTime == null || this.secondRange[0] == null)
       return null;
     return this.startTime.getTime() + this.secondRange[0] * 1000 + this.offset * 1000;
   }
 
-  private get to() : number{
-    if(this.endTime == null || this.secondRange[1] == null)
+  private get to(): number {
+    if (this.endTime == null || this.secondRange[1] == null)
       return null;
     return this.endTime.getTime() + this.secondRange[1] * 1000 + this.offset * 1000;
   }

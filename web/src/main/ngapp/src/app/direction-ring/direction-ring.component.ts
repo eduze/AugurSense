@@ -22,6 +22,7 @@ export class DirectionRingComponent implements OnInit, AfterViewInit {
     this.refreshView();
     this.selectionChanged.emit(value);
   }
+
   get drawHeadDirection(): boolean {
     return this._drawHeadDirection;
   }
@@ -31,6 +32,7 @@ export class DirectionRingComponent implements OnInit, AfterViewInit {
     this._drawHeadDirection = value;
     this.refreshView();
   }
+
   get drawPersonVelocity(): boolean {
     return this._drawPersonVelocity;
   }
@@ -40,6 +42,7 @@ export class DirectionRingComponent implements OnInit, AfterViewInit {
     this._drawPersonVelocity = value;
     this.refreshView();
   }
+
   get drawPersonCount(): boolean {
     return this._drawPersonCount;
   }
@@ -49,7 +52,9 @@ export class DirectionRingComponent implements OnInit, AfterViewInit {
     this._drawPersonCount = value;
     this.refreshView();
   }
+
   private globalMap: GlobalMap;
+
   get width(): number {
     return this._width;
   }
@@ -59,6 +64,7 @@ export class DirectionRingComponent implements OnInit, AfterViewInit {
     this._width = value;
     this.refreshView();
   }
+
   get height(): number {
     return this._height;
   }
@@ -68,6 +74,7 @@ export class DirectionRingComponent implements OnInit, AfterViewInit {
     this._height = value;
     this.refreshView();
   }
+
   get lineWidth(): number {
     return this._lineWidth;
   }
@@ -77,15 +84,15 @@ export class DirectionRingComponent implements OnInit, AfterViewInit {
     this._lineWidth = value;
     this.refreshView();
   }
+
   get pointRadi(): number {
     return this._pointRadi;
   }
 
-  private _lineWidth : number = 4;
+  private _lineWidth: number = 4;
 
-  private _width : number = 500;
+  private _width: number = 500;
   private _height: number = 500;
-
 
 
   @Input()
@@ -109,16 +116,18 @@ export class DirectionRingComponent implements OnInit, AfterViewInit {
   private cx: CanvasRenderingContext2D;
 
 
-  constructor(private analyticsService : AnalyticsService, private configService: ConfigService) { }
+  constructor(private analyticsService: AnalyticsService, private configService: ConfigService) {
+  }
 
-  private _dataPoints : PointDirections[];
+  private _dataPoints: PointDirections[];
 
-  private _pointRadi : number = 8;
+  private _pointRadi: number = 8;
+
   ngOnInit() {
 
   }
 
-  private static drawMultiRadiantCircle(ctx, xc, yc, r, radientColors, lineWidth) : void {
+  private static drawMultiRadiantCircle(ctx, xc, yc, r, radientColors, lineWidth): void {
     //External Code: https://stackoverflow.com/questions/22223950/angle-gradient-in-canvas
 
     let partLength = (2 * Math.PI) / radientColors.length;
@@ -140,12 +149,12 @@ export class DirectionRingComponent implements OnInit, AfterViewInit {
 
       ctx.beginPath();
 
-      if(startColor.includes("NaN")){
+      if (startColor.includes("NaN")) {
         console.log("nan " + xc + " " + yc);
         continue;
       }
 
-      if(endColor.includes("NaN")){
+      if (endColor.includes("NaN")) {
         console.log("nan " + xc + " " + yc);
         continue;
       }
@@ -166,72 +175,76 @@ export class DirectionRingComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private static getStrengthColour(strength : number){
+  private static getStrengthColour(strength: number) {
     let defaultGradient = {
       0.0: "#99ffffff",
-      0.025:"#FFefff39",
-      0.05:'#FFffde03',
+      0.025: "#FFefff39",
+      0.05: '#FFffde03',
       0.1: '#FFFFaf07',
       0.25: '#FFff7900',
       0.5: '#FFff5000',
       1.0: '#FFFF0000'
     };
 
-    let lessKey : number = Number.MAX_VALUE;
+    let lessKey: number = Number.MAX_VALUE;
     let moreKey: number = Number.MIN_VALUE;
-    for (let key in defaultGradient)
-    {
+    for (let key in defaultGradient) {
       //console.log(key);
-      let k : number = parseFloat(key);
-      if(k > moreKey)
+      let k: number = parseFloat(key);
+      if (k > moreKey)
         moreKey = k;
-      if(k < lessKey)
+      if (k < lessKey)
         lessKey = k;
 
     }
 
     //console.log(lessKey + " " + moreKey);
     for (let key in defaultGradient) {
-      let k : number = parseFloat(key);
+      let k: number = parseFloat(key);
       let value = defaultGradient[key];
-      if(strength > k && k >= lessKey)
-      {
+      if (strength > k && k >= lessKey) {
         lessKey = k;
       }
-      if(strength < k && k <= moreKey){
+      if (strength < k && k <= moreKey) {
         moreKey = k;
       }
     }
 
 
-    let blendFactor = (strength - lessKey)/(moreKey - lessKey) * 100;
+    let blendFactor = (strength - lessKey) / (moreKey - lessKey) * 100;
 
     //console.log(defaultGradient[lessKey] + " " + defaultGradient[moreKey] + " " + blendFactor);
 
-    return DirectionRingComponent.mix(defaultGradient[moreKey], defaultGradient[lessKey],blendFactor);
+    return DirectionRingComponent.mix(defaultGradient[moreKey], defaultGradient[lessKey], blendFactor);
   }
 
-  private static mix (color_1: string, color_2: string, weight: number) : any {
+  private static mix(color_1: string, color_2: string, weight: number): any {
     //https://gist.github.com/jedfoster/7939513
     color_1 = color_1.substring(1);
     color_2 = color_2.substring(1);
 
-    function d2h(d) { return d.toString(16); }  // convert a decimal value to hex
-    function h2d(h) { return parseInt(h, 16); } // convert a hex value to decimal
+    function d2h(d) {
+      return d.toString(16);
+    }  // convert a decimal value to hex
+    function h2d(h) {
+      return parseInt(h, 16);
+    } // convert a hex value to decimal
 
     weight = (typeof(weight) !== 'undefined') ? weight : 50; // set the weight to 50%, if that argument is omitted
 
     let color = "#";
 
-    for(let i = 0; i <= 7; i += 2) { // loop through each of the 3 hex pairs—red, green, and blue
+    for (let i = 0; i <= 7; i += 2) { // loop through each of the 3 hex pairs—red, green, and blue
       let v1 = h2d(color_1.substr(i, 2)); // extract the current pairs
       let v2 = h2d(color_2.substr(i, 2));
-        // combine the current pairs from each source color, according to the specified weight
+      // combine the current pairs from each source color, according to the specified weight
       //console.log("i: " + i + " v1: " +v1 + " v2: " + v2 + " c1: " + color_1.substr(i,2) + " c2: " + color_2.substr(i,2));
 
       let val = d2h(Math.floor(v2 + (v1 - v2) * (weight / 100.0)));
 
-      while(val.length < 2) { val = '0' + val; } // prepend a '0' if val results in a single digit
+      while (val.length < 2) {
+        val = '0' + val;
+      } // prepend a '0' if val results in a single digit
 
       color += val; // concatenate val to our new color string
     }
@@ -243,8 +256,8 @@ export class DirectionRingComponent implements OnInit, AfterViewInit {
   private _drawPersonVelocity: boolean = false;
   private _drawHeadDirection: boolean = false;
 
-  refreshView() : void{
-    if(this.width == null || this.height == null || this.dataPoints == null || this.lineWidth == null || this.pointRadi == null)
+  refreshView(): void {
+    if (this.width == null || this.height == null || this.dataPoints == null || this.lineWidth == null || this.pointRadi == null)
       return;
 
     const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
@@ -257,60 +270,54 @@ export class DirectionRingComponent implements OnInit, AfterViewInit {
 
     this.cx = canvasEl.getContext('2d');
 
-    this.cx.clearRect(0,0,canvasEl.width,canvasEl.height);
-    if(this.dataPoints != null)
-    {
-      this.dataPoints.forEach((pd)=>{
-        if(this.dataPoints.indexOf(pd) == this.selectedRingIndex)
-        {
-          this.cx.fillStyle="rgba(0,125,255,0.5)";
+    this.cx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+    if (this.dataPoints != null) {
+      this.dataPoints.forEach((pd) => {
+        if (this.dataPoints.indexOf(pd) == this.selectedRingIndex) {
+          this.cx.fillStyle = "rgba(0,125,255,0.5)";
           this.cx.beginPath();
-          this.cx.ellipse(pd.x,pd.y,this.pointRadi,this.pointRadi,0,0,360);
+          this.cx.ellipse(pd.x, pd.y, this.pointRadi, this.pointRadi, 0, 0, 360);
           this.cx.fill();
         }
         let someColors = [];
 
-        if(this.drawPersonCount)
-        {
+        if (this.drawPersonCount) {
           pd.normalizedDirectionCountList.forEach(value => {
             let colour = DirectionRingComponent.getStrengthColour(value);
-            let alpha = parseInt(colour.substr(1,2),16)/256;
-            let red = parseInt(colour.substr(3,2),16);
-            let green = parseInt(colour.substr(5,2),16);
-            let blue = parseInt(colour.substr(7,2),16);
+            let alpha = parseInt(colour.substr(1, 2), 16) / 256;
+            let red = parseInt(colour.substr(3, 2), 16);
+            let green = parseInt(colour.substr(5, 2), 16);
+            let blue = parseInt(colour.substr(7, 2), 16);
             let rgb = "#" + colour.substr(3);
-            someColors.push("rgba(" + red +"," + green +","+blue + ", " + alpha + ")");
+            someColors.push("rgba(" + red + "," + green + "," + blue + ", " + alpha + ")");
           });
           DirectionRingComponent.drawMultiRadiantCircle(this.cx, pd.x, pd.y, this.pointRadi, someColors, this.lineWidth);
         }
-        if(this.drawPersonVelocity)
-        {
+        if (this.drawPersonVelocity) {
           pd.normalizedDirectionVelocityList.forEach(value => {
             let colour = DirectionRingComponent.getStrengthColour(value);
-            let alpha = parseInt(colour.substr(1,2),16)/256;
-            let red = parseInt(colour.substr(3,2),16);
-            let green = parseInt(colour.substr(5,2),16);
-            let blue = parseInt(colour.substr(7,2),16);
+            let alpha = parseInt(colour.substr(1, 2), 16) / 256;
+            let red = parseInt(colour.substr(3, 2), 16);
+            let green = parseInt(colour.substr(5, 2), 16);
+            let blue = parseInt(colour.substr(7, 2), 16);
             let rgb = "#" + colour.substr(3);
-            someColors.push("rgba(" + red +"," + green +","+blue + ", " + alpha + ")");
+            someColors.push("rgba(" + red + "," + green + "," + blue + ", " + alpha + ")");
           });
           DirectionRingComponent.drawMultiRadiantCircle(this.cx, pd.x, pd.y, this.pointRadi, someColors, this.lineWidth);
         }
 
-        if(this.drawHeadDirection)
-        {
+        if (this.drawHeadDirection) {
           pd.headDirectionList.forEach(value => {
             let colour = DirectionRingComponent.getStrengthColour(value);
-            let alpha = parseInt(colour.substr(1,2),16)/256;
-            let red = parseInt(colour.substr(3,2),16);
-            let green = parseInt(colour.substr(5,2),16);
-            let blue = parseInt(colour.substr(7,2),16);
+            let alpha = parseInt(colour.substr(1, 2), 16) / 256;
+            let red = parseInt(colour.substr(3, 2), 16);
+            let green = parseInt(colour.substr(5, 2), 16);
+            let blue = parseInt(colour.substr(7, 2), 16);
             let rgb = "#" + colour.substr(3);
-            someColors.push("rgba(" + red +"," + green +","+blue + ", " + alpha + ")");
+            someColors.push("rgba(" + red + "," + green + "," + blue + ", " + alpha + ")");
           });
           DirectionRingComponent.drawMultiRadiantCircle(this.cx, pd.x, pd.y, this.pointRadi, someColors, this.lineWidth);
         }
-
 
 
       });
@@ -323,7 +330,8 @@ export class DirectionRingComponent implements OnInit, AfterViewInit {
   @Output()
   selectionChanged: EventEmitter<number> = new EventEmitter<number>();
 
-  canvasConfigured : boolean = false;
+  canvasConfigured: boolean = false;
+
   configureCanvas(canvasEl: HTMLCanvasElement): void {
     this.cx = canvasEl.getContext('2d');
 
@@ -358,24 +366,24 @@ export class DirectionRingComponent implements OnInit, AfterViewInit {
     this.refreshView();
   }
 
-  private _selectedRingIndex : number = -1;
+  private _selectedRingIndex: number = -1;
 
   canvasClicked($event: MouseEvent) {
     console.log($event);
-    let hasSelection : boolean = false;
-    this.dataPoints.forEach((p)=>{
+    let hasSelection: boolean = false;
+    this.dataPoints.forEach((p) => {
       let dx = $event.layerX - p.x;
       let dy = $event.layerY - p.y;
-      let d = Math.sqrt(dx*dx+dy*dy);
+      let d = Math.sqrt(dx * dx + dy * dy);
       //console.log(d);
-      if(d < this.pointRadi){
+      if (d < this.pointRadi) {
         console.log("Selected ");
         console.log(p);
         hasSelection = true;
         this.selectedRingIndex = this.dataPoints.indexOf(p);
       }
     });
-    if(!hasSelection)
+    if (!hasSelection)
       this.selectedRingIndex = -1;
   }
 }

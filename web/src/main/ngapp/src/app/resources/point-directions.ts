@@ -24,13 +24,18 @@ export class PointDirections {
   directionCountList: number[];
   directionVelocityList: number[];
 
-  normalizedDirectionCountList : number[];
-  normalizedDirectionVelocityList : number[];
+  normalizedDirectionCountList: number[];
+  normalizedDirectionVelocityList: number[];
 
-  headDirectionList : number[];
+  headDirectionList: number[];
 
-  constructor(x:number,y:number,directionCountValues:number[], directionVelocityValues: number[], normalizedDirectionCountList: number[], normalizedDirectionVelocityList: number[], headDirectionList: number[])
-  {
+  constructor(x: number,
+              y: number,
+              directionCountValues: number[],
+              directionVelocityValues: number[],
+              normalizedDirectionCountList: number[],
+              normalizedDirectionVelocityList: number[],
+              headDirectionList: number[]) {
     this.x = x;
     this.y = y;
     this.directionCountList = directionCountValues;
