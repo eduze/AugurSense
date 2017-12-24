@@ -25,9 +25,9 @@ import org.eduze.fyp.api.State;
 import org.eduze.fyp.api.StateManager;
 import org.eduze.fyp.api.annotations.AutoStart;
 import org.eduze.fyp.api.listeners.ConfigurationListener;
+import org.eduze.fyp.api.model.Zone;
 import org.eduze.fyp.api.resources.PointMapping;
 import org.eduze.fyp.core.db.dao.ZoneDAO;
-import org.eduze.fyp.api.model.Zone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +35,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
@@ -83,7 +84,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     private List<Zone> zones = null;
 
     private void loadProperties() throws IOException {
-        try (InputStream propertiesFile = getClass().getResourceAsStream(this.propertiesFile)) {
+        try (InputStream propertiesFile = new FileInputStream(this.propertiesFile)) {
             System.getProperties().load(propertiesFile);
         }
     }

@@ -41,7 +41,7 @@
     <!--</bean>-->
 
     <bean id="configuration-manager" class="org.eduze.fyp.core.ConfigurationManagerImpl">
-        <property name="propertiesFile" value="analytics.properties"/>
+        <property name="propertiesFile" value="src/main/resources/analytics.properties"/>
         <property name="zoneDAO" ref="zoneDAO"/>
     </bean>
 

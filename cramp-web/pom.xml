@@ -8,7 +8,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>cramp-web</artifactId>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <name>Analytics Engine Webapp</name>
     <url>http://maven.apache.org</url>
@@ -88,7 +88,7 @@
                             <arguments>
                                 <argument>build</argument>
                                 <argument>--base-href=./</argument>
-                                <argument>--target=production</argument>
+                                <!--<argument>&#45;&#45;target=production</argument>-->
                             </arguments>
                         </configuration>
                         <goals>

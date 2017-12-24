@@ -46,11 +46,11 @@ public class RestServer implements Startable {
      */
     @Override
     public void start() {
-        startRestServer();
-        if (startWebServer) {
-            logger.warn("Not starting web server");
-            startWebServer();
-        }
+        //        startRestServer();
+        //        if (startWebServer) {
+        //            logger.warn("Not starting web server");
+        startWebServer();
+        //        }
         logger.info("Servers started successfully");
     }
 
