@@ -32,7 +32,7 @@ import {PointDirections} from "../resources/point-directions";
 @Injectable()
 export class AnalyticsService {
 
-  private baseUrl: string = "http://localhost:8085/api/v1/analytics/";
+  private baseUrl: string = "http://localhost:8000/api/v1/analytics/";
 
   constructor(private http: Http) {
   }

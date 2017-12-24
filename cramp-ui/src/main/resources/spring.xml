@@ -131,7 +131,7 @@
     <!-- ============================================================================ -->
     <!--                    REST Server related configuration                         -->
     <!-- ============================================================================ -->
-    <bean id="rest-server" class="org.eduze.fyp.ui.rest.RestServer">
+    <bean id="rest-server" class="org.eduze.fyp.web.RestServer">
         <constructor-arg value="false"/>
         <property name="controllers">
             <set>

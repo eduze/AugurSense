@@ -19,7 +19,7 @@
 package org.eduze.fyp.ui;
 
 import org.eduze.fyp.api.AnalyticsEngine;
-import org.eduze.fyp.ui.rest.RestServer;
+import org.eduze.fyp.web.RestServer;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.slf4j.Logger;

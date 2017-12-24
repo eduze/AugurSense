@@ -26,22 +26,28 @@ import org.eduze.fyp.web.resources.Status;
 import org.eduze.fyp.web.services.ConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
-@RequestMapping("/config")
+@Path("/config")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class ConfigController {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigController.class);
 
     private ConfigService configService;
 
-    @GetMapping("/cameraId")
+    @GET
+    @Path("/cameraId")
     public Response getCameraId() {
         try {
             Camera camera = configService.getCameraId();
@@ -52,7 +58,8 @@ public class ConfigController {
         }
     }
 
-    @GetMapping("/zones")
+    @GET
+    @Path("/zones")
     public Response getZones() {
         try {
             List<Zone> zonesList = configService.getZones();
@@ -64,7 +71,8 @@ public class ConfigController {
         }
     }
 
-    @GetMapping("/getMap")
+    @GET
+    @Path("/getMap")
     public Response getMap() {
         try {
             return Response.ok(configService.getMap()).build();
@@ -74,8 +82,9 @@ public class ConfigController {
         }
     }
 
-    @GetMapping("/{cameraId}")
-    public Response getMap(@PathVariable("cameraId") int cameraId) {
+    @GET
+    @Path("/{cameraId}")
+    public Response getMap(@PathParam("cameraId") int cameraId) {
         MapConfiguration mapConfiguration;
         try {
             mapConfiguration = configService.getMap(cameraId);
@@ -91,7 +100,8 @@ public class ConfigController {
         return Response.status(200).entity(mapConfiguration).build();
     }
 
-    @GetMapping("/views")
+    @GET
+    @Path("/views")
     public Response getViews() {
         try {
             return Response.ok(configService.getCameraViews()).build();
@@ -101,8 +111,8 @@ public class ConfigController {
         }
     }
 
-
-    @PostMapping("/cameraConfig")
+    @POST
+    @Path("/cameraConfig")
     public Response postCameraView(CameraConfig cameraConfig) {
         try {
             configService.configureCameraView(cameraConfig);

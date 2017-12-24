@@ -26,28 +26,33 @@ import org.eduze.fyp.web.services.DirectionAnalyticsService;
 import org.eduze.fyp.web.services.ReIDSearchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-@RestController
-@RequestMapping("/analytics")
+@Path("/analytics")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class AnalyticsController {
 
     private static final Logger logger = LoggerFactory.getLogger(AnalyticsController.class);
 
     private AnalyticsService analyticsService;
+
     private ReIDSearchService reIDSearchService;
+
     private DirectionAnalyticsService directionAnalyticsService;
 
-    public AnalyticsController(AnalyticsService analyticsService) {
-        this.analyticsService = analyticsService;
+    public DirectionAnalyticsService getDirectionAnalyticsService() {
+        return directionAnalyticsService;
     }
 
     public void setDirectionAnalyticsService(DirectionAnalyticsService directionAnalyticsService) {
@@ -62,19 +67,21 @@ public class AnalyticsController {
         return reIDSearchService;
     }
 
-    @GetMapping("/timestampCount/{from}/{to}")
-    public Response getTimestampCount(@PathVariable("from") long from, @PathVariable("to") long to) {
+    @GET
+    @Path("/timestampCount/{from}/{to}")
+    public Response getTimestampCount(@PathParam("from") long from, @PathParam("to") long to) {
         try {
             return Response.ok(analyticsService.getTimestampCount(from, to)).build();
         } catch (Exception e) {
             logger.error("Error occurred when obtaining map. {}", e);
             return Response.status(500).build();
         }
+
     }
 
-    @GetMapping("/route/{from}/{to}/{uuid}")
-    public Response getTrackFromUUID(@PathVariable("from") long from, @PathVariable("to") long to,
-            @PathVariable("uuid") String uuid) {
+    @GET
+    @Path("/route/{from}/{to}/{uuid}")
+    public Response getTrackFromUUID(@PathParam("from") long from, @PathParam("to") long to, @PathParam("uuid") String uuid) {
         try {
             return Response.ok(analyticsService.getTrackingRouteFromUUID(new Date(from), new Date(to), uuid, false)).build();
         } catch (Exception e) {
@@ -84,8 +91,9 @@ public class AnalyticsController {
 
     }
 
-    @GetMapping("/route/{from}/{to}/{uuid}/segmented")
-    public Response getSegmentedTrackFromUUID(@PathVariable("from") long from, @PathVariable("to") long to, @PathVariable("uuid") String uuid) {
+    @GET
+    @Path("/route/{from}/{to}/{uuid}/segmented")
+    public Response getSegmentedTrackFromUUID(@PathParam("from") long from, @PathParam("to") long to, @PathParam("uuid") String uuid) {
         try {
             return Response.ok(analyticsService.getTrackingRouteFromUUID(new Date(from), new Date(to), uuid, true)).build();
         } catch (Exception e) {
@@ -95,8 +103,9 @@ public class AnalyticsController {
 
     }
 
-    @GetMapping("/re_id/invoke/{from}/{to}/{uuid}")
-    public Response invokeReIdSearch(@PathVariable("from") long from, @PathVariable("to") long to, @PathVariable("uuid") String uuid) {
+    @GET
+    @Path("/re_id/invoke/{from}/{to}/{uuid}")
+    public Response invokeReIdSearch(@PathParam("from") long from, @PathParam("to") long to, @PathParam("uuid") String uuid) {
         try {
             reIDSearchService.invokeSearch(uuid, new Date(from), new Date(to), false);
             return Response.ok(true).build();
@@ -107,8 +116,9 @@ public class AnalyticsController {
 
     }
 
-    @GetMapping("/re_id/invoke/{from}/{to}/{uuid}/segmented")
-    public Response invokeReIdSearchSegmented(@PathVariable("from") long from, @PathVariable("to") long to, @PathVariable("uuid") String uuid) {
+    @GET
+    @Path("/re_id/invoke/{from}/{to}/{uuid}/segmented")
+    public Response invokeReIdSearchSegmented(@PathParam("from") long from, @PathParam("to") long to, @PathParam("uuid") String uuid) {
         try {
             reIDSearchService.invokeSearch(uuid, new Date(from), new Date(to), true);
             return Response.ok(true).build();
@@ -119,8 +129,10 @@ public class AnalyticsController {
 
     }
 
-    @GetMapping("/re_id/results/{from}/{to}/{uuid}")
-    public Response obtainReIDResults(@PathVariable("from") long from, @PathVariable("to") long to, @PathVariable("uuid") String uuid) {
+
+    @GET
+    @Path("/re_id/results/{from}/{to}/{uuid}")
+    public Response obtainReIDResults(@PathParam("from") long from, @PathParam("to") long to, @PathParam("uuid") String uuid) {
         try {
             ReIDStatus reIDStatus = null;
 
@@ -145,8 +157,9 @@ public class AnalyticsController {
 
     }
 
-    @GetMapping("/re_id/results/{from}/{to}/{uuid}/segmented")
-    public Response obtainReIDResultsSegmented(@PathVariable("from") long from, @PathVariable("to") long to, @PathVariable("uuid") String uuid) {
+    @GET
+    @Path("/re_id/results/{from}/{to}/{uuid}/segmented")
+    public Response obtainReIDResultsSegmented(@PathParam("from") long from, @PathParam("to") long to, @PathParam("uuid") String uuid) {
         try {
             ReIDStatus reIDStatus = null;
 
@@ -171,8 +184,9 @@ public class AnalyticsController {
 
     }
 
-    @GetMapping("/profile/{uuid}")
-    public Response obtainResults(@PathVariable("uuid") String uuid) {
+    @GET
+    @Path("/profile/{uuid}")
+    public Response obtainResults(@PathParam("uuid") String uuid) {
         try {
             return Response.ok(analyticsService.getProfile(uuid)).build();
         } catch (Exception e) {
@@ -182,8 +196,10 @@ public class AnalyticsController {
 
     }
 
-    @GetMapping("/zoneStatistics/{from}/{to}")
-    public Response getZoneStatistics(@PathVariable("from") long from, @PathVariable("to") long to) {
+
+    @GET
+    @Path("/zoneStatistics/{from}/{to}")
+    public Response getZoneStatistics(@PathParam("from") long from, @PathParam("to") long to) {
         try {
             return Response.ok(analyticsService.getZoneStatistics(from, to)).build();
         } catch (Exception e) {
@@ -193,9 +209,9 @@ public class AnalyticsController {
 
     }
 
-
-    @GetMapping("/zoneStatistics/{from}/{to}/{zoneId}/inflow")
-    public Response getZoneInflowPhotos(@PathVariable("from") long from, @PathVariable("to") long to, @PathVariable("zoneId") long zoneId) {
+    @GET
+    @Path("/zoneStatistics/{from}/{to}/{zoneId}/inflow")
+    public Response getZoneInflowPhotos(@PathParam("from") long from, @PathParam("to") long to, @PathParam("zoneId") long zoneId) {
         try {
             Date fromD = new Date(from);
             Date toD = new Date(to);
@@ -207,9 +223,9 @@ public class AnalyticsController {
         }
     }
 
-
-    @GetMapping("/zoneTimeline/{trackId}")
-    public Response getZoneTimeline(@PathVariable("trackId") int trackId) {
+    @GET
+    @Path("/zoneTimeline/{trackId}")
+    public Response getZoneTimeline(@PathParam("trackId") int trackId) {
         try {
             return Response.ok(analyticsService.getTimelineZonesFromTrackId(trackId, 0, false)).build();
         } catch (Exception e) {
@@ -219,8 +235,9 @@ public class AnalyticsController {
     }
 
 
-    @GetMapping("/zonedTimeVelocity/{from}/{to}/{zoneId}/{interval}")
-    public Response getZonedTimeVelocityDistribution(@PathVariable("from") long from, @PathVariable("to") long to, @PathVariable("zoneId") int zoneId, @PathVariable("interval") long interval) {
+    @GET
+    @Path("/zonedTimeVelocity/{from}/{to}/{zoneId}/{interval}")
+    public Response getZonedTimeVelocityDistribution(@PathParam("from") long from, @PathParam("to") long to, @PathParam("zoneId") int zoneId, @PathParam("interval") long interval) {
         try {
             Date fromD = new Date(from);
             Date toD = new Date(to);
@@ -235,8 +252,9 @@ public class AnalyticsController {
     }
 
 
-    @GetMapping("/zonedVelocityFrequency/{from}/{to}/{zoneId}/{interval}")
-    public Response getZonedVelocityFrequency(@PathVariable("from") long from, @PathVariable("to") long to, @PathVariable("zoneId") int zoneId, @PathVariable("interval") long interval) {
+    @GET
+    @Path("/zonedVelocityFrequency/{from}/{to}/{zoneId}/{interval}")
+    public Response getZonedVelocityFrequency(@PathParam("from") long from, @PathParam("to") long to, @PathParam("zoneId") int zoneId, @PathParam("interval") long interval) {
         try {
             Date fromD = new Date(from);
             Date toD = new Date(to);
@@ -251,9 +269,9 @@ public class AnalyticsController {
         }
     }
 
-
-    @GetMapping("/zonedTimeVelocity/{from}/{to}/{zoneId}/{interval}/segmented")
-    public Response getZonedTimeVelocityDistributionSegmented(@PathVariable("from") long from, @PathVariable("to") long to, @PathVariable("zoneId") int zoneId, @PathVariable("interval") long interval) {
+    @GET
+    @Path("/zonedTimeVelocity/{from}/{to}/{zoneId}/{interval}/segmented")
+    public Response getZonedTimeVelocityDistributionSegmented(@PathParam("from") long from, @PathParam("to") long to, @PathParam("zoneId") int zoneId, @PathParam("interval") long interval) {
         try {
             Date fromD = new Date(from);
             Date toD = new Date(to);
@@ -269,8 +287,9 @@ public class AnalyticsController {
     }
 
 
-    @GetMapping("/zonedVelocityFrequency/{from}/{to}/{zoneId}/{interval}/segmented")
-    public Response getZonedVelocityFrequencySegmented(@PathVariable("from") long from, @PathVariable("to") long to, @PathVariable("zoneId") int zoneId, @PathVariable("interval") long interval) {
+    @GET
+    @Path("/zonedVelocityFrequency/{from}/{to}/{zoneId}/{interval}/segmented")
+    public Response getZonedVelocityFrequencySegmented(@PathParam("from") long from, @PathParam("to") long to, @PathParam("zoneId") int zoneId, @PathParam("interval") long interval) {
         try {
             Date fromD = new Date(from);
             Date toD = new Date(to);
@@ -286,8 +305,9 @@ public class AnalyticsController {
     }
 
 
-    @GetMapping("/zoneTimeline/{trackId}/segmented/{segmentId}")
-    public Response getZoneTimeline(@PathVariable("trackId") int trackId, @PathVariable("segmentId") int segmentId) {
+    @GET
+    @Path("/zoneTimeline/{trackId}/segmented/{segmentId}")
+    public Response getZoneTimeline(@PathParam("trackId") int trackId, @PathParam("segmentId") int segmentId) {
         try {
             return Response.ok(analyticsService.getTimelineZonesFromTrackId(trackId, segmentId, true)).build();
         } catch (Exception e) {
@@ -296,9 +316,9 @@ public class AnalyticsController {
         }
     }
 
-
-    @GetMapping("/directionMap/{from}/{to}/{cellSize}/{directionCount}")
-    public Response getZoneTimeline(@PathVariable("from") long from, @PathVariable("to") long to, @PathVariable("cellSize") int cellSize, @PathVariable("directionCount") int directionCount) {
+    @GET
+    @Path("/directionMap/{from}/{to}/{cellSize}/{directionCount}")
+    public Response getZoneTimeline(@PathParam("from") long from, @PathParam("to") long to, @PathParam("cellSize") int cellSize, @PathParam("directionCount") int directionCount) {
         try {
             Date start = new Date(from);
             Date end = new Date(to);
@@ -309,9 +329,9 @@ public class AnalyticsController {
         }
     }
 
-
-    @GetMapping("/zoneStatistics/{from}/{to}/{zoneId}/outflow")
-    public Response getZoneOutflowPhotos(@PathVariable("from") long from, @PathVariable("to") long to, @PathVariable("zoneId") long zoneId) {
+    @GET
+    @Path("/zoneStatistics/{from}/{to}/{zoneId}/outflow")
+    public Response getZoneOutflowPhotos(@PathParam("from") long from, @PathParam("to") long to, @PathParam("zoneId") long zoneId) {
         try {
             Date fromD = new Date(from);
             Date toD = new Date(to);
@@ -323,9 +343,9 @@ public class AnalyticsController {
         }
     }
 
-
-    @GetMapping("/zoneStatistics/{from}/{to}/{zoneId}/inflow/segmented")
-    public Response getZoneInflowPhotosSegmented(@PathVariable("from") long from, @PathVariable("to") long to, @PathVariable("zoneId") long zoneId) {
+    @GET
+    @Path("/zoneStatistics/{from}/{to}/{zoneId}/inflow/segmented")
+    public Response getZoneInflowPhotosSegmented(@PathParam("from") long from, @PathParam("to") long to, @PathParam("zoneId") long zoneId) {
         try {
             Date fromD = new Date(from);
             Date toD = new Date(to);
@@ -337,9 +357,9 @@ public class AnalyticsController {
         }
     }
 
-
-    @GetMapping("/zoneStatistics/{from}/{to}/{zoneId}/outflow/segmented")
-    public Response getZoneOutflowPhotosSegmented(@PathVariable("from") long from, @PathVariable("to") long to, @PathVariable("zoneId") long zoneId) {
+    @GET
+    @Path("/zoneStatistics/{from}/{to}/{zoneId}/outflow/segmented")
+    public Response getZoneOutflowPhotosSegmented(@PathParam("from") long from, @PathParam("to") long to, @PathParam("zoneId") long zoneId) {
         try {
             Date fromD = new Date(from);
             Date toD = new Date(to);
@@ -351,9 +371,9 @@ public class AnalyticsController {
         }
     }
 
-
-    @GetMapping("/crossCounts/{from}/{to}")
-    public Response getCrossCounts(@PathVariable("from") long from, @PathVariable("to") long to) {
+    @GET
+    @Path("/crossCounts/{from}/{to}")
+    public Response getCrossCounts(@PathParam("from") long from, @PathParam("to") long to) {
         try {
             return Response.ok(analyticsService.getCrossCount(from, to)).build();
         } catch (Exception e) {
@@ -364,7 +384,8 @@ public class AnalyticsController {
     }
 
 
-    @GetMapping("/getMap")
+    @GET
+    @Path("/getMap")
     public Response getMap() {
         try {
             return Response.ok(analyticsService.getMap()).build();
@@ -374,8 +395,8 @@ public class AnalyticsController {
         }
     }
 
-
-    @GetMapping("/realTimeMap")
+    @GET
+    @Path("/realTimeMap")
     public Response getRealTimeMap() {
         try {
             return Response.ok(analyticsService.getRealTimeMap()).build();
@@ -385,9 +406,9 @@ public class AnalyticsController {
         }
     }
 
-
-    @GetMapping("/timeBoundMap/{from}/{to}")
-    public Response getTimeboundMap(@PathVariable("from") long from, @PathVariable("to") long to) {
+    @GET
+    @Path("/timeBoundMap/{from}/{to}")
+    public Response getTimeboundMap(@PathParam("from") long from, @PathParam("to") long to) {
         try {
             Date fromD = new Date(from);
             Date toD = new Date(to);
@@ -399,9 +420,9 @@ public class AnalyticsController {
         }
     }
 
-
-    @GetMapping("/timeBoundMap/{from}/{to}/trackSegmented")
-    public Response getTimeboundMapWithSegments(@PathVariable("from") long from, @PathVariable("to") long to) {
+    @GET
+    @Path("/timeBoundMap/{from}/{to}/trackSegmented")
+    public Response getTimeboundMapWithSegments(@PathParam("from") long from, @PathParam("to") long to) {
         try {
             Date fromD = new Date(from);
             Date toD = new Date(to);
@@ -413,9 +434,9 @@ public class AnalyticsController {
         }
     }
 
-
-    @GetMapping("/timeBoundMap/{from}/{to}/photos")
-    public Response getTimeboundPhotos(@PathVariable("from") long from, @PathVariable("to") long to) {
+    @GET
+    @Path("/timeBoundMap/{from}/{to}/photos")
+    public Response getTimeboundPhotos(@PathParam("from") long from, @PathParam("to") long to) {
         try {
             Date fromD = new Date(from);
             Date toD = new Date(to);
@@ -427,9 +448,9 @@ public class AnalyticsController {
         }
     }
 
-
-    @GetMapping("/trackingSnaps/{id}")
-    public Response getTrackingSnaps(@PathVariable("id") int id) {
+    @GET
+    @Path("/trackingSnaps/{id}")
+    public Response getTrackingSnaps(@PathParam("id") int id) {
         try {
             return Response.ok(analyticsService.getPastPhotos(id, -1)).build();
         } catch (Exception e) {
@@ -438,9 +459,9 @@ public class AnalyticsController {
         }
     }
 
-
-    @GetMapping("/trackingSnaps/{id}/{segmentIndex}")
-    public Response getTrackingSnapsWithSegments(@PathVariable("id") int id, @PathVariable("segmentIndex") int segmentIndex) {
+    @GET
+    @Path("/trackingSnaps/{id}/{segmentIndex}")
+    public Response getTrackingSnapsWithSegments(@PathParam("id") int id, @PathParam("segmentIndex") int segmentIndex) {
         try {
             return Response.ok(analyticsService.getPastPhotos(id, segmentIndex)).build();
         } catch (Exception e) {
@@ -449,9 +470,9 @@ public class AnalyticsController {
         }
     }
 
-
-    @GetMapping("/realTimeMap/{id}")
-    public Response getRealTimeInfo(@PathVariable("id") int id) {
+    @GET
+    @Path("/realTimeMap/{id}")
+    public Response getRealTimeInfo(@PathParam("id") int id) {
         try {
             return Response.ok(analyticsService.getRealtimePhotos(id)).build();
         } catch (Exception e) {
@@ -460,8 +481,8 @@ public class AnalyticsController {
         }
     }
 
-
-    @GetMapping("/realTimeMap/all")
+    @GET
+    @Path("/realTimeMap/all")
     public Response getRealTimeInfoAll() {
         try {
             return Response.ok(analyticsService.getRealtimePhotosAll()).build();
@@ -471,9 +492,9 @@ public class AnalyticsController {
         }
     }
 
-
-    @GetMapping("/heatMap/{from}/{to}")
-    public Response getHeatMap(@PathVariable("from") long from, @PathVariable("to") long to) {
+    @GET
+    @Path("/heatMap/{from}/{to}")
+    public Response getHeatMap(@PathParam("from") long from, @PathParam("to") long to) {
         try {
 
             return Response.ok(analyticsService.getHeatMap(from, to)).build();
@@ -483,8 +504,9 @@ public class AnalyticsController {
         }
     }
 
-    @GetMapping("/count/{from}/{to}")
-    public Response getCount(@PathVariable("from") long from, @PathVariable("to") long to) {
+    @GET
+    @Path("/count/{from}/{to}")
+    public Response getCount(@PathParam("from") long from, @PathParam("to") long to) {
         try {
             return Response.status(200).entity(analyticsService.getCount(from, to)).build();
         } catch (Exception e) {
@@ -493,10 +515,10 @@ public class AnalyticsController {
         }
     }
 
-
-    @GetMapping("/stoppoints/{from}/{to}/{radius}/{time}/{height}/{width}")
-    public Response getStopPoints(@PathVariable("from") long from, @PathVariable("to") long to, @PathVariable("radius") int radius,
-            @PathVariable("time") int time, @PathVariable("height") int height, @PathVariable("width") int width) {
+    @GET
+    @Path("/stoppoints/{from}/{to}/{radius}/{time}/{height}/{width}")
+    public Response getStopPoints(@PathParam("from") long from, @PathParam("to") long to, @PathParam("radius") int radius,
+            @PathParam("time") int time, @PathParam("height") int height, @PathParam("width") int width) {
         try {
             return Response.status(200).entity(analyticsService.getStopPoints(from, to, radius, time, height, width)).build();
         } catch (Exception e) {
@@ -505,7 +527,8 @@ public class AnalyticsController {
         }
     }
 
-    public DirectionAnalyticsService getDirectionAnalyticsService() {
-        return directionAnalyticsService;
+
+    public AnalyticsController(AnalyticsService analyticsService) {
+        this.analyticsService = analyticsService;
     }
 }

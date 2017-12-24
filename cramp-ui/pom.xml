@@ -22,11 +22,6 @@
             <groupId>org.eduze.fyp</groupId>
             <artifactId>cramp-web</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.eduze.fyp</groupId>
-            <artifactId>cramp-web</artifactId>
-            <type>war</type>
-        </dependency>
 
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>

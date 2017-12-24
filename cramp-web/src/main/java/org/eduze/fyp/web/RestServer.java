@@ -1,11 +1,30 @@
-package org.eduze.fyp.ui.rest;
+/*
+ * Copyright 2017 Eduze
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
+ * to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions
+ * of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
+ */
+
+package org.eduze.fyp.web;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.session.SessionHandler;
+import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.webapp.WebAppContext;
-import org.eclipse.jetty.xml.XmlConfiguration;
+import org.eclipse.jetty.util.resource.PathResource;
 import org.eduze.fyp.api.annotations.AutoStart;
 import org.eduze.fyp.api.config.Startable;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -14,7 +33,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -46,41 +68,46 @@ public class RestServer implements Startable {
      */
     @Override
     public void start() {
-        //        startRestServer();
-        //        if (startWebServer) {
-        //            logger.warn("Not starting web server");
-        startWebServer();
-        //        }
+        startRestServer();
         logger.info("Servers started successfully");
     }
 
     private void startRestServer() {
-        XmlConfiguration configuration;
-        try {
-            URL configFile = getClass().getClassLoader().getResource(JETTY_CONFIG);
-            if (configFile == null) {
-                logger.error("Config file '{}' is null", JETTY_CONFIG);
-                throw new IllegalArgumentException("Jetty configuration could not be found");
-            }
-
-            configuration = new XmlConfiguration(configFile);
-            this.jettyServer = (Server) configuration.configure();
-        } catch (Exception e) {
-            logger.error("Unable to configure server from configuration file : {}", JETTY_CONFIG, e);
-            throw new IllegalStateException("Unable to configure server", e);
-        }
+        this.jettyServer = new Server(8000);
 
         ResourceConfig config = new ResourceConfig();
         controllers.forEach(config::register);
 
-        final ServletContainer servletContainer = new ServletContainer(config);
-        ServletHolder servlet = new ServletHolder(servletContainer);
+        // The filesystem paths we will map
+        Path pwdPath = null;
+        try {
+            pwdPath = new File(System.getProperty("user.dir")).toPath().toRealPath();
+        } catch (IOException e) {
+            logger.error("Error occurred", e);
+            throw new IllegalStateException("Error occurred", e);
+        }
 
         ServletContextHandler context = new ServletContextHandler(jettyServer, null);
-        context.addServlet(servlet, CONTEXT_PATH);
+        context.setContextPath("/");
+        context.setBaseResource(new PathResource(pwdPath));
         context.setSessionHandler(new SessionHandler());
-        jettyServer.setHandler(context);
 
+        final ServletContainer servletContainer = new ServletContainer(config);
+        ServletHolder servlet = new ServletHolder(servletContainer);
+        context.addServlet(servlet, CONTEXT_PATH);
+
+        DefaultServlet defaultServlet = new DefaultServlet();
+        ServletHolder servletHolder = new ServletHolder("default", defaultServlet);
+        URL path = this.getClass().getClassLoader().getResource("ng");
+        try {
+            servletHolder.setInitParameter("resourceBase", path.toURI().toASCIIString());
+        } catch (URISyntaxException e) {
+            logger.error("Error occurred", e);
+        }
+        servletHolder.setInitParameter("dirAllowed", "true");
+        context.addServlet(servletHolder, "/");
+
+        jettyServer.setHandler(context);
         logger.debug("Starting REST server");
         try {
             jettyServer.start();
@@ -90,35 +117,6 @@ public class RestServer implements Startable {
             throw new IllegalStateException("Unable to start REST server", e);
         }
         logger.info("REST Server started successfully ...");
-    }
-
-    private void startWebServer() {
-        webServer = new Server(8000);
-
-        WebAppContext webAppContext = new WebAppContext();
-        webAppContext.setContextPath("/*");
-        URL war = Thread.currentThread().getContextClassLoader().getResource("web");
-        File warFile;
-        try {
-            logger.debug("Using war file {}", war.toString());
-            warFile = new File(war.toURI());
-        } catch (Exception e) {
-            logger.error("Error occurred when determining WAR file", e);
-            throw new IllegalStateException("Unable to start WEB Server", e);
-        }
-        webAppContext.setWar(warFile.getAbsolutePath());
-        webAppContext.setExtractWAR(true);
-        webServer.setHandler(webAppContext);
-
-        logger.debug("Starting WEB server");
-        try {
-            webServer.start();
-            Runtime.getRuntime().addShutdownHook(new Thread(RestServer.this::stop));
-        } catch (Exception e) {
-            logger.error("Error occurred when starting WEB server due to : {}", e.getMessage());
-            throw new IllegalStateException("Unable to start WEB server", e);
-        }
-        logger.info("WEB Server started successfully ...");
     }
 
     /**
