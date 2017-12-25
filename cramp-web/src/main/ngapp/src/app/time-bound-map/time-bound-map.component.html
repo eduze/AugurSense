@@ -1,72 +1,81 @@
 <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
-
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <div>
-        <span>Map on </span>
+  <div class="container-fluid" style="margin-top: 20px">
+    <mat-card>
+      <mat-card-title>Timeline</mat-card-title>
+      <mat-card-subtitle>
+        Map from
         <p-calendar [(ngModel)]="startTime" [showTime]="true"></p-calendar>
+        to
         <p-calendar [(ngModel)]="endTime" [showTime]="true"></p-calendar>
 
-        <span>From {{ toDateTimeString(from) }} to {{ toDateTimeString(to) }}</span>
+        <p-checkbox [(ngModel)]="useTrackSegments" binary="true" value="UseTrackSegments"
+                    label="Use Track Segments"></p-checkbox>
 
-        <p-checkbox [(ngModel)]="useTrackSegments" binary="true"  value="UseTrackSegments" label="Use Track Segments"></p-checkbox>
+        <mat-chip-list class="pull-right">
+          <mat-chip color="primary" selected="true">{{personSnapshots.length}} people</mat-chip>
+        </mat-chip-list>
+      </mat-card-subtitle>
 
+      <mat-card-content>
 
-        <span style="float:right;">{{ personSnapshots.length }} people</span>
+        <div class="row" *ngIf="globalMap">
+          <div class="col-md-12 col-sm-12 col-xs-12">
 
-      </div>
-
-    </div>
-    <p-slider [(ngModel)]="secondRange" [range]="true" [min]="0" [max]="300" [step]="1"></p-slider>
-
-    <div class="panel-body">
-      <div class="row" *ngIf="globalMap">
-        <div class="col-md-12 col-sm-12 col-xs-12">
-
-          <svg x="0" y="0" width="100%" height="500">
-            <g height="100%" width="100%">
-              <image [attr.xlink:href]="globalMap.image" x="0" y="0" (click)="backgroundClicked();"></image>
-            </g>
-
-            <g *ngFor="let personTrack of personSnapshots" (click)="trackClicked(personTrack);">
-              <g *ngIf="personTrack[0] != null">
-                <g *ngIf="!isSelected(personTrack[0])">
-                  <circle [attr.fill]="personTrack[0].colour" r="5" [attr.cx]="personTrack[0].x" [attr.cy]="personTrack[0].y" ></circle>
-                </g>
-                <g *ngIf="isSelected(personTrack[0])">
-                  <circle fill="gold" r="5" [attr.cx]="personTrack[0].x" [attr.cy]="personTrack[0].y" ></circle>
-                </g>
-
-                <g *ngIf="!isSelected(personTrack[0])">
-                  <line [attr.stroke]="personTrack[0].colour" stroke-width="2" *ngFor="let person of personTrack | slice : 1; let i = index" [attr.x1]="personTrack[i].x" [attr.y1]="personTrack[i].y" [attr.x2]="personTrack[i+1].x" [attr.y2]="personTrack[i+1].y"></line>
-                </g>
-                <g *ngIf="isSelected(personTrack[0])">
-                  <line stroke="gold" stroke-width="2" *ngFor="let person of personTrack | slice : 1; let i = index" [attr.x1]="personTrack[i].x" [attr.y1]="personTrack[i].y" [attr.x2]="personTrack[i+1].x" [attr.y2]="personTrack[i+1].y"></line>
-                </g>
-
-                <line [attr.x1]="personTrack[0].x" [attr.y1] = "personTrack[0].y"
-                      [attr.x2]="personTrack[0].x + personTrack[0].headDirectionX * 10"
-                      [attr.y2]="personTrack[0].y + personTrack[0].headDirectionY * 10"
-                      [attr.stroke]="personTrack[0].standSitColour" stroke-width="2"
-                      *ngIf="personTrack[0]['headDirectionX'] != null && personTrack[0]['headDirectionY'] != null"></line>
-
+            <svg x="0" y="0" width="100%" height="500">
+              <g height="100%" width="100%">
+                <image [attr.xlink:href]="globalMap.image" x="0" y="0" (click)="backgroundClicked();"></image>
               </g>
-            </g>
 
-          </svg>
+              <g *ngFor="let personTrack of personSnapshots" (click)="trackClicked(personTrack);">
+                <g *ngIf="personTrack[0] != null">
+                  <g *ngIf="!isSelected(personTrack[0])">
+                    <circle [attr.fill]="personTrack[0].colour" r="5" [attr.cx]="personTrack[0].x"
+                            [attr.cy]="personTrack[0].y"></circle>
+                  </g>
+                  <g *ngIf="isSelected(personTrack[0])">
+                    <circle fill="gold" r="5" [attr.cx]="personTrack[0].x" [attr.cy]="personTrack[0].y"></circle>
+                  </g>
+
+                  <g *ngIf="!isSelected(personTrack[0])">
+                    <line [attr.stroke]="personTrack[0].colour" stroke-width="2"
+                          *ngFor="let person of personTrack | slice : 1; let i = index" [attr.x1]="personTrack[i].x"
+                          [attr.y1]="personTrack[i].y" [attr.x2]="personTrack[i+1].x"
+                          [attr.y2]="personTrack[i+1].y"></line>
+                  </g>
+                  <g *ngIf="isSelected(personTrack[0])">
+                    <line stroke="gold" stroke-width="2" *ngFor="let person of personTrack | slice : 1; let i = index"
+                          [attr.x1]="personTrack[i].x" [attr.y1]="personTrack[i].y" [attr.x2]="personTrack[i+1].x"
+                          [attr.y2]="personTrack[i+1].y"></line>
+                  </g>
+
+                  <line [attr.x1]="personTrack[0].x" [attr.y1]="personTrack[0].y"
+                        [attr.x2]="personTrack[0].x + personTrack[0].headDirectionX * 10"
+                        [attr.y2]="personTrack[0].y + personTrack[0].headDirectionY * 10"
+                        [attr.stroke]="personTrack[0].standSitColour" stroke-width="2"
+                        *ngIf="personTrack[0]['headDirectionX'] != null && personTrack[0]['headDirectionY'] != null"></line>
+
+                </g>
+              </g>
+
+            </svg>
+          </div>
         </div>
-      </div>
 
-    </div>
+        <p-slider [(ngModel)]="secondRange" [range]="true" [min]="0" [max]="300" [step]="1"></p-slider>
+        <span>From {{ toDateTimeString(from) }} to {{ toDateTimeString(to) }}</span>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card style="margin-top: 50px">
+      <mat-card-title>Track Details</mat-card-title>
+      <mat-card-content>
+        <app-realtime-info [useRealtimeEndpoint]="false" [showAll]="selectedTrackIndex==-1" [id]="selectedTrackIndex"
+                           [reIDOnClick]="selectedTrackIndex!=-1" [from]="from" [to]="to"
+                           [useTrackSegment]="useTrackSegments" [segmentIndex]="selectedSegmentIndex"
+                           (personClicked)="personClicked($event)"></app-realtime-info>
+      </mat-card-content>
+    </mat-card>
+
   </div>
 
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title">Track Details
-      </h4>
-    </div>
-    <div class="panel-body">
-      <app-realtime-info [useRealtimeEndpoint] = "false" [showAll]="selectedTrackIndex==-1" [id]="selectedTrackIndex" [reIDOnClick]="selectedTrackIndex!=-1" [from]="from" [to]="to" [useTrackSegment]="useTrackSegments" [segmentIndex]="selectedSegmentIndex" (personClicked)="personClicked($event)" ></app-realtime-info>
-    </div>
-  </div>
 </div>

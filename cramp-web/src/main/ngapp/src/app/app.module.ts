@@ -1,18 +1,16 @@
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {BrowserModule} from '@angular/platform-browser';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {CalendarModule, ChartModule, CheckboxModule, RadioButton, SliderModule} from 'primeng/primeng';
 
 import {AppComponent} from "./app.component";
 import {AppRoutingModule} from "./app-routing.module";
 import {DashboardComponent} from "./dashboard/dashboard.component";
-import {AnalyticsService} from "./services/analytics.service";
 import {HeatmapComponent} from "./heatmap/heatmap.component";
 import {PeopleCountComponent} from './people-count/people-count.component';
 import {PointMappingComponent} from './settings/point-mapping/point-mapping.component';
-import {ConfigService} from "./services/config.service";
 import {ZonesComponent} from './zones/zones.component';
 import {ZoneInfoComponent} from './zone-info/zone-info.component';
 import {RealtimeMapComponent} from './realtime-map/realtime-map.component';
@@ -24,7 +22,14 @@ import {TimelineComponent} from './timeline/timeline.component';
 import {TimeVelocityDistributionComponent} from './time-velocity-distribution/time-velocity-distribution.component';
 import {DirectionRingComponent} from './direction-ring/direction-ring.component';
 import {MovementDirectionComponent} from './movement-direction/movement-direction.component';
-import {MatButtonModule, MatCheckboxModule} from '@angular/material';
+import {AnalyticsService} from "./services/analytics.service";
+import {ConfigService} from "./services/config.service";
+
+import {
+  MatButtonModule, MatCardModule, MatCheckboxModule, MatChipsModule, MatFormFieldModule, MatIconModule,
+  MatInputModule, MatListModule, MatMenuModule, MatSidenavModule, MatToolbarModule
+} from '@angular/material';
+
 
 @NgModule({
   declarations: [
@@ -56,8 +61,17 @@ import {MatButtonModule, MatCheckboxModule} from '@angular/material';
     CheckboxModule,
     ChartModule,
     SliderModule,
+    MatMenuModule,
+    MatSidenavModule,
     MatButtonModule,
-    MatCheckboxModule
+    MatToolbarModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatListModule,
+    MatIconModule,
+    MatCardModule,
+    MatChipsModule
   ],
   providers: [AnalyticsService, ConfigService],
   bootstrap: [AppComponent]

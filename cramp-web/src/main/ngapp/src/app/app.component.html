@@ -17,76 +17,32 @@
   ~ IN THE SOFTWARE.
   -->
 
-<!--<mat-menu>-->
-<!--<button mat-menu-item> Settings</button>-->
-<!--<button mat-menu-item> Help</button>-->
-<!--</mat-menu>-->
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    <span routerLink="/"> Augur Analytics</span>
 
-<nav class="navbar navbar-inverse">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" routerLink="/">CRAMP Analytics</a>
-    </div>
-    <ul class="nav navbar-nav">
-      <li routerLinkActive="active">
-        <a routerLink="/settings">Configuration</a>
-      </li>
-    </ul>
-  </div>
-</nav>
+    <span class="example-spacer"></span>
 
-<nav class="navbar navbar-default sidebar" role="navigation">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-sidebar-navbar-collapse-1">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-    </div>
-    <div class="collapse navbar-collapse" id="bs-sidebar-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li routerLinkActive="active">
-          <a routerLink="/realtime"> Real Time
-            <span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-home"></span>
-          </a>
-        </li>
-        <li routerLinkActive="active">
-          <a routerLink="/time-bound-map"> Time Shift
-            <span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-home"></span>
-          </a>
-        </li>
-        <li routerLinkActive="active">
-          <a routerLink="/zones"> Zones
-            <span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-home"></span>
-          </a>
-        </li>
-        <li routerLinkActive="active">
-          <a routerLink="/heatmap"> Heat Map
-            <span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-th-list"></span>
-          </a>
-        </li>
-        <li routerLinkActive="active">
-          <a routerLink="/statistics"> Statistics
-            <span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-tags"></span>
-          </a>
-        </li>
-        <li routerLinkActive="active">
-          <a routerLink="/stoppoints"> Stop Points
-            <span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-tags"></span>
-          </a>
-        </li>
-        <li routerLinkActive="active">
-          <a routerLink="/movement-direction"> Movement Direction
-            <span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-tags"></span>
-          </a>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
+    <button mat-icon-button routerLink="/settings">
+      <mat-icon>settings</mat-icon>
+    </button>
+  </mat-toolbar-row>
+</mat-toolbar>
 
-<div class="container-fluid">
-  <router-outlet></router-outlet>
-</div>
+<mat-sidenav-container class="example-container">
+
+  <mat-sidenav #sidenav mode="side" opened="true" [fixedInViewport]="false" [fixedTopGap]="5" [fixedBottomGap]="5">
+    <mat-nav-list>
+      <mat-list-item *ngFor="let option of options">
+        <span matLine routerLink="{{option.route}}">{{ option.name }}</span>
+        <button mat-icon-button>
+          <mat-icon>{{option.icon}}</mat-icon>
+        </button>
+      </mat-list-item>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

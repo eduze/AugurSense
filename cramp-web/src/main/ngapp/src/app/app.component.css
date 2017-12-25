@@ -16,54 +16,41 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import {Component} from '@angular/core';
 
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
-})
+.example-container {
+  position: absolute;
+  top: 60px;
+  bottom: 60px;
+  left: 0;
+  right: 0;
+}
 
-export class AppComponent {
+.example-sidenav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  background: rgba(255, 0, 0, 0.5);
+}
 
-  options: any = [
-    {
-      route: "/realtime",
-      name: "Real Time",
-      icon: "hourglass_empty"
-    },
-    {
-      route: "/time-bound-map",
-      name: "Time Shift",
-      icon: "timeline"
-    },
-    {
-      route: "/zones",
-      name: "Zones",
-      icon: "picture_in_picture"
-    },
-    {
-      route: "/heatmap",
-      name: "Heat Map",
-      icon: "satellite"
-    },
-    {
-      route: "/statistics",
-      name: "Statistics",
-      icon: "trending_up"
-    },
-    {
-      route: "/stoppoints",
-      name: "Stop Points",
-      icon: "people"
-    },
-    {
-      route: "/movement-direction",
-      name: "Movement Directions",
-      icon: "directions_walk"
-    }
-  ];
+.example-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+}
 
-  constructor() {
-  }
+.example-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.example-icon {
+  padding: 0 14px;
+}
+
+.example-spacer {
+  flex: 1 1 auto;
 }
