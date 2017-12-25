@@ -18,7 +18,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Http} from '@angular/http'
+import {HttpClient} from '@angular/common/http'
 import 'rxjs/add/operator/toPromise';
 import {Zone} from "../resources/zone";
 import {GlobalMap} from "../resources/global-map";
@@ -28,14 +28,14 @@ export class ConfigService {
 
   private baseUrl: string = "http://localhost:8000/api/v1/config/";
 
-  constructor(private http: Http) {
+  constructor(private http: HttpClient) {
   }
 
   getCameraViews(): Promise<Map<string, string>> {
     return this.http.get(this.baseUrl + "views")
       .toPromise()
       .then(response => {
-        let views: Map<string, string> = response.json() as Map<string, string>;
+        let views: Map<string, string> = response as Map<string, string>;
         for (let key in views) {
           views[key] = "data:image/JPEG;base64," + views[key];
         }
@@ -48,8 +48,8 @@ export class ConfigService {
     return this.http.get(this.baseUrl + "getMap")
       .toPromise()
       .then(response => {
-        console.log(response.json());
-        let views: Map<string, string> = response.json() as Map<string, string>;
+        console.log(response);
+        let views: Map<string, string> = response as Map<string, string>;
         let base64: string = "data:image/JPEG;base64," + views["mapImage"];
 
         return new GlobalMap(base64);
@@ -58,15 +58,10 @@ export class ConfigService {
   }
 
   getZones(): Promise<Zone[]> {
-    return this.http.get(this.baseUrl + "zones")
+    return this.http.get<Zone[]>(this.baseUrl + "zones")
       .toPromise()
       .then(response => {
-        let arr = response.json();
-        let zones: Zone[] = [];
-        for (let i of arr) {
-          zones.push(new Zone(i.id, i.zoneName, i.xcoordinates, i.ycoordinates));
-        }
-        return zones;
+        return response;
       })
       .catch(ConfigService.handleError);
   }

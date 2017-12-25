@@ -19,27 +19,27 @@ export class ZonesComponent implements OnInit {
 
   polygons: any[] = [];
 
-  zoneStatistics : ZoneStatistic[] = [];
-  selectedZoneIndex : number = -1;
+  zoneStatistics: ZoneStatistic[] = [];
+  selectedZoneIndex: number = -1;
   totalPeople: number;
 
-  private _fromDate : Date = new Date(0);
-  private _toDate : Date = new Date();
+  private _fromDate: Date = new Date(0);
+  private _toDate: Date = new Date();
 
-  get fromDate() : Date{
+  get fromDate(): Date {
     return this._fromDate;
   }
 
-  set fromDate(value : Date){
+  set fromDate(value: Date) {
     this._fromDate = value;
     this.fetchResults();
   }
 
-  get toDate() : Date{
+  get toDate(): Date {
     return this._toDate;
   }
 
-  set toDate(value : Date){
+  set toDate(value: Date) {
     this._toDate = value;
     this.fetchResults();
   }
@@ -51,13 +51,12 @@ export class ZonesComponent implements OnInit {
     this.selectedZoneIndex = index;
   }
 
-  private backgroundClicked(){
+  private backgroundClicked() {
     this.selectedZoneIndex = -1;
     console.log("Unselected");
 
-    this.zones.forEach((v)=>{
-      if(v.id == 0)
-      {
+    this.zones.forEach((v) => {
+      if (v.id == 0) {
         //Rest of the world zone found
         this.selectedZoneIndex = this.zones.indexOf(v);
       }
@@ -66,19 +65,17 @@ export class ZonesComponent implements OnInit {
   }
 
 
-
-
-  private fetchResults() : void{
-    if(this.fromDate == null)
+  private fetchResults(): void {
+    if (this.fromDate == null)
       return;
-    if(this.toDate == null)
+    if (this.toDate == null)
       return;
 
     this.analyticsService.getZoneStatistics(this.fromDate.getTime(), this.toDate.getTime()).then((zs) => {
       this.zoneStatistics = zs;
 
-      if(this.zoneStatistics.length > 0)
-        this.totalPeople = this.zoneStatistics.map((item) => item.averagePersonCount).reduce((r1,r2)=> r1+ r2);
+      if (this.zoneStatistics.length > 0)
+        this.totalPeople = this.zoneStatistics.map((item) => item.averagePersonCount).reduce((r1, r2) => r1 + r2);
       else
         this.totalPeople = 0;
 
@@ -89,39 +86,45 @@ export class ZonesComponent implements OnInit {
         let matches = zs.filter((match) => {
           return item.zone.id == match.zoneId
         });
-        if(matches.length > 0){
+        if (matches.length > 0) {
           item.zoneStatistic = matches[0];
 
-          for(var key in item.zoneStatistic.outgoingMap) {
-            if(item.zoneStatistic.outgoingMap.hasOwnProperty(key)) {
+          for (var key in item.zoneStatistic.outgoingMap) {
+            if (item.zoneStatistic.outgoingMap.hasOwnProperty(key)) {
               // find matching polygon
-              let matching_polys = this.polygons.filter((mat_poly)=>{
+              let matching_polys = this.polygons.filter((mat_poly) => {
                 return key == mat_poly.zone.id;
               });
-              if(matching_polys.length > 0){
+              if (matching_polys.length > 0) {
                 let matching_poly = matching_polys[0];
-                let transmission = { midX: matching_poly.midX, midY: matching_poly.midY, count: item.zoneStatistic.outgoingMap[key] / item.zoneStatistic.totalOutgoing};
+                let transmission = {
+                  midX: matching_poly.midX,
+                  midY: matching_poly.midY,
+                  count: item.zoneStatistic.outgoingMap[key] / item.zoneStatistic.totalOutgoing
+                };
                 item.outgoingMap.push(transmission);
               }
             }
           }
 
-          for(var key in item.zoneStatistic.incomingMap) {
-            if(item.zoneStatistic.incomingMap.hasOwnProperty(key)) {
+          for (var key in item.zoneStatistic.incomingMap) {
+            if (item.zoneStatistic.incomingMap.hasOwnProperty(key)) {
               // find matching polygon
-              let matching_polys = this.polygons.filter((mat_poly)=>{
+              let matching_polys = this.polygons.filter((mat_poly) => {
                 return key == mat_poly.zone.id;
               });
-              if(matching_polys.length > 0){
+              if (matching_polys.length > 0) {
                 let matching_poly = matching_polys[0];
-                let transmission = { midX: matching_poly.midX, midY: matching_poly.midY, count: item.zoneStatistic.incomingMap[key] / item.zoneStatistic.totalIncoming};
+                let transmission = {
+                  midX: matching_poly.midX,
+                  midY: matching_poly.midY,
+                  count: item.zoneStatistic.incomingMap[key] / item.zoneStatistic.totalIncoming
+                };
                 item.incomingMap.push(transmission);
               }
             }
           }
         }
-
-
 
 
       });
@@ -133,51 +136,49 @@ export class ZonesComponent implements OnInit {
   }
 
 
-
   ngOnInit() {
-    this.configService.getZones().then((zones) => {
-      this.zones = zones;
-      for (let zone of zones) {
-        let poly: { polygon: String, midX: number, midY: number, zone: Zone, zoneStatistic: ZoneStatistic, outgoingMap:any, incomingMap : any } = {
-          polygon: null,
-          midX: 0,
-          midY: 0,
-          zone: null,
-          zoneStatistic: null,
-          outgoingMap : [],
-          incomingMap : []
-        };
-        let midX = 0;
-        let midY = 0;
+    this.configService.getZones()
+      .then((zones) => {
+        this.zones = zones;
+        for (let x in this.zones) {
+          let poly: { polygon: string, midX: number, midY: number, zone: Zone, zoneStatistic: ZoneStatistic, outgoingMap: any, incomingMap: any } = {
+            polygon: null,
+            midX: 0,
+            midY: 0,
+            zone: null,
+            zoneStatistic: null,
+            outgoingMap: [],
+            incomingMap: []
+          };
+          let midX = 0;
+          let midY = 0;
 
-        let p = "";
-        for (let i in zone.xCoordinates) {
-          p += zone.xCoordinates[i] + "," + zone.yCoordinates[i] + " ";
-          midX += zone.xCoordinates[i];
-          midY += zone.yCoordinates[i];
-        }
-
-        midX /= zone.xCoordinates.length;
-        midY /= zone.yCoordinates.length;
-
-        poly.polygon = p;
-        poly.midX = midX;
-        poly.midY = midY;
-        poly.zone = zone;
-
-
-
-        this.polygons.push(poly);
-
-        this.zones.forEach((v)=>{
-          if(v.id == 0)
-          {
-            //Rest of the world zone found
-            this.selectedZoneIndex = this.zones.indexOf(v);
+          let p = "";
+          for (let i in this.zones[x].xCoordinates) {
+            p += this.zones[x].xCoordinates[i] + "," + this.zones[x].yCoordinates[i] + " ";
+            midX += this.zones[x].xCoordinates[i];
+            midY += this.zones[x].yCoordinates[i];
           }
-        });
-      }
-    });
+
+          console.log(this.zones[x]);
+          midX /= this.zones[x].xCoordinates.length;
+          midY /= this.zones[x].yCoordinates.length;
+
+          poly.polygon = p;
+          poly.midX = midX;
+          poly.midY = midY;
+          poly.zone = this.zones[x];
+
+          this.polygons.push(poly);
+
+          this.zones.forEach((v) => {
+            if (v.id == 0) {
+              //Rest of the world zone found
+              this.selectedZoneIndex = this.zones.indexOf(v);
+            }
+          });
+        }
+      });
 
     this.configService.getMap().then((globalMap) => {
       this.globalMap = globalMap;

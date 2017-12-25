@@ -21,6 +21,7 @@ export class ZoneInfoComponent implements OnInit {
     this.outflowPersons = null;
     this.refreshData();
   }
+
   get from(): Date {
     return this._from;
   }
@@ -32,6 +33,7 @@ export class ZoneInfoComponent implements OnInit {
     this.outflowPersons = null;
     this.refreshData();
   }
+
   get activeView(): string {
     return this._activeView;
   }
@@ -48,30 +50,30 @@ export class ZoneInfoComponent implements OnInit {
 
   }
 
-  getTotal() : number{
+  getTotal(): number {
     return this.zoneStatistics[this.selectedIndex].totalIncoming + this.zoneStatistics[this.selectedIndex].totalOutgoing;
   }
 
   private totalFlowView = "totalFlow";
   private averagePeopleCountView = "averagePeopleCount";
-  private _activeView : string = this.averagePeopleCountView;
-  private _zones : Zone[];
+  private _activeView: string = this.averagePeopleCountView;
+  private _zones: Zone[];
   private _zoneStatistics: ZoneStatistic[];
   private _selectedIndex: number = -1;
 
   private fromTimestamp: string;
   private toTimestamp: string;
 
-  private chartOptions : any = {animation:{ duration: 0 }};
+  private chartOptions: any = {animation: {duration: 0}};
 
   get zones(): Zone[] {
     return this._zones;
   }
 
-  private _from : Date;
-  private _to : Date;
+  private _from: Date;
+  private _to: Date;
 
-  @Input() set zones(value: Zone[]){
+  @Input() set zones(value: Zone[]) {
     this._zones = value;
     this.inflowPersons = null;
     this.outflowPersons = null;
@@ -79,7 +81,7 @@ export class ZoneInfoComponent implements OnInit {
     this.refreshData();
   }
 
-  @Input() set selectedIndex(index:number){
+  @Input() set selectedIndex(index: number) {
     this._selectedIndex = index;
     this.inflowPersons = null;
     this.outflowPersons = null;
@@ -87,23 +89,23 @@ export class ZoneInfoComponent implements OnInit {
     this.refreshData();
   }
 
-  @Input() set zoneStatistics(value:ZoneStatistic[]){
+  @Input() set zoneStatistics(value: ZoneStatistic[]) {
     this._zoneStatistics = value;
     this.refreshData();
   }
 
-  get zoneStatistic() : ZoneStatistic {
-    if(this._selectedIndex < 0)
+  get zoneStatistic(): ZoneStatistic {
+    if (this._selectedIndex < 0)
       return null;
     return this._zoneStatistics[this._selectedIndex];
   }
 
-  get selectedIndex(): number{
+  get selectedIndex(): number {
     return this._selectedIndex;
   }
 
 
-  get zoneStatistics() : ZoneStatistic[]{
+  get zoneStatistics(): ZoneStatistic[] {
     return this._zoneStatistics;
   }
 
@@ -115,8 +117,8 @@ export class ZoneInfoComponent implements OnInit {
   averageSittingCountView: string = "averageSittingCount";
   averageSittingCountVariationData: any;
 
-  inflowView : string = "inflowView";
-  outflowView : string = "outflowView";
+  inflowView: string = "inflowView";
+  outflowView: string = "outflowView";
   movementSpeedView: string = "movementSpeedView";
 
   inflowPersons: PersonImage[] = null;
@@ -128,39 +130,38 @@ export class ZoneInfoComponent implements OnInit {
   }
 
 
-  useSegments : boolean = true;
+  useSegments: boolean = true;
 
 
-  refreshInflowPersons(){
-    if(this.activeView != this.inflowView)
+  refreshInflowPersons() {
+    if (this.activeView != this.inflowView)
       return;
 
-    if(this.selectedIndex < 0) {
+    if (this.selectedIndex < 0) {
       this.inflowPersons = null;
     }
 
-    this.analyticsService.getZoneInflowPhotos(this.from.getTime(),this.to.getTime(),this.zones[this.selectedIndex].id,this.useSegments).then((pi) => {
+    this.analyticsService.getZoneInflowPhotos(this.from.getTime(), this.to.getTime(), this.zones[this.selectedIndex].id, this.useSegments).then((pi) => {
       this.inflowPersons = pi;
       console.log(pi);
     });
   }
 
-  refreshOutflowPersons(){
-    if(this.activeView != this.outflowView)
+  refreshOutflowPersons() {
+    if (this.activeView != this.outflowView)
       return;
 
-    if(this.selectedIndex < 0) {
+    if (this.selectedIndex < 0) {
       this.outflowPersons = null;
     }
 
-    this.analyticsService.getZoneOutflowPhotos(this.from.getTime(),this.to.getTime(),this.zones[this.selectedIndex].id,this.useSegments).then((pi) => {
+    this.analyticsService.getZoneOutflowPhotos(this.from.getTime(), this.to.getTime(), this.zones[this.selectedIndex].id, this.useSegments).then((pi) => {
       this.outflowPersons = pi;
       console.log(pi);
     });
   }
 
-  switchView (newView: string) : void
-  {
+  switchView(newView: string): void {
     this.activeView = newView;
   }
 
@@ -180,13 +181,11 @@ export class ZoneInfoComponent implements OnInit {
     var incomingDataLabels = [];
     var incomingData = [];
 
-
-
     for (var key in this.zoneStatistic.incomingMap) {
       if (this.zoneStatistic.incomingMap.hasOwnProperty(key)) {
         incomingDataLabels.push(this.zones.filter(value => {
           return value.id.toString() == key;
-        })[0].name);
+        })[0].zoneName);
         incomingData.push(this.zoneStatistic.incomingMap[key])
       }
     }
@@ -216,7 +215,7 @@ export class ZoneInfoComponent implements OnInit {
       if (this.zoneStatistic.outgoingMap.hasOwnProperty(key)) {
         outgoingDataLabels.push(this.zones.filter(value => {
           return value.id.toString() == key;
-        })[0].name);
+        })[0].zoneName);
         outgoingData.push(this.zoneStatistic.outgoingMap[key])
       }
     }
@@ -310,7 +309,7 @@ export class ZoneInfoComponent implements OnInit {
     this.refreshOutflowPersons();
   }
 
-  velocityMeasureTimeInterval : number = 1000;
+  velocityMeasureTimeInterval: number = 1000;
 
 
   ngOnInit() {

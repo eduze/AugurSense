@@ -18,6 +18,7 @@ export class TimeBoundMapComponent implements OnInit {
   set selectedSegmentIndex(value: number) {
     this._selectedSegmentIndex = value;
   }
+
   get useTrackSegments(): boolean {
     return this._useTrackSegments;
   }
@@ -26,18 +27,19 @@ export class TimeBoundMapComponent implements OnInit {
     this._useTrackSegments = value;
     this.refresh();
   }
+
   get selectedTrackIndex(): number {
     return this._selectedTrackIndex;
   }
 
 
-
-  private _useTrackSegments : boolean = false;
+  private _useTrackSegments: boolean = false;
 
 
   set selectedTrackIndex(value: number) {
     this._selectedTrackIndex = value;
   }
+
   get secondRange(): number[] {
     return this._secondRange;
   }
@@ -46,6 +48,7 @@ export class TimeBoundMapComponent implements OnInit {
     this._secondRange = value;
     this.refresh();
   }
+
   get startTime(): Date {
     return this._startTime;
   }
@@ -66,65 +69,65 @@ export class TimeBoundMapComponent implements OnInit {
     this.refresh();
   }
 
-  private toDateTimeString(timestamp: number) : string{
+  private toDateTimeString(timestamp: number): string {
     return new Date(timestamp).toLocaleString();
   }
 
-  private getColour(index: number) : string{
+  private getColour(index: number): string {
     return "rgb(" + Math.round(((index / 256 / 256) * 40) % 256).toString() + "," + Math.round(((index / 256) * 40) % 256).toString() + "," + Math.round((index * 40) % 256).toString() + ")";
   }
 
-  private getStandSitColour(person: PersonSnapshot): string{
+  private getStandSitColour(person: PersonSnapshot): string {
     const standCol = Math.round(person.standProbability * 255);
     const sitCol = Math.round(person.sitProbability * 255);
 
-    return "rgb("+standCol.toString()+", " +sitCol.toString() + ",255 )";
+    return "rgb(" + standCol.toString() + ", " + sitCol.toString() + ",255 )";
   }
 
-  private get from() : number{
-    if(this.startTime == null || this.secondRange[0] == null)
+  private get from(): number {
+    if (this.startTime == null || this.secondRange[0] == null)
       return null;
     return this.startTime.getTime() + this.secondRange[0] * 1000;
   }
 
-  private get to() : number{
-    if(this.endTime == null || this.secondRange[1] == null)
+  private get to(): number {
+    if (this.endTime == null || this.secondRange[1] == null)
       return null;
     return this.endTime.getTime() + this.secondRange[1] * 1000;
   }
 
-  constructor(private analyticsService: AnalyticsService, private configService: ConfigService) { }
+  constructor(private analyticsService: AnalyticsService, private configService: ConfigService) {
+  }
 
   private _startTime: Date = new Date(0);
   private _endTime: Date = new Date(0);
 
-  private _secondRange : number[] = [0,60];
+  private _secondRange: number[] = [0, 60];
   private personSnapshots: PersonSnapshot[][] = [[]];
   globalMap: GlobalMap;
 
-  private _selectedTrackIndex : number = -1;
-  private _selectedSegmentIndex : number = -1;
+  private _selectedTrackIndex: number = -1;
+  private _selectedSegmentIndex: number = -1;
 
 
-
-  private backgroundClicked() : void{
+  private backgroundClicked(): void {
     this.selectedTrackIndex = -1;
   }
 
-  private isSelected(p : PersonSnapshot) : boolean{
-    if(p.ids.length == 0)
+  private isSelected(p: PersonSnapshot): boolean {
+    if (p.ids.length == 0)
       return false;
 
-    if(!this.useTrackSegments){
+    if (!this.useTrackSegments) {
       return p.ids[0] == this.selectedTrackIndex;
     }
-    else{
+    else {
       return p.ids[0] == this.selectedTrackIndex && p.trackSegmentIndex == this.selectedSegmentIndex;
     }
   }
 
-  private trackClicked(track:PersonSnapshot[]): void{
-    if(track[0].ids.length > 0) {
+  private trackClicked(track: PersonSnapshot[]): void {
+    if (track[0].ids.length > 0) {
       this.selectedTrackIndex = track[0].ids[0];
       this.selectedSegmentIndex = track[0].trackSegmentIndex;
     }
@@ -132,18 +135,18 @@ export class TimeBoundMapComponent implements OnInit {
     console.log(track);
   }
 
-  private refresh() : void {
+  private refresh(): void {
 
-    if(this.startTime == null)
+    if (this.startTime == null)
       return;
 
-    if(this.endTime == null)
+    if (this.endTime == null)
       return;
 
-    this.analyticsService.getTimeboundMap(this.from,this.to,this.useTrackSegments)
+    this.analyticsService.getTimeboundMap(this.from, this.to, this.useTrackSegments)
       .then(ps => {
         this.personSnapshots = ps;
-        ps.forEach((item)=>{
+        ps.forEach((item) => {
           item.reverse();
           item[0]["colour"] = this.getColour(item[0].ids[0]);
           item[0]["standSitColour"] = this.getStandSitColour(item[0]);
@@ -154,8 +157,9 @@ export class TimeBoundMapComponent implements OnInit {
       .catch(reason => console.log(reason));
 
   }
-  personClicked(person: PersonImage) : void {
-    if(person.ids.length > 0) {
+
+  personClicked(person: PersonImage): void {
+    if (person.ids.length > 0) {
       this.selectedTrackIndex = person.ids[0];
       this.selectedSegmentIndex = person.trackSegmentIndex;
       console.log("Track Segment Index: " + person.trackSegmentIndex)

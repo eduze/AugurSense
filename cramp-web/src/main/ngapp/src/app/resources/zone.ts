@@ -19,16 +19,14 @@
 
 export class Zone {
   id: number;
-  name: string;
   zoneName: string;
   xCoordinates: number[];
   yCoordinates: number[];
 
   constructor(id: number, name: string, xCoordinates: number[], yCoordinates: number[]) {
     this.id = id;
-    this.name = name;
+    this.zoneName = name;
     this.xCoordinates = xCoordinates;
     this.yCoordinates = yCoordinates;
-    this.zoneName = name;
   }
 }

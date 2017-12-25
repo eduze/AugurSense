@@ -18,7 +18,7 @@
  */
 
 import {Injectable} from '@angular/core'
-import {Http} from '@angular/http'
+import {HttpClient} from '@angular/common/http'
 import 'rxjs/add/operator/toPromise';
 
 import {PersonSnapshot} from "../resources/person-snapshot";
@@ -34,7 +34,7 @@ export class AnalyticsService {
 
   private baseUrl: string = "http://localhost:8000/api/v1/analytics/";
 
-  constructor(private http: Http) {
+  constructor(private http: HttpClient) {
   }
 
   getProfile(uuid: String): Promise<PersonImage> {
@@ -42,7 +42,7 @@ export class AnalyticsService {
       .toPromise()
       .then(response => {
 
-        let personImage = response.json();
+        let personImage = response;
 
         let base64: string = "data:image/JPEG;base64," + personImage["image"];
 
@@ -65,7 +65,7 @@ export class AnalyticsService {
     return this.http.get(this.baseUrl + "realTimeMap")
       .toPromise()
       .then(response => {
-        return response.json() as PersonSnapshot[][]
+        return response as PersonSnapshot[][]
       })
       .catch(AnalyticsService.handleError);
   }
@@ -78,8 +78,8 @@ export class AnalyticsService {
     return this.http.get(url)
       .toPromise()
       .then(response => {
-        console.log(response.json());
-        return response.json();
+        console.log(response);
+        return response;
       })
       .catch(AnalyticsService.handleError);
   }
@@ -92,9 +92,9 @@ export class AnalyticsService {
     return this.http.get(url)
       .toPromise()
       .then(response => {
-        console.log(response.json());
+        console.log(response);
 
-        let status = response.json() as ReIdStatus;
+        let status = response as ReIdStatus;
 
         if (status.completed) {
           let results = status.results;
@@ -116,7 +116,6 @@ export class AnalyticsService {
 
         }
         return status;
-
       })
       .catch(AnalyticsService.handleError);
   }
@@ -128,7 +127,7 @@ export class AnalyticsService {
     return this.http.get(url)
       .toPromise()
       .then(response => {
-        return response.json() as PersonSnapshot[][]
+        return response as PersonSnapshot[][]
       })
       .catch(AnalyticsService.handleError);
   }
@@ -137,8 +136,8 @@ export class AnalyticsService {
     return this.http.get(this.baseUrl + "zoneStatistics/" + from + "/" + to)
       .toPromise()
       .then(response => {
-        console.debug(response.json());
-        return response.json() as ZoneStatistic[]
+        console.debug(response);
+        return response as ZoneStatistic[]
       })
       .catch(AnalyticsService.handleError);
   }
@@ -160,8 +159,8 @@ export class AnalyticsService {
     return this.http.get(url)
       .toPromise()
       .then(response => {
-        console.debug(response.json());
-        let results = response.json() as TimelineZone[];
+        console.debug(response);
+        let results = response as TimelineZone[];
         let result: TimelineTrack = new TimelineTrack();
         results.forEach((r) => {
           r.colour = AnalyticsService.getZoneColour(r.zone.id);
@@ -189,9 +188,9 @@ export class AnalyticsService {
     return this.http.get(url)
       .toPromise()
       .then(response => {
-        console.debug(response.json());
+        console.debug(response);
 
-        return response.json() as { [id: number]: number[]; };
+        return response as { [id: number]: number[]; };
       })
       .catch(AnalyticsService.handleError);
   }
@@ -206,9 +205,9 @@ export class AnalyticsService {
     return this.http.get(url)
       .toPromise()
       .then(response => {
-        console.debug(response.json());
+        console.debug(response);
 
-        return response.json() as { [id: number]: number; };
+        return response as { [id: number]: number; };
       })
       .catch(AnalyticsService.handleError);
   }
@@ -217,8 +216,8 @@ export class AnalyticsService {
     return this.http.get(this.baseUrl + "heatMap/" + from + "/" + to)
       .toPromise()
       .then(response => {
-        console.debug(response.json());
-        return response.json() as number[][]
+        console.debug(response);
+        return response as number[][]
       })
       .catch(AnalyticsService.handleError);
   }
@@ -228,8 +227,8 @@ export class AnalyticsService {
     return this.http.get(this.baseUrl + "directionMap/" + from + "/" + to + "/" + cellSize + "/" + directionCount)
       .toPromise()
       .then(response => {
-        console.debug(response.json());
-        return response.json() as PointDirections[]
+        console.debug(response);
+        return response as PointDirections[]
       })
       .catch(AnalyticsService.handleError);
   }
@@ -238,7 +237,7 @@ export class AnalyticsService {
     return this.http.get(this.baseUrl + "realTimeMap/all")
       .toPromise()
       .then(response => {
-        let results = response.json() as PersonImage[];
+        let results = response as PersonImage[];
 
         results.forEach((personImage) => {
           let base64: string = "data:image/JPEG;base64," + personImage["image"];
@@ -268,7 +267,7 @@ export class AnalyticsService {
     return this.http.get(url)
       .toPromise()
       .then(response => {
-        let results = response.json() as PersonImage[];
+        let results = response as PersonImage[];
 
         results.forEach((personImage) => {
           let base64: string = "data:image/JPEG;base64," + personImage["image"];
@@ -298,7 +297,7 @@ export class AnalyticsService {
     return this.http.get(url)
       .toPromise()
       .then(response => {
-        let results = response.json() as PersonImage[];
+        let results = response as PersonImage[];
 
         results.forEach((personImage) => {
           let base64: string = "data:image/JPEG;base64," + personImage["image"];
@@ -324,7 +323,7 @@ export class AnalyticsService {
     return this.http.get(this.baseUrl + "timeBoundMap/" + from + "/" + to + "/photos")
       .toPromise()
       .then(response => {
-        let results = response.json() as PersonImage[];
+        let results = response as PersonImage[];
 
         results.forEach((personImage) => {
           let base64: string = "data:image/JPEG;base64," + personImage["image"];
@@ -350,7 +349,7 @@ export class AnalyticsService {
     return this.http.get(this.baseUrl + "realTimeMap/" + trackingId)
       .toPromise()
       .then(response => {
-        let results = response.json() as PersonImage[];
+        let results = response as PersonImage[];
 
         results.forEach((personImage) => {
           let base64: string = "data:image/JPEG;base64," + personImage["image"];
@@ -376,8 +375,9 @@ export class AnalyticsService {
     return this.http.get(this.baseUrl + "getMap")
       .toPromise()
       .then(response => {
-        console.debug(response.json());
-        return response.json().image as string
+        console.debug(response);
+        const res = response as Map<string, string>;
+        return res["image"] as string
       })
       .catch(AnalyticsService.handleError);
   }
@@ -386,8 +386,8 @@ export class AnalyticsService {
     return this.http.get(this.baseUrl + "count/" + from + "/" + to)
       .toPromise().then(
         response => {
-          console.log(response.json());
-          return response.json() as number
+          console.log(response);
+          return response as number
         }
       ).catch(AnalyticsService.handleError);
   }
@@ -397,8 +397,8 @@ export class AnalyticsService {
       + height + "/" + width)
       .toPromise().then(
         response => {
-          console.log(response.json());
-          return response.json() as number[][]
+          console.log(response);
+          return response as number[][]
         }
       ).catch(AnalyticsService.handleError);
   }
@@ -416,7 +416,7 @@ export class AnalyticsService {
     return this.http.get(url)
       .toPromise()
       .then(response => {
-        let results = response.json() as PersonImage[];
+        let results = response as PersonImage[];
 
         results.forEach((personImage) => {
           let base64: string = "data:image/JPEG;base64," + personImage["image"];
@@ -446,7 +446,7 @@ export class AnalyticsService {
     return this.http.get(url)
       .toPromise()
       .then(response => {
-        return response.json() as PersonSnapshot[];
+        return response as PersonSnapshot[];
       })
       .catch(AnalyticsService.handleError);
   }

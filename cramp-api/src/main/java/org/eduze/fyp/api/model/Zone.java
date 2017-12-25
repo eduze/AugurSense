@@ -25,18 +25,20 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
 
 @Entity
 @Table(name = "zones")
+@XmlRootElement
 public class Zone {
+
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
     private String zoneName;
-
     private String xCoordinates;
     private String yCoordinates;
 
@@ -48,17 +50,18 @@ public class Zone {
         return zoneName;
     }
 
+    @XmlElement(name = "xCoordinates")
     public int[] getXCoordinates() {
         return getCoordinates(xCoordinates);
     }
 
+    @XmlElement(name = "yCoordinates")
     public int[] getYCoordinates() {
         return getCoordinates(yCoordinates);
     }
 
     private int[] getCoordinates(String coordinateField) {
-
-        if(Objects.equals(coordinateField, ""))
+        if (Objects.equals(coordinateField, ""))
             return new int[0];
         String[] strCoordinates = coordinateField.split(",");
         int[] coordinates = new int[strCoordinates.length];

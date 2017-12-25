@@ -32,7 +32,8 @@
                 {{ zoneStatistic.averagePersonCount }}
               </td>
             </tr>
-            <tr [ngClass]="{active: activeView == averageStandingCountView}" (click)="switchView(averageStandingCountView)">
+            <tr [ngClass]="{active: activeView == averageStandingCountView}"
+                (click)="switchView(averageStandingCountView)">
               <td style="padding-left: 20px;">
                 Standing
               </td>
@@ -40,7 +41,8 @@
                 {{ zoneStatistic.averageStandingCount }}
               </td>
             </tr>
-            <tr [ngClass]="{active: activeView == averageSittingCountView}" (click)="switchView(averageSittingCountView)">
+            <tr [ngClass]="{active: activeView == averageSittingCountView}"
+                (click)="switchView(averageSittingCountView)">
               <td style="padding-left: 20px;">
                 Sitting
               </td>
@@ -72,7 +74,7 @@
                 {{ zoneStatistic.totalIncoming }}
               </td>
             </tr>
-            <tr [ngClass]="{active: activeView == outflowView}" (click)="switchView(outflowView)" >
+            <tr [ngClass]="{active: activeView == outflowView}" (click)="switchView(outflowView)">
               <td style="padding-left: 20px;">
                 Outgoing
               </td>
@@ -88,8 +90,6 @@
     </div>
 
 
-
-
   </div>
   <div class="col-md-8" *ngIf="zoneStatistic != null && activeView == averagePeopleCountView">
     <div class="panel panel-default">
@@ -97,7 +97,7 @@
         <h4>Average People Count</h4>
       </div>
       <div class="panel-body">
-        <p-chart type="line" [data]="averageCountVariationData" [options] = "chartOptions"></p-chart>
+        <p-chart type="line" [data]="averageCountVariationData" [options]="chartOptions"></p-chart>
 
       </div>
     </div>
@@ -109,7 +109,7 @@
         <h4>Average Standing People Count</h4>
       </div>
       <div class="panel-body">
-        <p-chart type="line" [data]="averageStandingCountVariationData" [options] = "chartOptions"></p-chart>
+        <p-chart type="line" [data]="averageStandingCountVariationData" [options]="chartOptions"></p-chart>
       </div>
     </div>
   </div>
@@ -120,20 +120,23 @@
         <h4>Average Sitting People Count</h4>
       </div>
       <div class="panel-body">
-        <p-chart type="line" [data]="averageSittingCountVariationData" [options] = "chartOptions"></p-chart>
+        <p-chart type="line" [data]="averageSittingCountVariationData" [options]="chartOptions"></p-chart>
       </div>
     </div>
   </div>
 
 
   <div class="col-md-8" *ngIf="zoneStatistic != null && activeView == movementSpeedView">
-    <div class="col-md-12" >
+    <div class="col-md-12">
       <div class="panel panel-default">
         <div class="panel-heading">
           <h4>Time Velocity Distribution</h4>
         </div>
         <div class="panel-body">
-          <app-time-velocity-distribution [zoneId]="zones[selectedIndex].id" [segmented]="useSegments" [from]="from" [to]="to" [timeInterval]="velocityMeasureTimeInterval" [timeVelocityView]="true" [velocityFrequencyView]="false"></app-time-velocity-distribution>
+          <app-time-velocity-distribution [zoneId]="zones[selectedIndex].id" [segmented]="useSegments" [from]="from"
+                                          [to]="to" [timeInterval]="velocityMeasureTimeInterval"
+                                          [timeVelocityView]="true"
+                                          [velocityFrequencyView]="false"></app-time-velocity-distribution>
         </div>
       </div>
     </div>
@@ -144,7 +147,10 @@
           <span> {{fromTimestamp}} - {{ toTimestamp }}</span>
         </div>
         <div class="panel-body">
-          <app-time-velocity-distribution [zoneId]="zones[selectedIndex].id" [segmented]="useSegments" [from]="from" [to]="to" [timeInterval]="velocityMeasureTimeInterval" [timeVelocityView]="false" [velocityFrequencyView]="true"></app-time-velocity-distribution>
+          <app-time-velocity-distribution [zoneId]="zones[selectedIndex].id" [segmented]="useSegments" [from]="from"
+                                          [to]="to" [timeInterval]="velocityMeasureTimeInterval"
+                                          [timeVelocityView]="false"
+                                          [velocityFrequencyView]="true"></app-time-velocity-distribution>
         </div>
 
       </div>
@@ -152,7 +158,8 @@
     <div class="col-md-12">
       <div class="panel panel-default">
         <div class="panel-body">
-          <span>Sampling Interval <span style="float: right;">{{ velocityMeasureTimeInterval / 1000 }} seconds</span></span>
+          <span>Sampling Interval <span
+            style="float: right;">{{ velocityMeasureTimeInterval / 1000 }} seconds</span></span>
           <p-slider [(ngModel)]="velocityMeasureTimeInterval" [min]="1000" [max]="60000" [step]="1000"></p-slider>
         </div>
 
@@ -166,7 +173,7 @@
         <h4>Outgoing Flow</h4>
       </div>
       <div class="panel-body">
-        <p-chart type="pie" [data]="outgoingData" [options] = "chartOptions"></p-chart>
+        <p-chart type="pie" [data]="outgoingData" [options]="chartOptions"></p-chart>
       </div>
     </div>
   </div>
@@ -177,7 +184,7 @@
         <h4>Incoming Flow</h4>
       </div>
       <div class="panel-body">
-        <p-chart type="pie" [options] = "chartOptions" [data]="incomingData"></p-chart>
+        <p-chart type="pie" [options]="chartOptions" [data]="incomingData"></p-chart>
       </div>
     </div>
   </div>
@@ -193,7 +200,8 @@
 
               <div class="panel-body" style="height:200px; width: 100%; text-align: center;">
                 <a routerLink="/{{ inflowPerson.uuid }}" target="_blank">
-                  <img [src]="inflowPerson.image" style="width: 100%; height: 95%; max-width: 100%; max-height: 100%; object-fit: contain;"/>
+                  <img [src]="inflowPerson.image"
+                       style="width: 100%; height: 95%; max-width: 100%; max-height: 100%; object-fit: contain;"/>
                 </a>
               </div>
 
@@ -217,7 +225,8 @@
 
               <div class="panel-body" style="height:200px; width: 100%; text-align: center;">
                 <a routerLink="/{{ outflowPerson.uuid }}" target="_blank">
-                  <img [src]="outflowPerson.image" style="width: 100%; height: 95%; max-width: 100%; max-height: 100%; object-fit: contain;"/>
+                  <img [src]="outflowPerson.image"
+                       style="width: 100%; height: 95%; max-width: 100%; max-height: 100%; object-fit: contain;"/>
                 </a>
               </div>
 
