@@ -17,7 +17,7 @@
   ~ IN THE SOFTWARE.
   -->
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-info">
+<nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-info">
   <a class="navbar-brand" routerLink="/">Augur Analytics</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
           aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,7 +26,7 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
+      <li class="nav-item">
         <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
       </li>
     </ul>
@@ -36,13 +36,13 @@
   </div>
 </nav>
 
-<div class="container-fluid mt-0 h-100">
+<div class="container-fluid mt-5 pt-2 h-100">
   <div class="row h-100">
-    <div class="col-md-2 ml-0 px-0 bg-dark">
-      <ul class="nav flex-column">
-        <li class="nav-item" *ngFor="let option of options">
-          <a class="nav-link text-white" routerLink="{{option.route}}" routerLinkActive="active">
-            {{option.name}}
+    <div class="col-md-2 col-sm-1 ml-0 px-0 bg-dark">
+      <ul class="nav flex-column my-0">
+        <li class="nav-item" *ngFor="let option of options" routerLinkActive="bg-info active">
+          <a class="nav-link text-light" routerLink="{{option.route}}">
+            <span>{{option.name}}</span>
             <mat-icon class="float-right">{{option.icon}}</mat-icon>
           </a>
         </li>
@@ -54,21 +54,8 @@
   </div>
 </div>
 
-<!--<mat-sidenav-container>-->
-
-<!--<mat-sidenav #sidenav mode="side" opened="true" [fixedInViewport]="false" [fixedTopGap]="0" [fixedBottomGap]="0">-->
-<!--<mat-nav-list>-->
-<!--<mat-list-item *ngFor="let option of options" routerLink="{{option.route}}" routerLinkActive="bg-secondary">-->
-<!--<span matLine>{{ option.name }}</span>-->
-<!--<button mat-icon-button>-->
-<!--<mat-icon>{{option.icon}}</mat-icon>-->
-<!--</button>-->
-<!--</mat-list-item>-->
-<!--</mat-nav-list>-->
-<!--</mat-sidenav>-->
-
-<!--<mat-sidenav-content>-->
-<!--<router-outlet></router-outlet>-->
-<!--</mat-sidenav-content>-->
-
-<!--</mat-sidenav-container>-->
+<nav class="navbar fixed-bottom navbar-light bg-light">
+  <span class="text-center w-100">
+    &copy; Augur Analytics
+  </span>
+</nav>
