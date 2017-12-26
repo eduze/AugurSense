@@ -27,7 +27,7 @@ import {ConfigService} from "./services/config.service";
 
 import {
   MatButtonModule, MatCardModule, MatCheckboxModule, MatChipsModule, MatFormFieldModule, MatIconModule,
-  MatInputModule, MatListModule, MatMenuModule, MatSidenavModule, MatToolbarModule
+  MatInputModule, MatListModule, MatMenuModule, MatSidenavModule, MatSliderModule, MatToolbarModule
 } from '@angular/material';
 
 
@@ -71,7 +71,8 @@ import {
     MatListModule,
     MatIconModule,
     MatCardModule,
-    MatChipsModule
+    MatChipsModule,
+    MatSliderModule
   ],
   providers: [AnalyticsService, ConfigService],
   bootstrap: [AppComponent]

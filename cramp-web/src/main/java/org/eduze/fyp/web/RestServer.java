@@ -26,6 +26,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.PathResource;
 import org.eduze.fyp.api.annotations.AutoStart;
+import org.eduze.fyp.api.annotations.Mode;
 import org.eduze.fyp.api.config.Startable;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -46,7 +47,7 @@ import java.util.Set;
  *
  * @author Imesha Sudasingha
  */
-@AutoStart(startOrder = 2)
+@AutoStart(startOrder = 2, mode = Mode.PASSIVE)
 public class RestServer implements Startable {
 
     private static final Logger logger = LoggerFactory.getLogger(RestServer.class);

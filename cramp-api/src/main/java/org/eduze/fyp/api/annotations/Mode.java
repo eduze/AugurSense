@@ -17,4 +17,8 @@
  * IN THE SOFTWARE.
  */
 
+package org.eduze.fyp.api.annotations;
 
+public enum Mode {
+    ACTIVE, PASSIVE
+}

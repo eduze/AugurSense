@@ -1,7 +1,9 @@
-<div>
-  <canvas #canvas width="100%" height="100%" (click)="canvasClicked($event)">
-    alternate content for browsers that do not support Canvas
-  </canvas>
-</div>
+<mat-card>
+  <mat-card-content>
+    <canvas #canvas (click)="canvasClicked($event)">
+      Sorry, your browser doesn't support canvas elements
+    </canvas>
+  </mat-card-content>
+</mat-card>
 
 

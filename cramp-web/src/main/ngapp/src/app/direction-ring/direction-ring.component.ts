@@ -262,8 +262,9 @@ export class DirectionRingComponent implements OnInit, AfterViewInit {
 
     const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
 
-    canvasEl.width = this.width;
-    canvasEl.height = this.height;
+    // This is not required since size is set through the image
+    // canvasEl.width = this.width;
+    // canvasEl.height = this.height;
 
     // this.container.nativeElement.setAttribute("width",this.width);
     // this.container.nativeElement.setAttribute("height",this.height);

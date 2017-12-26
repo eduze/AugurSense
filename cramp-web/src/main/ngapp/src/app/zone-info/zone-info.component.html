@@ -1,241 +1,179 @@
-<div class="col-md-12" style="display: flex;">
-  <div class="col-md-5">
-    <div class="panel panel-primary" *ngIf="zoneStatistic != null">
-      <div class="panel-heading">
-        <h3 *ngIf="zoneStatistic != null">
-          {{ zoneStatistic.zoneName }}
-        </h3>
-        <span *ngIf="zoneStatistic != null">
-          {{fromTimestamp}} - {{ toTimestamp }}
-        </span>
-      </div>
-      <div class="panel-body">
+<div class="row my-3">
+  <div class="col-md-6">
+    <mat-card *ngIf="zoneStatistic != null">
+      <mat-card-title>{{ zoneStatistic.zoneName }}</mat-card-title>
+      <mat-card-subtitle>
+        {{fromTimestamp}} - {{ toTimestamp }}
+      </mat-card-subtitle>
 
-        <div *ngIf="zoneStatistic != null">
-          <table class="table">
-            <thead>
-            <tr>
-              <th>
-                Statistics
-              </th>
-              <th>
-                #
-              </th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr [ngClass]="{active: activeView == averagePeopleCountView}" (click)="switchView(averagePeopleCountView)">
-              <td>
-                Average People Count
-              </td>
-              <td>
-                {{ zoneStatistic.averagePersonCount }}
-              </td>
-            </tr>
-            <tr [ngClass]="{active: activeView == averageStandingCountView}"
-                (click)="switchView(averageStandingCountView)">
-              <td style="padding-left: 20px;">
-                Standing
-              </td>
-              <td>
-                {{ zoneStatistic.averageStandingCount }}
-              </td>
-            </tr>
-            <tr [ngClass]="{active: activeView == averageSittingCountView}"
-                (click)="switchView(averageSittingCountView)">
-              <td style="padding-left: 20px;">
-                Sitting
-              </td>
-              <td>
-                {{ zoneStatistic.averageSittingCount }}
-              </td>
-            </tr>
-            <tr [ngClass]="{active: activeView == movementSpeedView}" (click)="switchView(movementSpeedView)">
-              <td>
-                Movement Speed
-              </td>
-              <td>
-                <span style="float:right;">&gt;&gt;</span>
-              </td>
-            </tr>
-            <tr [ngClass]="{active: activeView == totalFlowView}" (click)="switchView(totalFlowView)">
-              <td>
-                Traffic Flow
-              </td>
-              <td>
-                {{ getTotal() }}
-              </td>
-            </tr>
-            <tr [ngClass]="{active: activeView == inflowView}" (click)="switchView(inflowView)">
-              <td style="padding-left: 20px;">
-                Incoming
-              </td>
-              <td>
-                {{ zoneStatistic.totalIncoming }}
-              </td>
-            </tr>
-            <tr [ngClass]="{active: activeView == outflowView}" (click)="switchView(outflowView)">
-              <td style="padding-left: 20px;">
-                Outgoing
-              </td>
-              <td>
-                {{ zoneStatistic.totalOutgoing }}
-              </td>
-            </tr>
-            </tbody>
+      <mat-card-content>
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th>Statistics</th>
+            <th>#</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr [ngClass]="{active: activeView == averagePeopleCountView}" (click)="switchView(averagePeopleCountView)">
+            <td>
+              Average People Count
+            </td>
+            <td>
+              {{ zoneStatistic.averagePersonCount }}
+            </td>
+          </tr>
+          <tr [ngClass]="{active: activeView == averageStandingCountView}"
+              (click)="switchView(averageStandingCountView)">
+            <td style="padding-left: 20px;">
+              Standing
+            </td>
+            <td>
+              {{ zoneStatistic.averageStandingCount }}
+            </td>
+          </tr>
+          <tr [ngClass]="{active: activeView == averageSittingCountView}"
+              (click)="switchView(averageSittingCountView)">
+            <td style="padding-left: 20px;">
+              Sitting
+            </td>
+            <td>
+              {{ zoneStatistic.averageSittingCount }}
+            </td>
+          </tr>
+          <tr [ngClass]="{active: activeView == movementSpeedView}" (click)="switchView(movementSpeedView)">
+            <td>
+              Movement Speed
+            </td>
+            <td>
+              <span style="float:right;">&gt;&gt;</span>
+            </td>
+          </tr>
+          <tr [ngClass]="{active: activeView == totalFlowView}" (click)="switchView(totalFlowView)">
+            <td>
+              Traffic Flow
+            </td>
+            <td>
+              {{ getTotal() }}
+            </td>
+          </tr>
+          <tr [ngClass]="{active: activeView == inflowView}" (click)="switchView(inflowView)">
+            <td style="padding-left: 20px;">
+              Incoming
+            </td>
+            <td>
+              {{ zoneStatistic.totalIncoming }}
+            </td>
+          </tr>
+          <tr [ngClass]="{active: activeView == outflowView}" (click)="switchView(outflowView)">
+            <td style="padding-left: 20px;">
+              Outgoing
+            </td>
+            <td>
+              {{ zoneStatistic.totalOutgoing }}
+            </td>
+          </tr>
+          </tbody>
 
-          </table>
-        </div>
-      </div>
-    </div>
-
-
+        </table>
+      </mat-card-content>
+    </mat-card>
   </div>
-  <div class="col-md-8" *ngIf="zoneStatistic != null && activeView == averagePeopleCountView">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4>Average People Count</h4>
-      </div>
-      <div class="panel-body">
+
+  <div class="col-md-6" *ngIf="zoneStatistic != null">
+    <mat-card *ngIf="activeView == averagePeopleCountView">
+      <mat-card-title>Average People Count</mat-card-title>
+      <mat-card-content class="w-100">
         <p-chart type="line" [data]="averageCountVariationData" [options]="chartOptions"></p-chart>
+      </mat-card-content>
+    </mat-card>
 
-      </div>
-    </div>
-  </div>
-
-  <div class="col-md-8" *ngIf="zoneStatistic != null && activeView == averageStandingCountView">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4>Average Standing People Count</h4>
-      </div>
-      <div class="panel-body">
+    <mat-card *ngIf="activeView == averageStandingCountView">
+      <mat-card-title>Average Standing People Count</mat-card-title>
+      <mat-card-content class="w-100">
         <p-chart type="line" [data]="averageStandingCountVariationData" [options]="chartOptions"></p-chart>
-      </div>
-    </div>
-  </div>
+      </mat-card-content>
+    </mat-card>
 
-  <div class="col-md-8" *ngIf="zoneStatistic != null && activeView == averageSittingCountView">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4>Average Sitting People Count</h4>
-      </div>
-      <div class="panel-body">
+    <mat-card *ngIf="activeView == averageSittingCountView">
+      <mat-card-title>Average Sitting People Count</mat-card-title>
+      <mat-card-content>
         <p-chart type="line" [data]="averageSittingCountVariationData" [options]="chartOptions"></p-chart>
-      </div>
-    </div>
-  </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card *ngIf="activeView == movementSpeedView">
+      <mat-card-title>Time Velocity Distribution</mat-card-title>
+      <mat-card-content>
+        <app-time-velocity-distribution [zoneId]="zones[selectedIndex].id" [segmented]="useSegments" [from]="from"
+                                        [to]="to" [timeInterval]="velocityMeasureTimeInterval"
+                                        [timeVelocityView]="true"
+                                        [velocityFrequencyView]="false"></app-time-velocity-distribution>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card *ngIf="activeView == movementSpeedView" class="mt-3">
+      <mat-card-title>Velocity Frequency Distribution</mat-card-title>
+      <mat-card-subtitle> {{fromTimestamp}} - {{ toTimestamp }}</mat-card-subtitle>
+      <mat-card-content>
+        <app-time-velocity-distribution [zoneId]="zones[selectedIndex].id" [segmented]="useSegments" [from]="from"
+                                        [to]="to" [timeInterval]="velocityMeasureTimeInterval"
+                                        [timeVelocityView]="false"
+                                        [velocityFrequencyView]="true"></app-time-velocity-distribution>
+      </mat-card-content>
+      <mat-card-footer>
+        <span>Sampling Interval <span
+          style="float: right;">{{ velocityMeasureTimeInterval / 1000 }} seconds</span></span>
+        <p-slider [(ngModel)]="velocityMeasureTimeInterval" [min]="1000" [max]="60000" [step]="1000"></p-slider>
+      </mat-card-footer>
+    </mat-card>
 
 
-  <div class="col-md-8" *ngIf="zoneStatistic != null && activeView == movementSpeedView">
-    <div class="col-md-12">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4>Time Velocity Distribution</h4>
-        </div>
-        <div class="panel-body">
-          <app-time-velocity-distribution [zoneId]="zones[selectedIndex].id" [segmented]="useSegments" [from]="from"
-                                          [to]="to" [timeInterval]="velocityMeasureTimeInterval"
-                                          [timeVelocityView]="true"
-                                          [velocityFrequencyView]="false"></app-time-velocity-distribution>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-12">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4>Velocity Frequency Distribution</h4>
-          <span> {{fromTimestamp}} - {{ toTimestamp }}</span>
-        </div>
-        <div class="panel-body">
-          <app-time-velocity-distribution [zoneId]="zones[selectedIndex].id" [segmented]="useSegments" [from]="from"
-                                          [to]="to" [timeInterval]="velocityMeasureTimeInterval"
-                                          [timeVelocityView]="false"
-                                          [velocityFrequencyView]="true"></app-time-velocity-distribution>
-        </div>
-
-      </div>
-    </div>
-    <div class="col-md-12">
-      <div class="panel panel-default">
-        <div class="panel-body">
-          <span>Sampling Interval <span
-            style="float: right;">{{ velocityMeasureTimeInterval / 1000 }} seconds</span></span>
-          <p-slider [(ngModel)]="velocityMeasureTimeInterval" [min]="1000" [max]="60000" [step]="1000"></p-slider>
-        </div>
-
-      </div>
-    </div>
-  </div>
-
-  <div class="cold-md-4" *ngIf="zoneStatistic != null && activeView == totalFlowView">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4>Outgoing Flow</h4>
-      </div>
-      <div class="panel-body">
+    <mat-card *ngIf="activeView == totalFlowView">
+      <mat-card-title>Outgoing Flow</mat-card-title>
+      <mat-card-content>
         <p-chart type="pie" [data]="outgoingData" [options]="chartOptions"></p-chart>
-      </div>
-    </div>
-  </div>
+      </mat-card-content>
+    </mat-card>
 
-  <div class="col-md-4" *ngIf="zoneStatistic != null && activeView == totalFlowView">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4>Incoming Flow</h4>
-      </div>
-      <div class="panel-body">
+    <mat-card *ngIf="activeView == totalFlowView">
+      <mat-card-title>Incoming Flow</mat-card-title>
+      <mat-card-content>
         <p-chart type="pie" [options]="chartOptions" [data]="incomingData"></p-chart>
-      </div>
-    </div>
-  </div>
+      </mat-card-content>
+    </mat-card>
 
-  <div class="col-md-8" *ngIf="zoneStatistic != null && activeView == inflowView">
-    <div class="col-md-12">
+    <mat-card *ngIf="activeView == inflowView && inflowPersons != null">
+      <mat-card-content class="row">
+        <div class="col-md-2" *ngFor="let inflowPerson of inflowPersons">
+          <mat-card>
+            <mat-card-title>{{ getDateString(inflowPerson.timestamp) }}</mat-card-title>
 
-      <div class="col-md-12" *ngIf="inflowPersons != null">
-        <div *ngFor="let inflowPerson of inflowPersons">
-          <div class="col-md-2" style="margin: 0px; padding: 0px;">
-            <div class="panel panel-default">
-              <div class="panel-heading">{{ getDateString(inflowPerson.timestamp) }}</div>
-
-              <div class="panel-body" style="height:200px; width: 100%; text-align: center;">
-                <a routerLink="/{{ inflowPerson.uuid }}" target="_blank">
-                  <img [src]="inflowPerson.image"
-                       style="width: 100%; height: 95%; max-width: 100%; max-height: 100%; object-fit: contain;"/>
-                </a>
-              </div>
-
-            </div>
-          </div>
-
+            <mat-card-content>
+              <a routerLink="/{{ inflowPerson.uuid }}" target="_blank">
+                <img [src]="inflowPerson.image"
+                     style="width: 100%; height: 95%; max-width: 100%; max-height: 100%; object-fit: contain;"/>
+              </a>
+            </mat-card-content>
+          </mat-card>
         </div>
+      </mat-card-content>
+    </mat-card>
 
-      </div>
-    </div>
-  </div>
-
-  <div class="col-md-8" *ngIf="zoneStatistic != null && activeView == outflowView">
-    <div class="col-md-12">
-
-      <div class="col-md-12" *ngIf="outflowPersons != null">
-        <div *ngFor="let outflowPerson of outflowPersons">
-          <div class="col-md-2" style="margin: 0px; padding: 0px;">
-            <div class="panel panel-default">
-              <div class="panel-heading">{{ getDateString(outflowPerson.timestamp) }}</div>
-
-              <div class="panel-body" style="height:200px; width: 100%; text-align: center;">
-                <a routerLink="/{{ outflowPerson.uuid }}" target="_blank">
-                  <img [src]="outflowPerson.image"
-                       style="width: 100%; height: 95%; max-width: 100%; max-height: 100%; object-fit: contain;"/>
-                </a>
-              </div>
-
-            </div>
-          </div>
-
+    <mat-card *ngIf="activeView == outflowView && outflowPersons != null">
+      <mat-card-content class="row">
+        <div class="col-md-2" *ngFor="let outflowPerson of outflowPersons">
+          <mat-card>
+            <mat-card-title>{{ getDateString(outflowPerson.timestamp) }}</mat-card-title>
+            <mat-card-content style="height:200px; width: 100%; text-align: center;">
+              <a routerLink="/{{ outflowPerson.uuid }}" target="_blank">
+                <img [src]="outflowPerson.image"
+                     style="width: 100%; height: 95%; max-width: 100%; max-height: 100%; object-fit: contain;"/>
+              </a>
+            </mat-card-content>
+          </mat-card>
         </div>
-
-      </div>
-    </div>
+      </mat-card-content>
+    </mat-card>
   </div>
 </div>

@@ -1,17 +1,15 @@
-<div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1">
+<div class="col-md-8 offset-md-2 col-sm-10 offset-sm-1 mt-3">
 
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <b>Zone Map</b>
-      <span style="padding-left: 10px; padding-right: 2px;">
-          From <p-calendar [showTime]="true" [(ngModel)]="fromDate"></p-calendar>
-        </span>
-      <span style="padding-left: 10px; padding-right: 2px;">
-            To <p-calendar [showTime]="true" [(ngModel)]="toDate"></p-calendar>
-        </span>
-    </div>
+  <mat-card>
+    <mat-card-title>Zone Map</mat-card-title>
+    <mat-card-subtitle>
+      From
+      <p-calendar [showTime]="true" [(ngModel)]="fromDate"></p-calendar>
+      to
+      <p-calendar [showTime]="true" [(ngModel)]="toDate"></p-calendar>
+    </mat-card-subtitle>
 
-    <div class="panel-body">
+    <mat-card-content>
       <div class="row" *ngIf="globalMap">
         <div class="col-md-12 col-sm-12 col-xs-12">
 
@@ -41,22 +39,15 @@
                         *ngFor="let neighbour of poly.incomingMap" font-size="15" text-anchor="middle">
                     - {{ neighbour.count * 100 | number : '1.2-2'}}%
                   </text>
-
                 </g>
-
               </g>
             </g>
-
-
           </svg>
-
         </div>
       </div>
-    </div>
+    </mat-card-content>
+  </mat-card>
 
-  </div>
-  <div>
-    <app-zone-info [zones]="zones" [from]="fromDate" [to]="toDate" [zoneStatistics]="zoneStatistics"
-                   [selectedIndex]="selectedZoneIndex"></app-zone-info>
-  </div>
+  <app-zone-info [zones]="zones" [from]="fromDate" [to]="toDate" [zoneStatistics]="zoneStatistics"
+                 [selectedIndex]="selectedZoneIndex"></app-zone-info>
 </div>

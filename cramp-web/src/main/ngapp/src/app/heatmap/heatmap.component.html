@@ -17,25 +17,48 @@
   ~ IN THE SOFTWARE.
   -->
 
-<div class="container-fluid">
+<div class="col-md-8 offset-md-2 col-sm-10 offset-sm-1 my-3">
 
-  <div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-1">
-
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <button class="btn btn-info" (click)="generateHeatMap()">Generate Heat Map</button>
-        <p-calendar [showTime] = "true" [(ngModel)]="startTime"></p-calendar>
-        <p-calendar [showTime]="true" [(ngModel)]="endTime"></p-calendar>
-        <span>{{startString}} to {{endString}} </span>
+  <mat-card>
+    <mat-card-title>
+      Heat Map
+    </mat-card-title>
+    <mat-card-subtitle>
+      <div class="row">
+        <div class="col-md-10">
+          <mat-list>
+            <mat-list-item>
+              From
+              <p-calendar [showTime]="true" [(ngModel)]="startTime"></p-calendar>
+              to
+              <p-calendar [showTime]="true" [(ngModel)]="endTime"></p-calendar>
+            </mat-list-item>
+            <mat-list-item>
+              <div class="container-fluid">
+                <div>
+                  <p-slider [(ngModel)]="secondRange" [range]="true" [min]="0" [max]="300" [step]="1"
+                            class="w-100"></p-slider>
+                </div>
+                <div class="mt-1">
+                  <p-slider [(ngModel)]="offset" [min]="0" [max]="300" [step]="1" class="w-100"></p-slider>
+                </div>
+              </div>
+            </mat-list-item>
+          </mat-list>
+        </div>
+        <div class="col-md-2">
+          <button mat-raised-button (click)="generateHeatMap()" color="primary" class="float-right">Generate Heat Map
+          </button>
+        </div>
       </div>
-      <p-slider [(ngModel)]="secondRange" [range]="true" [min]="0" [max]="300" [step]="1"></p-slider>
-      <p-slider [(ngModel)]="offset" [min]="0" [max]="300" [step]="1"></p-slider>
-      <div class="panel-body">
-        <canvas #canvas class="center-block"></canvas>
-      </div>
-    </div>
-
-  </div>
+    </mat-card-subtitle>
+    <mat-card-content class="panel-body">
+      <canvas #canvas class="center-block"></canvas>
+    </mat-card-content>
+    <mat-card-footer class="container-fluid text-right">
+      From {{startString}} to {{endString}}
+    </mat-card-footer>
+  </mat-card>
 
 </div>
 
