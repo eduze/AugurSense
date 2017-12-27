@@ -1,83 +1,58 @@
-<div class="row my-3">
+<div class="row">
+
   <div class="col-md-6">
-    <mat-card *ngIf="zoneStatistic != null">
-      <mat-card-title>{{ zoneStatistic.zoneName }}</mat-card-title>
-      <mat-card-subtitle>
-        {{fromTimestamp}} - {{ toTimestamp }}
-      </mat-card-subtitle>
-
-      <mat-card-content>
-        <table class="table table-hover">
-          <thead>
-          <tr>
-            <th>Statistics</th>
-            <th>#</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr [ngClass]="{active: activeView == averagePeopleCountView}" (click)="switchView(averagePeopleCountView)">
-            <td>
-              Average People Count
-            </td>
-            <td>
-              {{ zoneStatistic.averagePersonCount }}
-            </td>
-          </tr>
-          <tr [ngClass]="{active: activeView == averageStandingCountView}"
-              (click)="switchView(averageStandingCountView)">
-            <td style="padding-left: 20px;">
-              Standing
-            </td>
-            <td>
-              {{ zoneStatistic.averageStandingCount }}
-            </td>
-          </tr>
-          <tr [ngClass]="{active: activeView == averageSittingCountView}"
-              (click)="switchView(averageSittingCountView)">
-            <td style="padding-left: 20px;">
-              Sitting
-            </td>
-            <td>
-              {{ zoneStatistic.averageSittingCount }}
-            </td>
-          </tr>
-          <tr [ngClass]="{active: activeView == movementSpeedView}" (click)="switchView(movementSpeedView)">
-            <td>
-              Movement Speed
-            </td>
-            <td>
-              <span style="float:right;">&gt;&gt;</span>
-            </td>
-          </tr>
-          <tr [ngClass]="{active: activeView == totalFlowView}" (click)="switchView(totalFlowView)">
-            <td>
-              Traffic Flow
-            </td>
-            <td>
-              {{ getTotal() }}
-            </td>
-          </tr>
-          <tr [ngClass]="{active: activeView == inflowView}" (click)="switchView(inflowView)">
-            <td style="padding-left: 20px;">
-              Incoming
-            </td>
-            <td>
-              {{ zoneStatistic.totalIncoming }}
-            </td>
-          </tr>
-          <tr [ngClass]="{active: activeView == outflowView}" (click)="switchView(outflowView)">
-            <td style="padding-left: 20px;">
-              Outgoing
-            </td>
-            <td>
-              {{ zoneStatistic.totalOutgoing }}
-            </td>
-          </tr>
-          </tbody>
-
-        </table>
-      </mat-card-content>
-    </mat-card>
+    <div class="box box-primary" *ngIf="zoneStatistic != null">
+      <div class="box-header with-border">
+        <h4 class="box-title">{{ zoneStatistic.zoneName }}</h4>
+      </div>
+      <div class="box-body">
+        <p class="lead">From {{fromTimestamp}} To {{ toTimestamp }}</p>
+        <div class="container-fluid table-responsive">
+          <table class="table table-hover">
+            <thead>
+            <tr>
+              <th class="text-center">Statistics</th>
+              <th class="text-center">#</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr [ngClass]="{active: activeView == averagePeopleCountView}" (click)="switchView(averagePeopleCountView)">
+              <td>Average People Count</td>
+              <td>{{ zoneStatistic.averagePersonCount }}</td>
+            </tr>
+            <tr [ngClass]="{active: activeView == averageStandingCountView}"
+                (click)="switchView(averageStandingCountView)">
+              <td style="padding-left: 20px;">Standing</td>
+              <td>{{ zoneStatistic.averageStandingCount }}</td>
+            </tr>
+            <tr [ngClass]="{active: activeView == averageSittingCountView}"
+                (click)="switchView(averageSittingCountView)">
+              <td style="padding-left: 20px;">Sitting</td>
+              <td>{{ zoneStatistic.averageSittingCount }}</td>
+            </tr>
+            <tr [ngClass]="{active: activeView == movementSpeedView}" (click)="switchView(movementSpeedView)">
+              <td>Movement Speed</td>
+              <td>
+                <span style="float:right;">&gt;&gt;</span>
+              </td>
+            </tr>
+            <tr [ngClass]="{active: activeView == totalFlowView}" (click)="switchView(totalFlowView)">
+              <td>Traffic Flow</td>
+              <td>{{ getTotal() }}</td>
+            </tr>
+            <tr [ngClass]="{active: activeView == inflowView}" (click)="switchView(inflowView)">
+              <td style="padding-left: 20px;">Incoming</td>
+              <td>{{ zoneStatistic.totalIncoming }}</td>
+            </tr>
+            <tr [ngClass]="{active: activeView == outflowView}" (click)="switchView(outflowView)">
+              <td style="padding-left: 20px;">Outgoing</td>
+              <td>{{ zoneStatistic.totalOutgoing }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="col-md-6" *ngIf="zoneStatistic != null">
@@ -129,19 +104,29 @@
     </mat-card>
 
 
-    <mat-card *ngIf="activeView == totalFlowView">
-      <mat-card-title>Outgoing Flow</mat-card-title>
-      <mat-card-content>
-        <p-chart type="pie" [data]="outgoingData" [options]="chartOptions"></p-chart>
-      </mat-card-content>
-    </mat-card>
+    <div class="row" *ngIf="activeView == totalFlowView">
+      <div class="col-md-12">
+        <div class="box box-primary">
+          <div class="box-header with-border">
+            <h4 class="box-title">Outgoing Flow</h4>
+          </div>
+          <div class="box-body">
+            <p-chart type="pie" [data]="outgoingData" [options]="chartOptions"></p-chart>
+          </div>
+        </div>
+      </div>
 
-    <mat-card *ngIf="activeView == totalFlowView">
-      <mat-card-title>Incoming Flow</mat-card-title>
-      <mat-card-content>
-        <p-chart type="pie" [options]="chartOptions" [data]="incomingData"></p-chart>
-      </mat-card-content>
-    </mat-card>
+      <div class="col-md-12">
+        <div class="box box-primary">
+          <div class="box-header with-border">
+            <h4 class="box-title">Incoming Flow</h4>
+          </div>
+          <div class="box-body">
+            <p-chart type="pie" [options]="chartOptions" [data]="incomingData"></p-chart>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <mat-card *ngIf="activeView == inflowView && inflowPersons != null">
       <mat-card-content class="row">

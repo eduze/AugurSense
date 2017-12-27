@@ -64,7 +64,6 @@ export class ZonesComponent implements OnInit {
 
   }
 
-
   private fetchResults(): void {
     if (this.fromDate == null)
       return;
@@ -74,11 +73,12 @@ export class ZonesComponent implements OnInit {
     this.analyticsService.getZoneStatistics(this.fromDate.getTime(), this.toDate.getTime()).then((zs) => {
       this.zoneStatistics = zs;
 
-      if (this.zoneStatistics.length > 0)
-        this.totalPeople = this.zoneStatistics.map((item) => item.averagePersonCount).reduce((r1, r2) => r1 + r2);
-      else
+      if (this.zoneStatistics.length > 0) {
+        this.totalPeople = this.zoneStatistics.map((item) => item.averagePersonCount)
+          .reduce((r1, r2) => r1 + r2);
+      } else {
         this.totalPeople = 0;
-
+      }
       this.polygons.map((item) => {
         item.outgoingMap.length = 0;
         item.incomingMap.length = 0;
@@ -107,7 +107,7 @@ export class ZonesComponent implements OnInit {
             }
           }
 
-          for (var key in item.zoneStatistic.incomingMap) {
+          for (const key in item.zoneStatistic.incomingMap) {
             if (item.zoneStatistic.incomingMap.hasOwnProperty(key)) {
               // find matching polygon
               let matching_polys = this.polygons.filter((mat_poly) => {
@@ -125,16 +125,10 @@ export class ZonesComponent implements OnInit {
             }
           }
         }
-
-
       });
       //this.selectedZoneStatistic = zs[0];
-
     });
-
-
   }
-
 
   ngOnInit() {
     this.configService.getZones()
@@ -182,13 +176,10 @@ export class ZonesComponent implements OnInit {
 
     this.configService.getMap().then((globalMap) => {
       this.globalMap = globalMap;
-      console.log(this.globalMap);
     });
 
     Observable.interval(2000).subscribe(x => {
       this.fetchResults();
     });
-
-
   }
 }
