@@ -3,7 +3,7 @@ import {GlobalMap} from "../resources/global-map";
 import {AnalyticsService} from "../services/analytics.service";
 import {ConfigService} from "../services/config.service";
 import {PersonSnapshot} from "../resources/person-snapshot";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs/Rx";
 import {PersonImage} from "../resources/person-image";
 
 @Component({

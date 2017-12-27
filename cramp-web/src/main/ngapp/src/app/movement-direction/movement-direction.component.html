@@ -1,13 +1,12 @@
-<div class="col-md-8 offset-md-2 col-sm-10 offset-sm-1 my-3">
-  <mat-card>
-    <mat-card-title>Movement Direction Map</mat-card-title>
-    <mat-card-subtitle>
-      <span>From</span>
-      <p-calendar [(ngModel)]="from" [showTime]="true"></p-calendar>
-      <span>to</span>
-      <p-calendar [(ngModel)]="to" [showTime]="true"></p-calendar>
+<mat-card>
+  <mat-card-title>Movement Direction Map</mat-card-title>
+  <mat-card-subtitle>
+    <span>From</span>
+    <p-calendar [(ngModel)]="from" [showTime]="true"></p-calendar>
+    <span>to</span>
+    <p-calendar [(ngModel)]="to" [showTime]="true"></p-calendar>
 
-      <span style="float:right;">
+    <span style="float:right;">
           <span style="padding-left: 10px;">
             <p-radioButton name="viewName" label="Movement Density" value="count"
                            [(ngModel)]="selectedView"></p-radioButton></span>
@@ -18,47 +17,45 @@
             <p-radioButton name="viewName" label="Head Direction" value="head"
                            [(ngModel)]="selectedView"></p-radioButton></span>
         </span>
-    </mat-card-subtitle>
-    <mat-card-content>
-      <div class="row">
+  </mat-card-subtitle>
+  <mat-card-content>
+    <div class="row">
 
-        <div class="col-md-7">
-          <app-direction-ring [dataPoints]="datePoints" [pointRadi]="cellSize/2" [width]="700"
-                              [drawPersonVelocity]="selectedView=='velocity'"
-                              [drawPersonCount]="selectedView == 'count'"
-                              [drawHeadDirection]="selectedView == 'head'" [height]="600"
-                              (selectionChanged)="selectedRingChanged($event)"></app-direction-ring>
-        </div>
-
-        <div class="col-md-5" *ngIf="selectedDataPoint != null">
-          <mat-card class="my-1">
-            <mat-card-title>Frequency</mat-card-title>
-            <mat-card-content>
-              <p-chart type="radar" [options]="chartNoLegendOptions" [data]="dataRadarCount"></p-chart>
-            </mat-card-content>
-          </mat-card>
-          <mat-card class="my-1">
-            <mat-card-title>Speed and Head Direction</mat-card-title>
-            <mat-card-content>
-              <p-chart type="radar" [options]="chartRightLegendOptions"
-                       [data]="dataRadarHeadDirectionAndVelocity"></p-chart>
-            </mat-card-content>
-          </mat-card>
-        </div>
-      </div>
-    </mat-card-content>
-    <mat-card-footer class="container-fluid">
-      <div class="form-group">
-        <label for="cellSizeSlider">Cell Size</label> <span style="float:right;">{{ cellSize }} units</span>
-        <p-slider id="cellSizeSlider" [(ngModel)]="cellSize" [min]="5" [max]="50" [step]="1"></p-slider>
-      </div>
-      <div class="form-group">
-        <label for="directionCountSlider">Direction Count</label> <span
-        style="float:right;">{{ directionCount }} directions</span>
-        <p-slider id="directionCountSlider" [(ngModel)]="directionCount" [min]="4" [max]="32" [step]="1"></p-slider>
+      <div class="col-md-7">
+        <app-direction-ring [dataPoints]="datePoints" [pointRadi]="cellSize/2" [width]="700"
+                            [drawPersonVelocity]="selectedView=='velocity'"
+                            [drawPersonCount]="selectedView == 'count'"
+                            [drawHeadDirection]="selectedView == 'head'" [height]="600"
+                            (selectionChanged)="selectedRingChanged($event)"></app-direction-ring>
       </div>
 
-    </mat-card-footer>
-  </mat-card>
+      <div class="col-md-5" *ngIf="selectedDataPoint != null">
+        <mat-card class="my-1">
+          <mat-card-title>Frequency</mat-card-title>
+          <mat-card-content>
+            <p-chart type="radar" [options]="chartNoLegendOptions" [data]="dataRadarCount"></p-chart>
+          </mat-card-content>
+        </mat-card>
+        <mat-card class="my-1">
+          <mat-card-title>Speed and Head Direction</mat-card-title>
+          <mat-card-content>
+            <p-chart type="radar" [options]="chartRightLegendOptions"
+                     [data]="dataRadarHeadDirectionAndVelocity"></p-chart>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </mat-card-content>
+  <mat-card-footer class="container-fluid">
+    <div class="form-group">
+      <label for="cellSizeSlider">Cell Size</label> <span style="float:right;">{{ cellSize }} units</span>
+      <p-slider id="cellSizeSlider" [(ngModel)]="cellSize" [min]="5" [max]="50" [step]="1"></p-slider>
+    </div>
+    <div class="form-group">
+      <label for="directionCountSlider">Direction Count</label> <span
+      style="float:right;">{{ directionCount }} directions</span>
+      <p-slider id="directionCountSlider" [(ngModel)]="directionCount" [min]="4" [max]="32" [step]="1"></p-slider>
+    </div>
 
-</div>
+  </mat-card-footer>
+</mat-card>

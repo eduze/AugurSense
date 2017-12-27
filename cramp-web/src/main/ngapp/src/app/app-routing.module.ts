@@ -40,14 +40,6 @@ const routes: Routes = [
     component: ZonesComponent
   },
   {
-    path: 'heatmap',
-    component: HeatmapComponent
-  },
-  {
-    path: 'statistics',
-    component: PeopleCountComponent
-  },
-  {
     path: 'stoppoints',
     component: PersonStopPointsComponent
   },
@@ -57,12 +49,8 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: '/realtime',
+    redirectTo: '/dashboard',
     pathMatch: 'full'
-  },
-  {
-    path: 'realtime',
-    component: RealtimeMapComponent
   },
   {
     path: 'time-bound-map',

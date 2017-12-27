@@ -1,64 +1,41 @@
-<!--
-  ~ Copyright 2017 Eduze
-  ~
-  ~ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-  ~ documentation files (the "Software"), to deal in the Software without restriction, including without limitation
-  ~ the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
-  ~ to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-  ~
-  ~ The above copyright notice and this permission notice shall be included in all copies or substantial portions
-  ~ of the Software.
-  ~
-  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
-  ~ BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-  ~ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-  ~ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-  ~ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-  ~ IN THE SOFTWARE.
-  -->
-
-<div class="col-md-8 offset-md-2 col-sm-10 offset-sm-1 my-3">
-
-  <mat-card>
-    <mat-card-title>
-      Heat Map
-    </mat-card-title>
-    <mat-card-subtitle>
-      <div class="row">
-        <div class="col-md-10">
-          <mat-list>
-            <mat-list-item>
-              From
-              <p-calendar [showTime]="true" [(ngModel)]="startTime"></p-calendar>
-              to
-              <p-calendar [showTime]="true" [(ngModel)]="endTime"></p-calendar>
-            </mat-list-item>
-            <mat-list-item>
-              <div class="row">
-                <div class="col-md-12">
-                  <p-slider [(ngModel)]="secondRange" [range]="true" [min]="0" [max]="300" [step]="1"
-                            class="col-md-12"></p-slider>
-                </div>
-                <div class="mt-1">
-                  <p-slider [(ngModel)]="offset" [min]="0" [max]="300" [step]="1" class="col-md-12"></p-slider>
-                </div>
-              </div>
-            </mat-list-item>
-          </mat-list>
-        </div>
-        <div class="col-md-2">
-          <button mat-raised-button (click)="generateHeatMap()" color="primary" class="float-right">Generate Heat Map
-          </button>
-        </div>
+<div class="box box-danger">
+  <div class="box-header with-border">
+    <h3 class="box-title">Heat Map</h3>
+    <div class="box-tools pull-right">
+      <!--<span class="badge">{{personSnapshots.length}}</span> people-->
+    </div>
+  </div>
+  <div class="box-body">
+    <div class="row">
+      <div class="col-md-10">
+        <ul class="list-group">
+          <li class="list-group-item borderless">
+            From
+            <p-calendar [showTime]="true" [(ngModel)]="startTime"></p-calendar>
+            to
+            <p-calendar [showTime]="true" [(ngModel)]="endTime"></p-calendar>
+          </li>
+          <li class="list-group-item borderless">
+            <p-slider [(ngModel)]="secondRange" [range]="true" [min]="0" [max]="300" [step]="1"
+                      class="col-md-12"></p-slider>
+          </li>
+          <li class="list-group-item borderless">
+            <p-slider [(ngModel)]="offset" [min]="0" [max]="300" [step]="1" class="col-md-12"></p-slider>
+          </li>
+        </ul>
       </div>
-    </mat-card-subtitle>
-    <mat-card-content class="panel-body">
+      <div class="col-md-2">
+        <button (click)="generateHeatMap()" class="btn btn-primary">
+          Generate
+        </button>
+      </div>
+    </div>
+
+    <div class="row">
       <canvas #canvas class="center-block"></canvas>
-    </mat-card-content>
-    <mat-card-footer class="container-fluid text-right">
-      From {{startString}} to {{endString}}
-    </mat-card-footer>
-  </mat-card>
-
+    </div>
+  </div>
+  <div class="box-footer">
+    From {{startString}} to {{endString}}
+  </div>
 </div>
-

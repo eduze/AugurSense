@@ -29,29 +29,19 @@ export class AppComponent {
 
   options: any = [
     {
-      route: "/realtime",
-      name: "Real Time",
+      route: "/dashboard",
+      name: "Dashboard",
       icon: "tachometer"
     },
     {
       route: "/time-bound-map",
-      name: "Time Shift",
-      icon: "tachometer"
+      name: "Timeline",
+      icon: "hourglass-o"
     },
     {
       route: "/zones",
       name: "Zones",
-      icon: "tachometer"
-    },
-    {
-      route: "/heatmap",
-      name: "Heat Map",
-      icon: "tachometer"
-    },
-    {
-      route: "/statistics",
-      name: "Statistics",
-      icon: "line-chart"
+      icon: "terminal"
     },
     {
       route: "/stoppoints",

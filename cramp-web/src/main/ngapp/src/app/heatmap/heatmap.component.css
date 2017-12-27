@@ -17,7 +17,8 @@
  * IN THE SOFTWARE.
  */
 
-/*canvas {*/
-/*position: relative;*/
-/*z-index: 20;*/
-/*}*/
+li.borderless {
+  border-top: 0 none;
+  border-right: 0 none;
+  border-bottom: 0 none;: 0 none;
+}

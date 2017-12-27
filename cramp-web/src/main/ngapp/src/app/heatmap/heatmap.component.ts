@@ -24,7 +24,7 @@ import {SimpleHeatMap} from "../lib/simple-heat-map";
 import {CanvasUtils} from "../lib/utils/canvas-utils";
 
 @Component({
-  selector: 'heatmap',
+  selector: 'app-heatmap',
   templateUrl: './heatmap.component.html',
   styleUrls: ['./heatmap.component.css']
 })
