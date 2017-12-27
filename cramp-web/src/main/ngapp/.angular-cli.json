@@ -20,14 +20,20 @@
       "prefix": "app",
       "styles": [
         "styles.css",
-        "../node_modules/bootstrap/dist/css/bootstrap.min.css",
+        "assets/AdminLTE/bower_components/bootstrap/dist/css/bootstrap.min.css",
+        "assets/AdminLTE/bower_components/font-awesome/css/font-awesome.min.css",
+        "assets/AdminLTE/bower_components/Ionicons/css/ionicons.min.css",
+        "assets/AdminLTE/dist/css/AdminLTE.min.css",
+        "assets/AdminLTE/dist/css/skins/_all-skins.min.css",
         "../node_modules/primeng/resources/themes/omega/theme.css",
-        "../node_modules/primeng/resources/primeng.min.css",
-        "../node_modules/font-awesome/css/font-awesome.min.css"
+        "../node_modules/primeng/resources/primeng.min.css"
       ],
       "scripts": [
-        "../node_modules/jquery/dist/jquery.min.js",
-        "../node_modules/bootstrap/dist/js/bootstrap.bundle.min.js",
+        "assets/AdminLTE/bower_components/jquery/dist/jquery.min.js",
+        "assets/AdminLTE/bower_components/bootstrap/dist/js/bootstrap.min.js",
+        "assets/AdminLTE/bower_components/jquery-slimscroll/jquery.slimscroll.min.js",
+        "assets/AdminLTE/bower_components/fastclick/lib/fastclick.js",
+        "assets/AdminLTE/dist/js/adminlte.min.js",
         "../node_modules/moment/min/moment.min.js",
         "../node_modules/chart.js/dist/Chart.js"
       ],

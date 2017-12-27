@@ -17,6 +17,7 @@
  * IN THE SOFTWARE.
  */
 import {Component} from '@angular/core';
+import {NavigationEnd, Router} from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -30,40 +31,53 @@ export class AppComponent {
     {
       route: "/realtime",
       name: "Real Time",
-      icon: "hourglass_empty"
+      icon: "tachometer"
     },
     {
       route: "/time-bound-map",
       name: "Time Shift",
-      icon: "timeline"
+      icon: "tachometer"
     },
     {
       route: "/zones",
       name: "Zones",
-      icon: "picture_in_picture"
+      icon: "tachometer"
     },
     {
       route: "/heatmap",
       name: "Heat Map",
-      icon: "satellite"
+      icon: "tachometer"
     },
     {
       route: "/statistics",
       name: "Statistics",
-      icon: "trending_up"
+      icon: "line-chart"
     },
     {
       route: "/stoppoints",
       name: "Stop Points",
-      icon: "people"
+      icon: "users"
     },
     {
       route: "/movement-direction",
       name: "Movement Directions",
-      icon: "directions_walk"
+      icon: "compass"
     }
   ];
 
-  constructor() {
+  current: any = {};
+
+  constructor(private router: Router) {
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        for (let option of this.options) {
+          console.log(this.router.url);
+          if (event.url.endsWith(option.route)) {
+            this.current = option;
+            break;
+          }
+        }
+      }
+    });
   }
 }

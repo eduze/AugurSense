@@ -16,12 +16,3 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-
-.active {
-  font-weight: bolder;
-  opacity: 0.7;
-}
-
-.nav-item:hover {
-  opacity: 0.5;
-}

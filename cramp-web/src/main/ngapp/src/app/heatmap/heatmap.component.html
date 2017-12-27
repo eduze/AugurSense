@@ -34,13 +34,13 @@
               <p-calendar [showTime]="true" [(ngModel)]="endTime"></p-calendar>
             </mat-list-item>
             <mat-list-item>
-              <div class="container-fluid">
-                <div>
+              <div class="row">
+                <div class="col-md-12">
                   <p-slider [(ngModel)]="secondRange" [range]="true" [min]="0" [max]="300" [step]="1"
-                            class="w-100"></p-slider>
+                            class="col-md-12"></p-slider>
                 </div>
                 <div class="mt-1">
-                  <p-slider [(ngModel)]="offset" [min]="0" [max]="300" [step]="1" class="w-100"></p-slider>
+                  <p-slider [(ngModel)]="offset" [min]="0" [max]="300" [step]="1" class="col-md-12"></p-slider>
                 </div>
               </div>
             </mat-list-item>

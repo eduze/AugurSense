@@ -1,61 +1,93 @@
-<!--
-  ~ Copyright 2017 Eduze
-  ~
-  ~ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-  ~ documentation files (the "Software"), to deal in the Software without restriction, including without limitation
-  ~ the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
-  ~ to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-  ~
-  ~ The above copyright notice and this permission notice shall be included in all copies or substantial portions
-  ~ of the Software.
-  ~
-  ~ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
-  ~ BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-  ~ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-  ~ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-  ~ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-  ~ IN THE SOFTWARE.
-  -->
+<div class="wrapper">
 
-<nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-info">
-  <a class="navbar-brand" routerLink="/">Augur Analytics</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+  <!-- Main Header -->
+  <header class="main-header">
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-      </li>
-    </ul>
-    <a class="btn btn-info" routerLink="settings">
-      <i class="fa fa-lg fa-cog"></i>
+    <!-- Logo -->
+    <a href="index2.html" class="logo">
+      <!-- mini logo for sidebar mini 50x50 pixels -->
+      <span class="logo-mini"><b>A</b>LT</span>
+      <!-- logo for regular state and mobile devices -->
+      <span class="logo-lg"><b>Augur</b>Analytics</span>
     </a>
-  </div>
-</nav>
 
-<div class="container-fluid mt-5 pt-2 h-100">
-  <div class="row h-100">
-    <div class="col-md-2 col-sm-1 ml-0 px-0 bg-dark">
-      <ul class="nav flex-column my-0">
-        <li class="nav-item" *ngFor="let option of options" routerLinkActive="bg-info active">
-          <a class="nav-link text-light" routerLink="{{option.route}}">
-            <span>{{option.name}}</span>
-            <mat-icon class="float-right">{{option.icon}}</mat-icon>
-          </a>
+    <!-- Header Navbar -->
+    <nav class="navbar navbar-static-top" role="navigation">
+      <!-- Sidebar toggle button-->
+      <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+        <span class="sr-only">Toggle navigation</span>
+      </a>
+      <!-- Navbar Right Menu -->
+      <div class="navbar-custom-menu">
+        <ul class="nav navbar-nav">
+          <!-- Control Sidebar Toggle Button -->
+          <li>
+            <a routerLink="/settings"><i class="fa fa-gears"></i></a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+  <!-- Left side column. contains the logo and sidebar -->
+  <aside class="main-sidebar">
+
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+
+      <!-- search form (Optional) -->
+      <form action="#" method="get" class="sidebar-form">
+        <div class="input-group">
+          <input type="text" name="q" class="form-control" placeholder="Search...">
+          <span class="input-group-btn">
+              <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
+              </button>
+            </span>
+        </div>
+      </form>
+      <!-- /.search form -->
+
+      <!-- Sidebar Menu -->
+      <ul class="sidebar-menu" data-widget="tree">
+        <li class="header">QUICK ACCESS</li>
+        <li *ngFor="let option of options" routerLinkActive="active">
+          <a routerLink="{{option.route}}"><i class="fa fa-{{option.icon}}"></i> <span>{{option.name}}</span></a>
         </li>
       </ul>
-    </div>
-    <div class="col-md-10">
-      <router-outlet></router-outlet>
-    </div>
-  </div>
-</div>
+      <!-- /.sidebar-menu -->
+    </section>
+    <!-- /.sidebar -->
+  </aside>
 
-<nav class="navbar fixed-bottom navbar-light bg-light">
-  <span class="text-center w-100">
-    &copy; Augur Analytics
-  </span>
-</nav>
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        {{current.name}}
+        <small>Optional description</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a routerLink="/"><i class="fa fa-dashboard"></i> Dashboard</a></li>
+        <li class="active">{{current.name}}</li>
+      </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content container-fluid">
+      <router-outlet></router-outlet>
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <!-- Main Footer -->
+  <footer class="main-footer">
+    <!-- To the right -->
+    <div class="pull-right hidden-xs">
+      Anything you want
+    </div>
+    <!-- Default to the left -->
+    <strong>Copyright &copy; 2016 <a href="#">Company</a>.</strong> All rights reserved.
+  </footer>
+</div>
+<!-- ./wrapper -->

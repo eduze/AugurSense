@@ -25,7 +25,7 @@ import org.springframework.context.ApplicationContext;
 
 import java.util.Comparator;
 
-import static org.springframework.core.annotation.AnnotationUtils.*;
+import static org.springframework.core.annotation.AnnotationUtils.getAnnotation;
 
 /**
  * Utility class to process annotations and act accordingly
@@ -46,6 +46,7 @@ public abstract class AnnotationUtils {
         context.getBeansOfType(Startable.class)
                 .values().stream()
                 .filter(bean -> bean.getClass().isAnnotationPresent(AutoStart.class))
+                .filter(bean -> getAnnotation(bean.getClass(), AutoStart.class).mode().equals(Mode.PASSIVE))
                 .sorted(Comparator.comparingInt(i -> getAnnotation(i.getClass(), AutoStart.class).startOrder()))
                 .forEach(Startable::start);
     }
@@ -54,6 +55,7 @@ public abstract class AnnotationUtils {
         context.getBeansOfType(Startable.class)
                 .values().stream()
                 .filter(bean -> bean.getClass().isAnnotationPresent(AutoStart.class))
+                .filter(bean -> getAnnotation(bean.getClass(), AutoStart.class).mode().equals(Mode.PASSIVE))
                 .sorted((s1, s2) -> Integer.compare(
                         getAnnotation(s2.getClass(), AutoStart.class).startOrder(),
                         getAnnotation(s1.getClass(), AutoStart.class).startOrder())

@@ -24,6 +24,7 @@ import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.api.State;
 import org.eduze.fyp.api.StateManager;
 import org.eduze.fyp.api.annotations.AutoStart;
+import org.eduze.fyp.api.annotations.Mode;
 import org.eduze.fyp.api.listeners.ConfigurationListener;
 import org.eduze.fyp.api.model.Zone;
 import org.eduze.fyp.api.resources.PointMapping;
@@ -55,7 +56,7 @@ import static org.eduze.fyp.core.Constants.Properties.FLOOR_MAP_IMAGE;
  *
  * @author Imesha Sudasingha
  */
-@AutoStart(startOrder = 1)
+@AutoStart(startOrder = 1, mode = Mode.PASSIVE)
 public class ConfigurationManagerImpl implements ConfigurationManager {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationManagerImpl.class);
