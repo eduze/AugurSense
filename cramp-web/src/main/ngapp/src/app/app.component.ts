@@ -44,11 +44,6 @@ export class AppComponent {
       icon: "terminal"
     },
     {
-      route: "/stoppoints",
-      name: "Stop Points",
-      icon: "users"
-    },
-    {
       route: "/movement-direction",
       name: "Movement Directions",
       icon: "compass"

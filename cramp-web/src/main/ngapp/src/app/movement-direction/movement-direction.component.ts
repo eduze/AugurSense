@@ -64,7 +64,6 @@ export class MovementDirectionComponent implements OnInit {
     this.refresh();
   }
 
-
   constructor(private analyticsService: AnalyticsService) {
   }
 

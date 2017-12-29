@@ -40,10 +40,6 @@ const routes: Routes = [
     component: ZonesComponent
   },
   {
-    path: 'stoppoints',
-    component: PersonStopPointsComponent
-  },
-  {
     path: 'settings',
     component: PointMappingComponent
   },
