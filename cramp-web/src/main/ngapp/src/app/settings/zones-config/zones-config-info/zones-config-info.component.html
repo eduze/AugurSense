@@ -1,0 +1,21 @@
+<div class="row container-fluid" *ngIf="zone">
+  <div class="box box-solid box-primary">
+    <div class="box-body">
+
+      <helper-message [message]="message" [messageType]="messageType"></helper-message>
+
+      <div class="form-horizontal">
+        <div class="form-group">
+          <label class="col-md-3 col-sm-6 col-xs-12">Zone Name</label>
+          <div class="col-md-9 col-sm-6 col-xs-12">
+            <input type="text" class="form-control" [(ngModel)]="zone.zoneName">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="box-footer">
+      <button class="btn btn-danger pull-left" (click)="delete()">Delete</button>
+      <button class="btn btn-primary pull-right" (click)="save()">Save</button>
+    </div>
+  </div>
+</div>

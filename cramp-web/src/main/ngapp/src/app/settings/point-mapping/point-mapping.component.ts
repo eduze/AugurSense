@@ -22,7 +22,7 @@ import {ConfigService} from "../../services/config.service";
 import {CameraView} from "../../resources/camera-view";
 
 @Component({
-  selector: 'point-mapping',
+  selector: 'app-point-mapping',
   templateUrl: './point-mapping.component.html',
   styleUrls: ['./point-mapping.component.css']
 })

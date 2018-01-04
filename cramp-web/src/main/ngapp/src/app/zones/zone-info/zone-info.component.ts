@@ -1,8 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {ZoneStatistic} from "../resources/zone-statistic";
-import {Zone} from "../resources/zone"
-import {PersonImage} from "../resources/person-image";
-import {AnalyticsService} from "../services/analytics.service";
+import {ZoneStatistic} from "../../resources/zone-statistic";
+import {Zone} from "../../resources/zone"
+import {PersonImage} from "../../resources/person-image";
+import {AnalyticsService} from "../../services/analytics.service";
 
 @Component({
   selector: 'app-zone-info',

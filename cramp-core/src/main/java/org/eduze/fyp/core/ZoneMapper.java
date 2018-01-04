@@ -2,13 +2,15 @@ package org.eduze.fyp.core;
 
 import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.api.listeners.ConfigurationListener;
-import org.eduze.fyp.core.resources.PersonLocation;
-import org.eduze.fyp.core.db.dao.ZoneDAO;
 import org.eduze.fyp.api.model.Zone;
+import org.eduze.fyp.core.db.dao.ZoneDAO;
+import org.eduze.fyp.core.resources.PersonLocation;
 
 import java.awt.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ZoneMapper implements ConfigurationListener {
     private ZoneDAO zoneDAO = null;
@@ -36,23 +38,25 @@ public class ZoneMapper implements ConfigurationListener {
         this.zonePersistantThreshold = zonePersistantThreshold;
     }
 
-    public ZoneMapper(ConfigurationManager configurationManager){
+    public ZoneMapper(ConfigurationManager configurationManager) {
         this.zonesList = configurationManager.getZones();
         initialize();
     }
 
-    private void initialize(){
-        if(initialized)
+    private void initialize() {
+        if (initialized)
             return;
-        if(zonesList == null)
+        if (zonesList == null)
             return;
 
         this.zonePolygons = new LinkedHashMap<>();
-        for(Zone zone : zonesList){
-            int[] xCoordinates = zone.getXCoordinates();
-            int[] yCoordinates = zone.getYCoordinates();
-            Polygon p = new Polygon(xCoordinates,yCoordinates,xCoordinates.length);
-            zonePolygons.put(zone,p);
+        for (Zone zone : zonesList) {
+            List<Integer> xCoordinates = zone.getXCoordinates();
+            List<Integer> yCoordinates = zone.getYCoordinates();
+            Polygon p = new Polygon(xCoordinates.stream().mapToInt(i -> i).toArray(),
+                    yCoordinates.stream().mapToInt(i -> i).toArray(),
+                    xCoordinates.size());
+            zonePolygons.put(zone, p);
         }
 
         initialized = true;
@@ -70,32 +74,29 @@ public class ZoneMapper implements ConfigurationListener {
             //TODO: identify rest of the world zone here! Its not contained in any of the polygons
             final Zone[] selectedZone = {null};
             final Polygon[] selectedPolygon = {null};
-            zonePolygons.forEach((zone,polygon) -> {
-                if(polygon.contains(new Point((int)personLocation.getSnapshot().getX(),(int)personLocation.getSnapshot().getY()))){
+            zonePolygons.forEach((zone, polygon) -> {
+                if (polygon.contains(new Point((int) personLocation.getSnapshot().getX(), (int) personLocation.getSnapshot().getY()))) {
                     selectedZone[0] = zone;
                     selectedPolygon[0] = polygon;
 
                 }
             });
 
-            if(selectedZone[0] == null)
-            {
+            if (selectedZone[0] == null) {
                 // identify rest of the world zone here! Its not contained in any of the polygons
-               zonesList.stream().filter(zone -> zone.getId() == 0).findFirst().ifPresent((c)->selectedZone[0]=c);
+                zonesList.stream().filter(zone -> zone.getId() == 0).findFirst().ifPresent((c) -> selectedZone[0] = c);
             }
 
-            if(selectedZone[0] != null)
-            {
+            if (selectedZone[0] != null) {
                 Zone zone = selectedZone[0];
                 personLocation.getSnapshot().setInstanceZone(zone);
                 // Obtain majority of last 5 zones
-                Map<Zone,Integer> polularityMap = new LinkedHashMap<>();
+                Map<Zone, Integer> polularityMap = new LinkedHashMap<>();
                 personLocation.getSnapshots().stream().limit(zonePersistantScanCount).forEach(personSnapshot -> {
                             if (polularityMap.containsKey(personSnapshot.getInstanceZone())) {
                                 polularityMap.put(personSnapshot.getInstanceZone(), polularityMap.get(personSnapshot.getInstanceZone()) + 1);
-                            }
-                            else{
-                                polularityMap.put(personSnapshot.getInstanceZone(),1);
+                            } else {
+                                polularityMap.put(personSnapshot.getInstanceZone(), 1);
                             }
                         }
                 );
@@ -104,18 +105,17 @@ public class ZoneMapper implements ConfigurationListener {
                 final Zone[] mostPopularZone = {null};
 
                 polularityMap.forEach((zone1, p) -> {
-                    if(p > mostPopularCount[0]){
+                    if (p > mostPopularCount[0]) {
                         mostPopularCount[0] = p;
                         mostPopularZone[0] = zone1;
                     }
                 });
 
-                if(personLocation.getSnapshot().getPersistantZone() == null){
+                if (personLocation.getSnapshot().getPersistantZone() == null) {
                     personLocation.getSnapshot().setPersistantZone(mostPopularZone[0]);
                     //Report transition
-                }
-                else{
-                    if(mostPopularCount[0] > zonePersistantThreshold){
+                } else {
+                    if (mostPopularCount[0] > zonePersistantThreshold) {
                         personLocation.getSnapshot().setPersistantZone(mostPopularZone[0]);
                     }
                 }

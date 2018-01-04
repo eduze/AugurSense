@@ -1,0 +1,27 @@
+<div class="col-md-12" *ngIf="globalMap">
+  <div class="box box-solid box-primary">
+    <div class="box-body">
+      <svg x="0" y="0" [attr.width]="globalMap.width" [attr.height]="globalMap.height" class="center-block">
+        <g height="100%" width="100%">
+          <image [attr.xlink:href]="globalMap.image" x="0" y="0" (click)="clicked($event)"></image>
+          <g *ngFor="let z of zones; let i = index">
+            <polygon class="zone" [attr.points]="z.polygon"></polygon>
+
+            <text [attr.x]="z.midX" [attr.y]="z.midY-30" fill="yellow" font-size="15" text-anchor="middle">
+              {{ z.zoneName }}
+            </text>
+          </g>
+          <g *ngFor="let x of zone.xCoordinates; let j = index">
+            <circle r="5" fill="red" [attr.cx]="zone.xCoordinates[j]" [attr.cy]="zone.yCoordinates[j]"></circle>
+          </g>
+          <g>
+            <polygon class="zone zone-selected" [attr.points]="zone.polygon"></polygon>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <div class="box-footer">
+      <button class="btn btn-danger center-block" (click)="clear()">Clear</button>
+    </div>
+  </div>
+</div>

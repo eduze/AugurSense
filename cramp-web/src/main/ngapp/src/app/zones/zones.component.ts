@@ -26,24 +26,6 @@ export class ZonesComponent implements OnInit {
   private _fromDate: Date = new Date(0);
   private _toDate: Date = new Date();
 
-  get fromDate(): Date {
-    return this._fromDate;
-  }
-
-  set fromDate(value: Date) {
-    this._fromDate = value;
-    this.fetchResults();
-  }
-
-  get toDate(): Date {
-    return this._toDate;
-  }
-
-  set toDate(value: Date) {
-    this._toDate = value;
-    this.fetchResults();
-  }
-
   constructor(private analyticsService: AnalyticsService, private configService: ConfigService) {
   }
 
@@ -79,27 +61,30 @@ export class ZonesComponent implements OnInit {
       } else {
         this.totalPeople = 0;
       }
-      this.polygons.map((item) => {
-        item.outgoingMap.length = 0;
-        item.incomingMap.length = 0;
 
-        let matches = zs.filter((match) => {
+      this.polygons.map((item) => {
+        item.outgoingMap = [];
+        item.incomingMap = [];
+
+        let matches: ZoneStatistic[] = zs.filter((match) => {
           return item.zone.id == match.zoneId
         });
+
         if (matches.length > 0) {
           item.zoneStatistic = matches[0];
 
-          for (var key in item.zoneStatistic.outgoingMap) {
+          for (let key in item.zoneStatistic.outgoingMap) {
             if (item.zoneStatistic.outgoingMap.hasOwnProperty(key)) {
               // find matching polygon
               let matching_polys = this.polygons.filter((mat_poly) => {
                 return key == mat_poly.zone.id;
               });
+
               if (matching_polys.length > 0) {
                 let matching_poly = matching_polys[0];
                 let transmission = {
-                  midX: matching_poly.midX,
-                  midY: matching_poly.midY,
+                  midX: matching_poly.zone.midX,
+                  midY: matching_poly.zone.midY,
                   count: item.zoneStatistic.outgoingMap[key] / item.zoneStatistic.totalOutgoing
                 };
                 item.outgoingMap.push(transmission);
@@ -116,8 +101,8 @@ export class ZonesComponent implements OnInit {
               if (matching_polys.length > 0) {
                 let matching_poly = matching_polys[0];
                 let transmission = {
-                  midX: matching_poly.midX,
-                  midY: matching_poly.midY,
+                  midX: matching_poly.zone.midX,
+                  midY: matching_poly.zone.midY,
                   count: item.zoneStatistic.incomingMap[key] / item.zoneStatistic.totalIncoming
                 };
                 item.incomingMap.push(transmission);
@@ -135,33 +120,12 @@ export class ZonesComponent implements OnInit {
       .then((zones) => {
         this.zones = zones;
         for (let x in this.zones) {
-          let poly: { polygon: string, midX: number, midY: number, zone: Zone, zoneStatistic: ZoneStatistic, outgoingMap: any, incomingMap: any } = {
-            polygon: null,
-            midX: 0,
-            midY: 0,
-            zone: null,
+          let poly: { zone: Zone, zoneStatistic: ZoneStatistic, outgoingMap: any, incomingMap: any } = {
+            zone: this.zones[x],
             zoneStatistic: null,
             outgoingMap: [],
             incomingMap: []
           };
-          let midX = 0;
-          let midY = 0;
-
-          let p = "";
-          for (let i in this.zones[x].xCoordinates) {
-            p += this.zones[x].xCoordinates[i] + "," + this.zones[x].yCoordinates[i] + " ";
-            midX += this.zones[x].xCoordinates[i];
-            midY += this.zones[x].yCoordinates[i];
-          }
-
-          console.log(this.zones[x]);
-          midX /= this.zones[x].xCoordinates.length;
-          midY /= this.zones[x].yCoordinates.length;
-
-          poly.polygon = p;
-          poly.midX = midX;
-          poly.midY = midY;
-          poly.zone = this.zones[x];
 
           this.polygons.push(poly);
 
@@ -174,12 +138,31 @@ export class ZonesComponent implements OnInit {
         }
       });
 
-    this.configService.getMap().then((globalMap) => {
-      this.globalMap = globalMap;
-    });
+    this.configService.getMap()
+      .then((globalMap) => {
+        this.globalMap = globalMap;
+      });
 
     Observable.interval(2000).subscribe(x => {
       this.fetchResults();
     });
+  }
+
+  get fromDate(): Date {
+    return this._fromDate;
+  }
+
+  set fromDate(value: Date) {
+    this._fromDate = value;
+    this.fetchResults();
+  }
+
+  get toDate(): Date {
+    return this._toDate;
+  }
+
+  set toDate(value: Date) {
+    this._toDate = value;
+    this.fetchResults();
   }
 }

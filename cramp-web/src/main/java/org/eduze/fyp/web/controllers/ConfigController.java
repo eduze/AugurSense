@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -56,6 +57,33 @@ public class ConfigController {
             logger.error("Error occurred when obtaining next camera ID", e);
             return Response.status(500).build();
         }
+    }
+
+    @POST
+    @Path("/zone/{zoneId}")
+    public Response updateZone(@PathParam("zoneId") int zoneId, Zone zone) {
+        logger.debug("Updating zone {}", zoneId);
+        try {
+            configService.updateZone(zoneId, zone);
+            return Response.status(200).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when updating zone - {}", zoneId, e);
+            return Response.status(500).build();
+        }
+    }
+
+    @DELETE
+    @Path("/zone/{zoneId}")
+    public Response deleteZone(@PathParam("zoneId") int zoneId) {
+        logger.debug("Deleting zone {}", zoneId);
+        try {
+            configService.deleteZone(zoneId);
+            return Response.status(200).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when updating zone - {}", zoneId, e);
+            return Response.status(500).build();
+        }
+
     }
 
     @GET

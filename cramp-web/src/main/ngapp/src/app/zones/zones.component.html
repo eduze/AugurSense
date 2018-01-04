@@ -31,14 +31,16 @@
               <g height="100%" width="100%">
                 <image [attr.xlink:href]="globalMap.image" x="0" y="0" (click)="backgroundClicked();"></image>
                 <g *ngFor="let poly of polygons; let i = index">
-                  <polygon class="zone" [attr.points]="poly.polygon" (click)="zoneClicked(i);"
+                  <polygon class="zone" [attr.points]="poly.zone.polygon" (click)="zoneClicked(i);"
                            [class.zone-selected]="i === selectedZoneIndex"></polygon>
 
-                  <text [attr.x]="poly.midX" [attr.y]="poly.midY-30" fill="yellow" font-size="15" text-anchor="middle">
+                  <text [attr.x]="poly.zone.midX" [attr.y]="poly.zone.midY-30" fill="yellow" font-size="15"
+                        text-anchor="middle">
                     {{ poly.zone.zoneName }}
                   </text>
 
-                  <text [attr.x]="poly.midX" [attr.y]="poly.midY" fill="yellow" font-size="15" text-anchor="middle"
+                  <text [attr.x]="poly.zone.midX" [attr.y]="poly.zone.midY" fill="yellow" font-size="15"
+                        text-anchor="middle"
                         *ngIf="poly.zoneStatistic != null && (selectedZoneIndex < 0 || selectedZoneIndex == i)">
                     {{ poly.zoneStatistic.averagePersonCount | number : '1.2-2'}} People
                   </text>

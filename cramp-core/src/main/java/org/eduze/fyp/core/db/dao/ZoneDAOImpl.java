@@ -41,13 +41,20 @@ public class ZoneDAOImpl implements ZoneDAO {
     }
 
     @Override
+    public Zone findById(int zoneId) {
+        Session session = this.sessionFactory.openSession();
+        Zone zone = session.load(Zone.class, zoneId);
+        session.close();
+        return zone;
+    }
+
+    @Override
     public Zone getZone(String zoneName) {
         Session session = this.sessionFactory.openSession();
         Query query = session.createQuery("from Zone Z where Z.name = :name")
                 .setParameter("name", zoneName, StringType.INSTANCE);
         List zoneList = query.list();
         session.close();
-
         return (Zone) zoneList.get(0);
     }
 
@@ -62,9 +69,36 @@ public class ZoneDAOImpl implements ZoneDAO {
     @Override
     public void save(Zone zone) {
         Session session = this.sessionFactory.openSession();
-        Transaction tx = session.beginTransaction();
         session.persist(zone);
-        tx.commit();
+        session.close();
+    }
+
+    @Override
+    public void update(Zone zone) {
+        Session session = this.sessionFactory.getCurrentSession();
+        Transaction transaction = session.beginTransaction();
+        session.update(zone);
+        transaction.commit();
+        session.close();
+    }
+
+    @Override
+    public void delete(int zoneId) {
+        Session session = this.sessionFactory.openSession();
+        Transaction transaction = session.beginTransaction();
+        try {
+            Zone zone = session.load(Zone.class, zoneId);
+            if (zone != null) {
+                session.delete(zone);
+                logger.debug("Deleted zone - {}", zoneId);
+            } else {
+                logger.warn("No zone found for id - {}", zoneId);
+            }
+        } catch (Exception e) {
+            logger.error("Error occurred when deleting zone - {}, {}", zoneId, e);
+            transaction.rollback();
+        }
+        transaction.commit();
         session.close();
     }
 }

@@ -57,11 +57,33 @@ export class ConfigService {
       .catch(ConfigService.handleError);
   }
 
+  updateZone(zone: Zone): Promise<boolean> {
+    return this.http.post(this.baseUrl + "zone/" + zone.id, zone)
+      .toPromise()
+      .then(response => {
+        return true;
+      }).catch(ConfigService.handleError)
+  }
+
+  deleteZone(zoneId: number): Promise<boolean> {
+    return this.http.delete(this.baseUrl + "zone/" + zoneId)
+      .toPromise()
+      .then(response => {
+        return true;
+      }).catch(ConfigService.handleError)
+  }
+
   getZones(): Promise<Zone[]> {
     return this.http.get<Zone[]>(this.baseUrl + "zones")
       .toPromise()
       .then(response => {
-        return response;
+        let arr = response as Zone[];
+        let zones: Zone[] = [];
+        for (let z of arr) {
+          zones.push(new Zone(z.id, z.zoneName, z.xCoordinates, z.yCoordinates));
+        }
+
+        return zones;
       })
       .catch(ConfigService.handleError);
   }

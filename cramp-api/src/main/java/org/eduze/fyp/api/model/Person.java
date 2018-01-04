@@ -47,8 +47,10 @@ public class Person {
     @Column(name = "time_stamp")
     private Date timestamp;
 
-    private int trackSegmentIndex;
+    @Convert(converter = PersonIdConverter.class)
+    private Set<Integer> ids;
 
+    private int trackSegmentIndex;
 
     private String uuid;
     private String previousUuid;
@@ -113,9 +115,6 @@ public class Person {
     public String getUuid() {
         return uuid;
     }
-
-    @Convert(converter = PersonIdConverter.class)
-    private Set<Integer> ids;
 
     protected Person() {
     }

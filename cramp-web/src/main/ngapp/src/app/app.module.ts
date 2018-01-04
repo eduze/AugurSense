@@ -12,7 +12,7 @@ import {HeatmapComponent} from "./heatmap/heatmap.component";
 import {PeopleCountComponent} from './people-count/people-count.component';
 import {PointMappingComponent} from './settings/point-mapping/point-mapping.component';
 import {ZonesComponent} from './zones/zones.component';
-import {ZoneInfoComponent} from './zone-info/zone-info.component';
+import {ZoneInfoComponent} from './zones/zone-info/zone-info.component';
 import {RealtimeMapComponent} from './realtime-map/realtime-map.component';
 import {RealtimeInfoComponent} from './realtime-info/realtime-info.component';
 import {TimeBoundMapComponent} from './time-bound-map/time-bound-map.component';
@@ -29,6 +29,11 @@ import {
   MatButtonModule, MatCardModule, MatCheckboxModule, MatChipsModule, MatFormFieldModule, MatIconModule,
   MatInputModule, MatListModule, MatMenuModule, MatSidenavModule, MatSliderModule, MatToolbarModule
 } from '@angular/material';
+import {ZonesConfigComponent} from './settings/zones-config/zones-config.component';
+import {ConfigComponent} from './settings/config/config.component';
+import {ZonesConfigInfoComponent} from './settings/zones-config/zones-config-info/zones-config-info.component';
+import {SuccessMessageComponent} from './helpers/success-message/success-message.component';
+import { ZoneUiComponent } from './settings/zones-config/zone-ui/zone-ui.component';
 
 
 @NgModule({
@@ -49,7 +54,12 @@ import {
     TimeVelocityDistributionComponent,
     DirectionRingComponent,
     MovementDirectionComponent,
-    RadioButton
+    RadioButton,
+    ZonesConfigComponent,
+    ConfigComponent,
+    ZonesConfigInfoComponent,
+    SuccessMessageComponent,
+    ZoneUiComponent
   ],
   imports: [
     BrowserModule,

@@ -21,10 +21,11 @@ package org.eduze.fyp.web.services;
 import org.eduze.fyp.api.AnalyticsEngine;
 import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.api.model.Zone;
+import org.eduze.fyp.core.db.dao.ZoneDAO;
+import org.eduze.fyp.core.util.ImageUtils;
 import org.eduze.fyp.web.resources.Camera;
 import org.eduze.fyp.web.resources.CameraConfig;
 import org.eduze.fyp.web.resources.MapConfiguration;
-import org.eduze.fyp.core.util.ImageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,8 @@ import java.util.Map;
 public class ConfigService {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigService.class);
+
+    private ZoneDAO zoneDAO;
 
     @Autowired
     private ConfigurationManager configurationManager;
@@ -118,8 +121,25 @@ public class ConfigService {
         return cameraViews;
     }
 
+    public void updateZone(int zoneId, Zone updatedZone) {
+        Zone zone = zoneDAO.findById(zoneId);
+
+        if (zone == null) {
+            throw new IllegalArgumentException("No zone found for Id - " + zoneId);
+        }
+
+        zone.setZoneName(updatedZone.getZoneName());
+        zone.setXCoordinates(updatedZone.getXCoordinates());
+        zone.setYCoordinates(updatedZone.getYCoordinates());
+        zoneDAO.update(zone);
+    }
+
+    public void deleteZone(int zoneId) {
+        zoneDAO.delete(zoneId);
+    }
+
     public List<Zone> getZones() {
-        return configurationManager.getZones();
+        return zoneDAO.list();
     }
 
     public byte[] getCameraView(int cameraId) throws IOException {
@@ -135,4 +155,7 @@ public class ConfigService {
         this.configurationManager = configurationManager;
     }
 
+    public void setZoneDAO(ZoneDAO zoneDAO) {
+        this.zoneDAO = zoneDAO;
+    }
 }

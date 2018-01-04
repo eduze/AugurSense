@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Eduze
+ * Copyright 2018 Eduze
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
@@ -17,23 +17,26 @@
  * IN THE SOFTWARE.
  */
 
-package org.eduze.fyp.core.db.dao;
+package org.eduze.fyp.api.model.helpers;
 
-import org.eduze.fyp.api.model.Zone;
-
+import javax.persistence.AttributeConverter;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public interface ZoneDAO {
+public class ZoneCoordinatesConverter implements AttributeConverter<List<Integer>, String> {
 
-    Zone findById(int zoneId);
+    @Override
+    public String convertToDatabaseColumn(List<Integer> ids) {
+        return ids.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+    }
 
-    Zone getZone(String zoneName);
-
-    List<Zone> list();
-
-    void save(Zone zone);
-
-    void update(Zone zone);
-
-    void delete(int zoneId);
+    @Override
+    public List<Integer> convertToEntityAttribute(String stringIds) {
+        return Stream.of(stringIds.split(","))
+                .map(Integer::valueOf)
+                .collect(Collectors.toList());
+    }
 }

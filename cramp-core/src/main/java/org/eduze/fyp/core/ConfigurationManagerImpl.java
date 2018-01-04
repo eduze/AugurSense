@@ -72,32 +72,17 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     private Map<Integer, PointMapping> pointMappings = new HashMap<>();
     private Map<Integer, InetSocketAddress> cameraIpAndPorts = new HashMap<>();
 
-    private ZoneDAO zoneDAO = null;
-
-    public List<Zone> getZones() {
-        return zones;
-    }
-
     private Set<ConfigurationListener> configurationListeners = new HashSet<>();
+    private ZoneDAO zoneDAO = null;
+    // TODO: 1/5/18 If zones are deleted through UI, it is not reflected here
+    private List<Zone> zones = null;
 
     public ConfigurationManagerImpl() { }
-
-    private List<Zone> zones = null;
 
     private void loadProperties() throws IOException {
         try (InputStream propertiesFile = new FileInputStream(this.propertiesFile)) {
             System.getProperties().load(propertiesFile);
         }
-    }
-
-    public ZoneDAO getZoneDAO() {
-        return zoneDAO;
-    }
-
-    public void setZoneDAO(ZoneDAO zoneDAO) {
-        this.zoneDAO = zoneDAO;
-        this.zones = zoneDAO.list();
-        notifyConfigurationChange();
     }
 
     @Override
@@ -139,6 +124,16 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         return nextInt;
     }
 
+    public ZoneDAO getZoneDAO() {
+        return zoneDAO;
+    }
+
+    public void setZoneDAO(ZoneDAO zoneDAO) {
+        this.zoneDAO = zoneDAO;
+        this.zones = zoneDAO.list();
+        notifyConfigurationChange();
+    }
+
     public BufferedImage getCameraView(int cameraId) {
         return cameraViews.get(cameraId);
     }
@@ -157,6 +152,11 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         boolean isAlphaPreMultiplied = cm.isAlphaPremultiplied();
         WritableRaster raster = map.copyData(null);
         return new BufferedImage(cm, raster, isAlphaPreMultiplied, null);
+    }
+
+    @Override
+    public List<Zone> getZones() {
+        return zones;
     }
 
     @Override

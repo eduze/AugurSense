@@ -19,7 +19,10 @@
 
 package org.eduze.fyp.api.model;
 
+import org.eduze.fyp.api.model.helpers.ZoneCoordinatesConverter;
+
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,7 +30,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Objects;
+import java.util.List;
 
 @Entity
 @Table(name = "zones")
@@ -39,8 +42,12 @@ public class Zone {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String zoneName;
-    private String xCoordinates;
-    private String yCoordinates;
+
+    @Convert(converter = ZoneCoordinatesConverter.class)
+    private List<Integer> xCoordinates;
+
+    @Convert(converter = ZoneCoordinatesConverter.class)
+    private List<Integer> yCoordinates;
 
     public int getId() {
         return id;
@@ -51,23 +58,25 @@ public class Zone {
     }
 
     @XmlElement(name = "xCoordinates")
-    public int[] getXCoordinates() {
-        return getCoordinates(xCoordinates);
+    public List<Integer> getXCoordinates() {
+        return xCoordinates;
     }
 
     @XmlElement(name = "yCoordinates")
-    public int[] getYCoordinates() {
-        return getCoordinates(yCoordinates);
+    public List<Integer> getYCoordinates() {
+        return yCoordinates;
     }
 
-    private int[] getCoordinates(String coordinateField) {
-        if (Objects.equals(coordinateField, ""))
-            return new int[0];
-        String[] strCoordinates = coordinateField.split(",");
-        int[] coordinates = new int[strCoordinates.length];
-        for (int i = 0; i < coordinates.length; i++)
-            coordinates[i] = Integer.valueOf(strCoordinates[i].trim());
-        return coordinates;
+    public void setZoneName(String zoneName) {
+        this.zoneName = zoneName;
+    }
+
+    public void setXCoordinates(List<Integer> xCoordinates) {
+        this.xCoordinates = xCoordinates;
+    }
+
+    public void setYCoordinates(List<Integer> yCoordinates) {
+        this.yCoordinates = yCoordinates;
     }
 
     @Override
