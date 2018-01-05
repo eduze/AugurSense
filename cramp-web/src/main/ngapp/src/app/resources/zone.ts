@@ -25,10 +25,12 @@ export class Zone {
   private _polygon: string;
   private _midX: number;
   private _midY: number;
+  private _zoneLimit: number;
 
-  constructor(id: number, name: string, xCoordinates: number[], yCoordinates: number[]) {
+  constructor(id: number, zoneName: string, xCoordinates: number[], yCoordinates: number[], zoneLimit: number) {
     this._id = id;
-    this._zoneName = name;
+    this._zoneName = zoneName;
+    this._zoneLimit = zoneLimit;
     this._xCoordinates = xCoordinates;
     this._yCoordinates = yCoordinates;
 
@@ -92,10 +94,19 @@ export class Zone {
     this.updatePolygon();
   }
 
+  get zoneLimit(): number {
+    return this._zoneLimit;
+  }
+
+  set zoneLimit(value: number) {
+    this._zoneLimit = value;
+  }
+
   public toJSON(key: string): Object {
     return {
       id: this.id,
       zoneName: this.zoneName,
+      zoneLimit: this.zoneLimit,
       xCoordinates: this.xCoordinates,
       yCoordinates: this.yCoordinates
     }

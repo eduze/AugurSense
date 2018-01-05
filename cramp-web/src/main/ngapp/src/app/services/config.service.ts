@@ -57,8 +57,17 @@ export class ConfigService {
       .catch(ConfigService.handleError);
   }
 
+  addZone(zone: Zone): Promise<Zone> {
+    return this.http.post(this.baseUrl + "zone", zone)
+      .toPromise()
+      .then(response => {
+        let z = response as Zone;
+        return new Zone(z.id, z.zoneName, z.xCoordinates, z.yCoordinates, z.zoneLimit);
+      }).catch(ConfigService.handleError)
+  }
+
   updateZone(zone: Zone): Promise<boolean> {
-    return this.http.post(this.baseUrl + "zone/" + zone.id, zone)
+    return this.http.put(this.baseUrl + "zone", zone)
       .toPromise()
       .then(response => {
         return true;
@@ -80,7 +89,7 @@ export class ConfigService {
         let arr = response as Zone[];
         let zones: Zone[] = [];
         for (let z of arr) {
-          zones.push(new Zone(z.id, z.zoneName, z.xCoordinates, z.yCoordinates));
+          zones.push(new Zone(z.id, z.zoneName, z.xCoordinates, z.yCoordinates, z.zoneLimit));
         }
 
         return zones;

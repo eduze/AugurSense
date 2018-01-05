@@ -19,31 +19,14 @@
       </div>
     </div>
     <div class="box-footer">
-      <button class="btn btn-primary" data-toggle="modal" data-target="#modal-default">Add Zone</button>
+      <button class="btn btn-primary" data-toggle="modal" [attr.data-target]="'#'+modalId">Add Zone</button>
     </div>
   </div>
 
   <div class="col-md-6 col-sm-3 col-xs-12">
-    <app-zones-config-info [zone]="zone" *ngIf="zone"></app-zones-config-info>
+    <app-zones-config-info [zone]="zone" *ngIf="zone" [zones]="zones"></app-zones-config-info>
   </div>
 
-  <div class="modal fade" id="modal-default">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title">Add Zone</h4>
-        </div>
-        <div class="modal-body">
-          <app-zone-ui [zones]="zones" [globalMap]="globalMap"></app-zone-ui>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <app-zone-ui [zones]="zones" [globalMap]="globalMap" [modalId]="modalId"></app-zone-ui>
 
 </div>

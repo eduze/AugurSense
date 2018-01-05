@@ -42,6 +42,7 @@ public class Zone {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String zoneName;
+    private int zoneLimit;
 
     @Convert(converter = ZoneCoordinatesConverter.class)
     private List<Integer> xCoordinates;
@@ -77,6 +78,14 @@ public class Zone {
 
     public void setYCoordinates(List<Integer> yCoordinates) {
         this.yCoordinates = yCoordinates;
+    }
+
+    public int getZoneLimit() {
+        return zoneLimit;
+    }
+
+    public void setZoneLimit(int zoneLimit) {
+        this.zoneLimit = zoneLimit;
     }
 
     @Override

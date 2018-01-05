@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {MessageType} from "../../lib/message-type";
+import {Message} from "../../lib/message";
 
 @Component({
   selector: 'helper-message',
@@ -8,11 +8,9 @@ import {MessageType} from "../../lib/message-type";
 })
 export class SuccessMessageComponent implements OnInit {
 
-  private _message: string;
-  private _messageType: string;
+  private _message: Message;
   private _timeout: number = 10000;
   private timer: any;
-  messageConfig: any;
 
   constructor() {
   }
@@ -20,11 +18,11 @@ export class SuccessMessageComponent implements OnInit {
   ngOnInit() {
   }
 
-  get message(): string {
+  get message(): Message {
     return this._message;
   }
 
-  @Input() set message(value: string) {
+  @Input() set message(value: Message) {
     this._message = value;
     if (value != null) {
       if (this.timer != null) {
@@ -37,20 +35,11 @@ export class SuccessMessageComponent implements OnInit {
     }
   }
 
-  get messageType(): string {
-    return this._messageType;
-  }
-
-  @Input() set messageType(value: string) {
-    this._messageType = value;
-    this.messageConfig = MessageType.MESSAGE_CONFIG[value]
-  }
-
   get timeout(): number {
     return this._timeout;
   }
 
-  @Input() set timeout(value: number) {
+  set timeout(value: number) {
     this._timeout = value;
   }
 }

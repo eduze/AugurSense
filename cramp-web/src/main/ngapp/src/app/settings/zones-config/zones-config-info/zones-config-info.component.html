@@ -2,13 +2,19 @@
   <div class="box box-solid box-primary">
     <div class="box-body">
 
-      <helper-message [message]="message" [messageType]="messageType"></helper-message>
+      <helper-message [message]="message"></helper-message>
 
       <div class="form-horizontal">
         <div class="form-group">
           <label class="col-md-3 col-sm-6 col-xs-12">Zone Name</label>
           <div class="col-md-9 col-sm-6 col-xs-12">
             <input type="text" class="form-control" [(ngModel)]="zone.zoneName">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-md-3 col-sm-6 col-xs-12">Zone Limit</label>
+          <div class="col-md-9 col-sm-6 col-xs-12">
+            <input type="number" min="0" class="form-control" [(ngModel)]="zone.zoneLimit">
           </div>
         </div>
       </div>

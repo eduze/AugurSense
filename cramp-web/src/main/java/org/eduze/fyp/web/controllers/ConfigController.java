@@ -31,6 +31,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -60,14 +61,26 @@ public class ConfigController {
     }
 
     @POST
-    @Path("/zone/{zoneId}")
-    public Response updateZone(@PathParam("zoneId") int zoneId, Zone zone) {
-        logger.debug("Updating zone {}", zoneId);
+    @Path("/zone")
+    public Response addZone(Zone zone) {
+        logger.debug("Adding zone {}", zone);
         try {
-            configService.updateZone(zoneId, zone);
+            return Response.status(200).entity(configService.addZone(zone)).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when adding zone - {}", zone, e);
+            return Response.status(500).build();
+        }
+    }
+
+    @PUT
+    @Path("/zone")
+    public Response updateZone(Zone zone) {
+        logger.debug("Updating zone - {}", zone);
+        try {
+            configService.updateZone(zone);
             return Response.status(200).build();
         } catch (Exception e) {
-            logger.error("Error occurred when updating zone - {}", zoneId, e);
+            logger.error("Error occurred when updating zone - {}", zone, e);
             return Response.status(500).build();
         }
     }

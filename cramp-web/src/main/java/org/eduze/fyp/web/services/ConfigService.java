@@ -121,14 +121,19 @@ public class ConfigService {
         return cameraViews;
     }
 
-    public void updateZone(int zoneId, Zone updatedZone) {
-        Zone zone = zoneDAO.findById(zoneId);
+    public Zone addZone(Zone zone) {
+        return zoneDAO.save(zone);
+    }
+
+    public void updateZone(Zone updatedZone) {
+        Zone zone = zoneDAO.findById(updatedZone.getId());
 
         if (zone == null) {
-            throw new IllegalArgumentException("No zone found for Id - " + zoneId);
+            throw new IllegalArgumentException("No zone found for Id - " + updatedZone.getId());
         }
 
         zone.setZoneName(updatedZone.getZoneName());
+        zone.setZoneLimit(updatedZone.getZoneLimit());
         zone.setXCoordinates(updatedZone.getXCoordinates());
         zone.setYCoordinates(updatedZone.getYCoordinates());
         zoneDAO.update(zone);

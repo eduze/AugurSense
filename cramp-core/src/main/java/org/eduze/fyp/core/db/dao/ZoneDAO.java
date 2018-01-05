@@ -31,7 +31,7 @@ public interface ZoneDAO {
 
     List<Zone> list();
 
-    void save(Zone zone);
+    Zone save(Zone zone);
 
     void update(Zone zone);
 

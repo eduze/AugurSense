@@ -13,6 +13,7 @@ export class ZonesConfigComponent implements OnInit {
   private _zones: Zone[] = [];
   private _zone: Zone;
   private _globalMap: GlobalMap;
+  modalId: string = "add-zone-modal";
 
   constructor(private configService: ConfigService) {
   }

@@ -1,27 +1,65 @@
-<div class="col-md-12" *ngIf="globalMap">
-  <div class="box box-solid box-primary">
-    <div class="box-body">
-      <svg x="0" y="0" [attr.width]="globalMap.width" [attr.height]="globalMap.height" class="center-block">
-        <g height="100%" width="100%">
-          <image [attr.xlink:href]="globalMap.image" x="0" y="0" (click)="clicked($event)"></image>
-          <g *ngFor="let z of zones; let i = index">
-            <polygon class="zone" [attr.points]="z.polygon"></polygon>
+<div class="modal fade" id="{{modalId}}" *ngIf="modalId">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Add Zone</h4>
+      </div>
+      <div class="modal-body">
+        <div class="col-md-12" *ngIf="globalMap">
+          <div class="box box-solid box-primary">
+            <div class="box-body">
 
-            <text [attr.x]="z.midX" [attr.y]="z.midY-30" fill="yellow" font-size="15" text-anchor="middle">
-              {{ z.zoneName }}
-            </text>
-          </g>
-          <g *ngFor="let x of zone.xCoordinates; let j = index">
-            <circle r="5" fill="red" [attr.cx]="zone.xCoordinates[j]" [attr.cy]="zone.yCoordinates[j]"></circle>
-          </g>
-          <g>
-            <polygon class="zone zone-selected" [attr.points]="zone.polygon"></polygon>
-          </g>
-        </g>
-      </svg>
-    </div>
-    <div class="box-footer">
-      <button class="btn btn-danger center-block" (click)="clear()">Clear</button>
+              <helper-message [message]="message"></helper-message>
+
+              <div class="form-group">
+                <svg x="0" y="0" [attr.width]="globalMap.width" [attr.height]="globalMap.height" class="center-block">
+                  <g height="100%" width="100%">
+                    <image [attr.xlink:href]="globalMap.image" x="0" y="0" (click)="clicked($event)"></image>
+                    <g *ngFor="let z of zones; let i = index">
+                      <polygon class="zone" [attr.points]="z.polygon"></polygon>
+
+                      <text [attr.x]="z.midX" [attr.y]="z.midY-30" fill="yellow" font-size="15" text-anchor="middle">
+                        {{ z.zoneName }}
+                      </text>
+                    </g>
+                    <g *ngFor="let x of zone.xCoordinates; let j = index">
+                      <circle r="5" fill="red" [attr.cx]="zone.xCoordinates[j]"
+                              [attr.cy]="zone.yCoordinates[j]"></circle>
+                    </g>
+                    <g>
+                      <polygon class="zone zone-selected" [attr.points]="zone.polygon"></polygon>
+                    </g>
+                  </g>
+                </svg>
+              </div>
+
+              <div class="form-group">
+                <label class="col-md-3 col-sm-6 col-xs-12">Zone Name</label>
+                <div class="col-md-9 col-sm-6 col-xs-12">
+                  <input type="text" class="form-control" [(ngModel)]="zone.zoneName">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="col-md-3 col-sm-6 col-xs-12">Zone Limit</label>
+                <div class="col-md-9 col-sm-6 col-xs-12">
+                  <input type="number" min="0" class="form-control" [(ngModel)]="zone.zoneLimit">
+                </div>
+              </div>
+
+            </div>
+            <div class="box-footer">
+              <button class="btn btn-danger center-block" (click)="clear()">Clear</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" (click)="addZone()">Add Zone</button>
+      </div>
     </div>
   </div>
 </div>

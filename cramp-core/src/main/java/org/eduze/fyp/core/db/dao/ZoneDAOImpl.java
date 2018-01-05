@@ -22,7 +22,6 @@ package org.eduze.fyp.core.db.dao;
 import org.eduze.fyp.api.model.Zone;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.hibernate.type.StringType;
 import org.slf4j.Logger;
@@ -42,9 +41,10 @@ public class ZoneDAOImpl implements ZoneDAO {
 
     @Override
     public Zone findById(int zoneId) {
-        Session session = this.sessionFactory.openSession();
-        Zone zone = session.load(Zone.class, zoneId);
-        session.close();
+        Session session = this.sessionFactory.getCurrentSession();
+        session.beginTransaction();
+        Zone zone = session.get(Zone.class, zoneId);
+        session.getTransaction().commit();
         return zone;
     }
 
@@ -66,26 +66,30 @@ public class ZoneDAOImpl implements ZoneDAO {
         return zoneList;
     }
 
+    @SuppressWarnings("Duplicates")
     @Override
-    public void save(Zone zone) {
+    public Zone save(Zone zone) {
         Session session = this.sessionFactory.openSession();
+        session.beginTransaction();
         session.persist(zone);
+        session.getTransaction().commit();
         session.close();
+        return zone;
     }
 
     @Override
     public void update(Zone zone) {
-        Session session = this.sessionFactory.getCurrentSession();
-        Transaction transaction = session.beginTransaction();
+        Session session = this.sessionFactory.openSession();
+        session.beginTransaction();
         session.update(zone);
-        transaction.commit();
+        session.getTransaction().commit();
         session.close();
     }
 
     @Override
     public void delete(int zoneId) {
         Session session = this.sessionFactory.openSession();
-        Transaction transaction = session.beginTransaction();
+        session.beginTransaction();
         try {
             Zone zone = session.load(Zone.class, zoneId);
             if (zone != null) {
@@ -96,9 +100,9 @@ public class ZoneDAOImpl implements ZoneDAO {
             }
         } catch (Exception e) {
             logger.error("Error occurred when deleting zone - {}, {}", zoneId, e);
-            transaction.rollback();
+            session.getTransaction().rollback();
         }
-        transaction.commit();
+        session.getTransaction().commit();
         session.close();
     }
 }
