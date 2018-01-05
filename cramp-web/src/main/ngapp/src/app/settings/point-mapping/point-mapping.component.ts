@@ -17,59 +17,69 @@
  * IN THE SOFTWARE.
  */
 
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ConfigService} from "../../services/config.service";
-import {CameraView} from "../../resources/camera-view";
+import {CameraConfig} from "../../resources/camera-config";
+import {GlobalMap} from "../../resources/global-map";
+import {Point} from "../../resources/point";
+import {Message} from "../../lib/message";
 
 @Component({
   selector: 'app-point-mapping',
   templateUrl: './point-mapping.component.html',
   styleUrls: ['./point-mapping.component.css']
 })
+export class PointMappingComponent implements OnInit {
 
-export class PointMappingComponent implements OnInit, AfterViewInit {
-
-  cameraViews: CameraView[];
-  mapImage: CameraView;
-  imagesLoaded: boolean = false;
+  cameraConfigs: CameraConfig[];
+  message: Message;
+  globalMap: GlobalMap;
 
   constructor(private configService: ConfigService) {
   }
 
   ngOnInit(): void {
-    this.configService.getCameraViews()
-      .then(views => {
-        this.cameraViews = [];
-        for (let key in views) {
-          if (key === "mapImage") {
-            this.mapImage = new CameraView("0", views[key]);
-          } else {
-            this.cameraViews.push(new CameraView(key, views[key]));
-          }
-        }
-
-        this.imagesLoaded = true;
+    this.configService.getCameraConfigs()
+      .then(configs => {
+        this.cameraConfigs = configs;
+        console.log(configs);
       })
       .catch(reason => console.error(reason));
+
+    this.configService.getMap()
+      .then(map => {
+        this.globalMap = map;
+      });
   }
 
-  ngAfterViewInit(): void {
+  public mapClicked(event: MouseEvent, config: CameraConfig) {
+    if (config.pointMapping.worldSpacePoints.length < 4) {
+      config.pointMapping.worldSpacePoints.push(new Point(event.offsetX, event.offsetY));
+    }
   }
 
-  public cameraViewClicked(event: MouseEvent, i: number): void {
-    let cameraView = this.cameraViews[i];
-    let h = parseInt(document.getElementById("camera" + i).getAttribute("height"));
-    let w = (cameraView.width / cameraView.height) * h;
-    console.log("%d x %d", w, h);
-
-    document.getElementById("camera" + i)
+  public viewClicked(event: MouseEvent, config: CameraConfig) {
+    if (config.pointMapping.screenSpacePoints.length < 4) {
+      config.pointMapping.screenSpacePoints.push(new Point(event.offsetX, event.offsetY));
+    }
   }
 
-  public mapImageClicked(event: MouseEvent, i: number): void {
-    const svgElement = <SVGImageElement>event.srcElement;
-    console.log("Offset (%d, %d) clicked", event.offsetX, event.offsetY);
-    console.log("Offset (%d, %d) clicked", event.x, event.y);
-    console.log("Offset (%d, %d) clicked", event.clientX, event.clientY);
-    console.log(svgElement);
+  public save(config: CameraConfig) {
+    if (config.pointMapping.worldSpacePoints.length != 4 || config.pointMapping.screenSpacePoints.length != 4) {
+      this.message = new Message("You should select 4 points from each map", Message.ERROR);
+      return;
+    }
+
+    this.configService.addCameraConfig(config)
+      .then(success => {
+        this.message = new Message("Point mapping added successfully", Message.SUCCESS);
+      }).catch(reason => {
+      this.message = new Message("Point mapping couldn't be added", Message.ERROR);
+    })
+  }
+
+  public clear(config: CameraConfig) {
+    config.pointMapping.worldSpacePoints = [];
+    config.pointMapping.screenSpacePoints = [];
   }
 }

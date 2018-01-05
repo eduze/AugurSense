@@ -22,6 +22,10 @@ import {HttpClient} from '@angular/common/http'
 import 'rxjs/add/operator/toPromise';
 import {Zone} from "../resources/zone";
 import {GlobalMap} from "../resources/global-map";
+import {CameraConfig} from "../resources/camera-config";
+import {PointMapping} from "../resources/point-mapping";
+import {Point} from "../resources/point";
+import {CameraView} from "../resources/camera-view";
 
 @Injectable()
 export class ConfigService {
@@ -31,17 +35,28 @@ export class ConfigService {
   constructor(private http: HttpClient) {
   }
 
-  getCameraViews(): Promise<Map<string, string>> {
-    return this.http.get(this.baseUrl + "views")
+  getCameraConfigs(): Promise<CameraConfig[]> {
+    return this.http.get(this.baseUrl + "cameraConfigs")
       .toPromise()
       .then(response => {
-        let views: Map<string, string> = response as Map<string, string>;
-        for (let key in views) {
-          views[key] = "data:image/JPEG;base64," + views[key];
+        console.log(response);
+        let configs: Map<number, CameraConfig> = response as Map<number, CameraConfig>;
+        let cameraConfigs: CameraConfig[] = [];
+        for (let key in configs) {
+          let cameraConfig: CameraConfig = ConfigService.toCameraConfig(configs[key]);
+          cameraConfigs.push(cameraConfig);
         }
-        return views;
+        return cameraConfigs;
       })
       .catch(ConfigService.handleError);
+  }
+
+  addCameraConfig(cameraConfig: CameraConfig): Promise<boolean> {
+    return this.http.post(this.baseUrl + "cameraConfig", cameraConfig)
+      .toPromise()
+      .then(response => {
+        return true;
+      }).catch(ConfigService.handleError)
   }
 
   getMap(): Promise<GlobalMap> {
@@ -95,6 +110,21 @@ export class ConfigService {
         return zones;
       })
       .catch(ConfigService.handleError);
+  }
+
+  private static toCameraConfig(config: any): CameraConfig {
+    let cameraId = config.cameraId;
+    let view = "data:image/JPEG;base64," + config.view;
+    let ipPort = config.ipAndPort;
+    let cameraConfig = new CameraConfig(cameraId, ipPort, new PointMapping(), new CameraView(view));
+
+    for (let i in config.pointMapping.screenSpacePoints) {
+      let screenSpacePoint = new Point(config.pointMapping.screenSpacePoints[i].x, config.pointMapping.screenSpacePoints[i].y);
+      cameraConfig.pointMapping.screenSpacePoints.push(screenSpacePoint);
+      let worldSpacePoint = new Point(config.pointMapping.worldSpacePoints[i].x, config.pointMapping.worldSpacePoints[i].y);
+      cameraConfig.pointMapping.worldSpacePoints.push(worldSpacePoint);
+    }
+    return cameraConfig;
   }
 
   private static stringToNumberArray(str: string): number[] {

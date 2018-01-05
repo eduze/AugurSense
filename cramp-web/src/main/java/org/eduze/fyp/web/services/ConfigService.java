@@ -21,16 +21,15 @@ package org.eduze.fyp.web.services;
 import org.eduze.fyp.api.AnalyticsEngine;
 import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.api.model.Zone;
+import org.eduze.fyp.api.resources.Camera;
+import org.eduze.fyp.api.resources.CameraConfig;
 import org.eduze.fyp.core.db.dao.ZoneDAO;
 import org.eduze.fyp.core.util.ImageUtils;
-import org.eduze.fyp.web.resources.Camera;
-import org.eduze.fyp.web.resources.CameraConfig;
 import org.eduze.fyp.web.resources.MapConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.ws.rs.NotFoundException;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
@@ -63,11 +62,9 @@ public class ConfigService {
      * @param cameraConfig {@link CameraConfig} instance to be configured
      * @throws IOException
      */
-    public void configureCameraView(CameraConfig cameraConfig) throws IOException {
-        BufferedImage view = ImageUtils.byteArrayToBufferedImage(cameraConfig.getViewBytes());
-
-        configurationManager.setCameraView(cameraConfig.getCamera().getId(), view, cameraConfig.getInitialMapping());
-        configurationManager.setCameraIpAndPort(cameraConfig.getCamera().getId(), cameraConfig.getIpAndPort());
+    public void addCameraConfig(CameraConfig cameraConfig) throws IOException {
+        logger.debug("Configuring camera view - {}", cameraConfig);
+        configurationManager.addCameraConfig(cameraConfig);
     }
 
     /**
@@ -101,24 +98,8 @@ public class ConfigService {
         return cameraViews;
     }
 
-    public Map<String, byte[]> getCameraViews() throws IOException {
-        Map<String, byte[]> cameraViews = new HashMap<>();
-        configurationManager.getCameraViews()
-                .forEach((id, view) -> {
-                    byte[] bytes = null;
-                    try {
-                        bytes = ImageUtils.bufferedImageToByteArray(view);
-                        cameraViews.put(String.valueOf(id), bytes);
-                    } catch (IOException e) {
-                        logger.error("Error occurred when obtaining camera view for camera : {}", id);
-                    }
-                });
-
-        BufferedImage map = configurationManager.getMap();
-        byte[] bytes = ImageUtils.bufferedImageToByteArray(map);
-        cameraViews.put("mapImage", bytes);
-
-        return cameraViews;
+    public Map<Integer, CameraConfig> getCameraConfigs() {
+        return configurationManager.getCameraConfigs();
     }
 
     public Zone addZone(Zone zone) {
@@ -147,13 +128,8 @@ public class ConfigService {
         return zoneDAO.list();
     }
 
-    public byte[] getCameraView(int cameraId) throws IOException {
-        BufferedImage cameraView = configurationManager.getCameraView(cameraId);
-        if (cameraView == null) {
-            throw new NotFoundException("Camera view not found");
-        }
-
-        return ImageUtils.bufferedImageToByteArray(cameraView);
+    public CameraConfig getCameraConfig(int cameraId) {
+        return configurationManager.getCameraConfig(cameraId);
     }
 
     public void setConfigurationManager(ConfigurationManager configurationManager) {

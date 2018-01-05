@@ -27,6 +27,7 @@ import org.eduze.fyp.api.annotations.AutoStart;
 import org.eduze.fyp.api.annotations.Mode;
 import org.eduze.fyp.api.listeners.ConfigurationListener;
 import org.eduze.fyp.api.model.Zone;
+import org.eduze.fyp.api.resources.CameraConfig;
 import org.eduze.fyp.api.resources.PointMapping;
 import org.eduze.fyp.core.db.dao.ZoneDAO;
 import org.slf4j.Logger;
@@ -40,14 +41,13 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.OptionalInt;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static org.eduze.fyp.core.Constants.Properties.FLOOR_MAP_IMAGE;
 
@@ -67,11 +67,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     private BufferedImage map;
 
     private Set<Integer> cameraIds = new HashSet<>();
-    private Map<Integer, BufferedImage> cameraViews = new ConcurrentHashMap<>();
-    private Map<Integer, PointMapping> initialMappings = new ConcurrentHashMap<>();
-    private Map<Integer, PointMapping> pointMappings = new HashMap<>();
-    private Map<Integer, InetSocketAddress> cameraIpAndPorts = new HashMap<>();
-
+    private Map<Integer, CameraConfig> cameraConfigs = new ConcurrentHashMap<>();
     private Set<ConfigurationListener> configurationListeners = new HashSet<>();
     private ZoneDAO zoneDAO = null;
     // TODO: 1/5/18 If zones are deleted through UI, it is not reflected here
@@ -85,29 +81,16 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         }
     }
 
-    @Override
-    public Map<Integer, PointMapping> getInitialMappings() {
-        return initialMappings;
-    }
-
-    public synchronized void setCameraView(int cameraId, BufferedImage view, PointMapping initialMapping) {
+    public synchronized void addCameraConfig(CameraConfig cameraConfig) {
         stateManager.checkState(State.STARTED);
-        logger.debug("Setting camera view for cam-{}; Mappings: {}", cameraId, initialMapping);
-        cameraViews.put(cameraId, view);
-        initialMappings.put(cameraId, initialMapping);
-        notifyConfigurationChange();
-    }
-
-    public synchronized void setCameraIpAndPort(int cameraId, String ipAndPort) throws UnknownHostException {
-        stateManager.checkState(State.STARTED);
-        String[] parts = ipAndPort.split(":");
-        cameraIpAndPorts.put(cameraId, InetSocketAddress.createUnresolved(parts[0], Integer.parseInt(parts[1])));
+        logger.debug("Adding camera config - {}", cameraConfig);
+        cameraConfigs.put(cameraConfig.getCameraId(), cameraConfig);
         notifyConfigurationChange();
     }
 
     public synchronized void addPointMapping(int cameraId, PointMapping mappings) {
         stateManager.checkState(State.STARTED);
-        pointMappings.put(cameraId, mappings);
+        cameraConfigs.get(cameraId).setPointMapping(mappings);
         notifyConfigurationChange();
     }
 
@@ -134,15 +117,14 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         notifyConfigurationChange();
     }
 
-    public BufferedImage getCameraView(int cameraId) {
-        return cameraViews.get(cameraId);
+    @Override
+    public CameraConfig getCameraConfig(int cameraId) {
+        return cameraConfigs.get(cameraId);
     }
 
     @Override
-    public Map<Integer, BufferedImage> getCameraViews() {
-        Map<Integer, BufferedImage> copyOfCameraViews = new HashMap<>();
-        copyOfCameraViews.putAll(cameraViews);
-        return copyOfCameraViews;
+    public Map<Integer, CameraConfig> getCameraConfigs() {
+        return cameraConfigs;
     }
 
     @Override
@@ -160,13 +142,8 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     }
 
     @Override
-    public Map<Integer, PointMapping> getPointMappings() {
-        return pointMappings;
-    }
-
-    @Override
     public PointMapping getPointMapping(int cameraId) {
-        return pointMappings.get(cameraId);
+        return cameraConfigs.get(cameraId).getPointMapping();
     }
 
     @Override
@@ -176,12 +153,16 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 
     @Override
     public Set<InetSocketAddress> getCameraIpAndPorts() {
-        return new HashSet<>(cameraIpAndPorts.values());
+        return cameraConfigs.values().stream()
+                .map(config -> {
+                    String[] parts = config.getIpAndPort().split(":");
+                    return InetSocketAddress.createUnresolved(parts[0], Integer.parseInt(parts[1]));
+                }).collect(Collectors.toSet());
     }
 
     @Override
     public int getNumberOfCameras() {
-        return cameraViews.entrySet().size();
+        return cameraConfigs.entrySet().size();
     }
 
     @Override
@@ -196,7 +177,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 
     @Override
     public boolean isConfigured() {
-        return cameraIds.size() > 0 && cameraIds.size() == pointMappings.keySet().size();
+        return cameraIds.size() > 0 && cameraIds.size() == cameraConfigs.keySet().size();
     }
 
     private void notifyConfigurationChange() {

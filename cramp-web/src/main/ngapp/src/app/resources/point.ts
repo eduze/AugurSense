@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Eduze
+ * Copyright 2018 Eduze
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
@@ -17,20 +17,12 @@
  * IN THE SOFTWARE.
  */
 
-package org.eduze.fyp.ui.controllers.util;
+export class Point {
+  x: number;
+  y: number;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
-
-public class ImageUtils {
-
-    private ImageUtils() {}
-
-    public static BufferedImage copyImage(BufferedImage original){
-        ColorModel cm = original.getColorModel();
-        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-        WritableRaster raster = original.copyData(null);
-        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
-    }
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+  }
 }

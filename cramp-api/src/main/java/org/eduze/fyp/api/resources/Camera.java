@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Eduze
+ * Copyright 2018 Eduze
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
@@ -17,7 +17,7 @@
  * IN THE SOFTWARE.
  */
 
-package org.eduze.fyp.web.resources;
+package org.eduze.fyp.api.resources;
 
 /**
  * Represents a camera. A camera only has a unique ID.

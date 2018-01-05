@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Eduze
+ * Copyright 2018 Eduze
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
@@ -16,9 +16,7 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-package org.eduze.fyp.web.resources;
-
-import org.eduze.fyp.api.resources.PointMapping;
+package org.eduze.fyp.api.resources;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
@@ -27,11 +25,9 @@ import java.io.IOException;
  * Configuration on a given camera's view.
  * <pre>
  *     {
- *         camera: {
- *             id: 1
- *         },
+ *         cameraId: 1
  *         ipAndPort: 192.168.1.1:8001,
- *         viewBytes: [...]
+ *         view: [...]
  *     }
  * </pre>
  *
@@ -39,26 +35,17 @@ import java.io.IOException;
  */
 @XmlRootElement
 public class CameraConfig {
-    private Camera camera;
+    private int cameraId;
     private String ipAndPort;
-    private byte[] viewBytes;
+    private byte[] view;
+    private PointMapping pointMapping = new PointMapping();
 
-    private PointMapping initialMapping = null;
-
-    public Camera getCamera() {
-        return camera;
+    public byte[] getView() {
+        return view;
     }
 
-    public void setCamera(Camera camera) {
-        this.camera = camera;
-    }
-
-    public byte[] getViewBytes() {
-        return viewBytes;
-    }
-
-    public void setViewBytes(byte[] bytes) throws IOException {
-        this.viewBytes = bytes;
+    public void setView(byte[] bytes) throws IOException {
+        this.view = bytes;
     }
 
     public String getIpAndPort() {
@@ -69,15 +56,23 @@ public class CameraConfig {
         this.ipAndPort = ipAndPort;
     }
 
+    public PointMapping getPointMapping() {
+        return pointMapping;
+    }
+
+    public void setPointMapping(PointMapping pointMapping) {
+        this.pointMapping = pointMapping;
+    }
+
+    public int getCameraId() {
+        return cameraId;
+    }
+
+    public void setCameraId(int cameraId) {
+        this.cameraId = cameraId;
+    }
+
     public String toString() {
-        return String.format("{ camera : %s, bytesLength : %d }", camera, viewBytes.length);
-    }
-
-    public PointMapping getInitialMapping() {
-        return initialMapping;
-    }
-
-    public void setInitialMapping(PointMapping initialMapping) {
-        this.initialMapping = initialMapping;
+        return String.format("{ camera : %s, ipAndPort : %s, pointMappings: %s }", cameraId, ipAndPort, pointMapping);
     }
 }

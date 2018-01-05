@@ -29,8 +29,8 @@ import org.eduze.fyp.api.resources.LocalMap;
 import org.eduze.fyp.api.resources.PersonCoordinate;
 import org.eduze.fyp.api.resources.PointMapping;
 import org.eduze.fyp.core.util.ImageUtils;
-import org.eduze.fyp.web.resources.Camera;
-import org.eduze.fyp.web.resources.CameraConfig;
+import org.eduze.fyp.api.resources.Camera;
+import org.eduze.fyp.api.resources.CameraConfig;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,8 +136,8 @@ public class CHASSTest {
         byte[] bytes = ImageUtils.bufferedImageToByteArray(viewImage);
 
         CameraConfig cameraConfig = new CameraConfig();
-        cameraConfig.setCamera(camera);
-        cameraConfig.setViewBytes(bytes);
+        cameraConfig.setCameraId(camera.getId());
+        cameraConfig.setView(bytes);
         cameraConfig.setIpAndPort(address);
 
         Response response = client.target(builder)

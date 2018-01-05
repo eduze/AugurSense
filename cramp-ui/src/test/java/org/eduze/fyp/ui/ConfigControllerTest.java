@@ -19,11 +19,11 @@
 package org.eduze.fyp.ui;
 
 import org.eduze.fyp.api.ConfigurationManager;
+import org.eduze.fyp.api.resources.Camera;
+import org.eduze.fyp.api.resources.CameraConfig;
 import org.eduze.fyp.api.resources.Point;
 import org.eduze.fyp.api.resources.PointMapping;
 import org.eduze.fyp.core.util.ImageUtils;
-import org.eduze.fyp.web.resources.Camera;
-import org.eduze.fyp.web.resources.CameraConfig;
 import org.eduze.fyp.web.resources.MapConfiguration;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.Assert;
@@ -87,8 +87,8 @@ public class ConfigControllerTest extends AbstractTestCase {
         byte[] bytes = ImageUtils.bufferedImageToByteArray(mapImage, "jpg");
 
         CameraConfig cameraConfig = new CameraConfig();
-        cameraConfig.setCamera(camera);
-        cameraConfig.setViewBytes(bytes);
+        cameraConfig.setCameraId(camera.getId());
+        cameraConfig.setView(bytes);
         cameraConfig.setIpAndPort("localhost:80");
 
         Response response = client.target(builder)
@@ -97,7 +97,10 @@ public class ConfigControllerTest extends AbstractTestCase {
 
         Assert.assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
 
-        BufferedImage cameraViewImage = ANALYTICS_ENGINE.getConfigurationManager().getCameraView(CAMERA_ID);
+        byte[] viewBytes = ANALYTICS_ENGINE.getConfigurationManager()
+                .getCameraConfig(CAMERA_ID)
+                .getView();
+        BufferedImage cameraViewImage = ImageUtils.byteArrayToBufferedImage(viewBytes);
 
         Assert.assertEquals(cameraViewImage.getHeight(), mapImage.getHeight());
         Assert.assertEquals(cameraViewImage.getWidth(), mapImage.getWidth());

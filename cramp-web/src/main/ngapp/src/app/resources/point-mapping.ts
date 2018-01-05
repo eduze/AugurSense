@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Eduze
+ * Copyright 2018 Eduze
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
@@ -17,20 +17,9 @@
  * IN THE SOFTWARE.
  */
 
-export class CameraView {
-  view: string;
-  width: number;
-  height: number;
+import {Point} from "./point";
 
-  constructor(view: string) {
-    this.view = view;
-
-    let obj = this;
-    let image = new Image();
-    image.onload = function () {
-      obj.height = image.height;
-      obj.width = image.width;
-    };
-    image.src = view;
-  }
+export class PointMapping {
+  screenSpacePoints: Point[] = [];
+  worldSpacePoints: Point[] = [];
 }

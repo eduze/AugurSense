@@ -19,8 +19,8 @@
 package org.eduze.fyp.web.controllers;
 
 import org.eduze.fyp.api.model.Zone;
-import org.eduze.fyp.web.resources.Camera;
-import org.eduze.fyp.web.resources.CameraConfig;
+import org.eduze.fyp.api.resources.Camera;
+import org.eduze.fyp.api.resources.CameraConfig;
 import org.eduze.fyp.web.resources.MapConfiguration;
 import org.eduze.fyp.web.resources.Status;
 import org.eduze.fyp.web.services.ConfigService;
@@ -38,6 +38,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Map;
 
 @Path("/config")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -105,7 +106,7 @@ public class ConfigController {
         try {
             List<Zone> zonesList = configService.getZones();
             logger.info("{} zones", zonesList);
-            return Response.status(200).entity(zonesList).build();
+            return Response.ok().entity(zonesList).build();
         } catch (Exception e) {
             logger.error("Error occurred when obtaining zones", e);
             return Response.status(500).build();
@@ -116,7 +117,8 @@ public class ConfigController {
     @Path("/getMap")
     public Response getMap() {
         try {
-            return Response.ok(configService.getMap()).build();
+            Map<String, byte[]> map = configService.getMap();
+            return Response.ok(map).build();
         } catch (Exception e) {
             logger.error("Error occurred when obtaining map. {}", e);
             return Response.status(500).build();
@@ -142,23 +144,24 @@ public class ConfigController {
     }
 
     @GET
-    @Path("/views")
-    public Response getViews() {
+    @Path("/cameraConfigs")
+    public Response getCameraConfigs() {
         try {
-            return Response.ok(configService.getCameraViews()).build();
+            Map<Integer, CameraConfig> cameraConfigs = configService.getCameraConfigs();
+            return Response.ok(cameraConfigs).build();
         } catch (Exception e) {
-            logger.error("Error occurred when obtaining next camera ID", e);
+            logger.error("Error occurred when obtaining camera configs", e);
             return Response.status(500).build();
         }
     }
 
     @POST
     @Path("/cameraConfig")
-    public Response postCameraView(CameraConfig cameraConfig) {
+    public Response postCameraConfig(CameraConfig cameraConfig) {
         try {
-            configService.configureCameraView(cameraConfig);
+            configService.addCameraConfig(cameraConfig);
         } catch (Exception e) {
-            logger.error("Error occurred when configuring camera view : {}", cameraConfig, e);
+            logger.error("Error occurred when adding camera config : {}", cameraConfig, e);
             return Response.status(500).build();
         }
         return Response.status(200).build();
