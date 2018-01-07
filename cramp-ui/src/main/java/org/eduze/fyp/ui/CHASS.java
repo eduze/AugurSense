@@ -31,7 +31,7 @@ public class CHASS {
 
     private static final Logger logger = LoggerFactory.getLogger(CHASS.class);
 
-    private static final String ROOT_CONFIG = "spring.xml";
+    private static final String ROOT_CONFIG = "etc/spring.xml";
 
     private static CHASS chass;
     private ApplicationContext applicationContext;

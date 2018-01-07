@@ -1,0 +1,41 @@
+<!--
+  ~ Copyright (c) 2018 Augur Analytics
+  -->
+
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+
+    <id>distribution</id>
+    <formats>
+        <format>zip</format>
+        <format>tar.gz</format>
+    </formats>
+
+    <dependencySets>
+        <dependencySet>
+            <useProjectArtifact>true</useProjectArtifact>
+            <outputDirectory>lib</outputDirectory>
+            <unpack>false</unpack>
+        </dependencySet>
+    </dependencySets>
+
+    <fileSets>
+        <fileSet>
+            <directory>${basedir}/src/main/resources/etc</directory>
+            <outputDirectory>etc</outputDirectory>
+            <filtered>true</filtered>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${basedir}/src/main/bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <includes>
+                <include>cramp.sh</include>
+            </includes>
+            <fileMode>755</fileMode>
+        </fileSet>
+    </fileSets>
+</assembly>

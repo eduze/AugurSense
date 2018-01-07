@@ -36,26 +36,22 @@
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-resources-plugin</artifactId>
+                <!-- Assembly Plugin -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/default.xml</descriptor>
+                    </descriptors>
+                </configuration>
                 <executions>
                     <execution>
-                        <id>copy-web-war</id>
-                        <phase>compile</phase>
+                        <id>assembly</id>
+                        <phase>package</phase>
                         <goals>
-                            <goal>copy-resources</goal>
+                            <goal>single</goal>
                         </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/classes</outputDirectory>
-                            <overwrite>true</overwrite>
-                            <resources>
-                                <resource>
-                                    <directory>${project.basedir}/../cramp-web/target</directory>
-                                    <includes>
-                                        <include>web/**</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

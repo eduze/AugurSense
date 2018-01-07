@@ -97,16 +97,16 @@ public class RestServer implements Startable {
         ServletHolder servlet = new ServletHolder(servletContainer);
         context.addServlet(servlet, CONTEXT_PATH);
 
-//        DefaultServlet defaultServlet = new DefaultServlet();
-//        ServletHolder servletHolder = new ServletHolder("default", defaultServlet);
-//        URL path = this.getClass().getClassLoader().getResource("ng");
-//        try {
-//            servletHolder.setInitParameter("resourceBase", path.toURI().toASCIIString());
-//        } catch (URISyntaxException e) {
-//            logger.error("Error occurred", e);
-//        }
-//        servletHolder.setInitParameter("dirAllowed", "true");
-//        context.addServlet(servletHolder, "/");
+        DefaultServlet defaultServlet = new DefaultServlet();
+        ServletHolder servletHolder = new ServletHolder("default", defaultServlet);
+        URL path = this.getClass().getClassLoader().getResource("ng");
+        try {
+            servletHolder.setInitParameter("resourceBase", path.toURI().toASCIIString());
+        } catch (URISyntaxException e) {
+            logger.error("Error occurred", e);
+        }
+        servletHolder.setInitParameter("dirAllowed", "true");
+        context.addServlet(servletHolder, "/");
 
         jettyServer.setHandler(context);
         logger.debug("Starting REST server");
