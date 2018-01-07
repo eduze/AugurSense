@@ -18,8 +18,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package org.eduze.fyp.api.resources;
+package org.eduze.fyp.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.eduze.fyp.api.model.helpers.PointListToStringConverter;
+import org.eduze.fyp.api.resources.Point;
+
+import javax.persistence.*;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,10 +35,26 @@ import java.util.List;
  *
  * @author Imesha Sudasingha
  */
+@Entity
+@Table(name = "point_mappings")
+@JsonIgnoreProperties("cameraConfig")
 public class PointMapping {
 
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+
+    @Convert(converter = PointListToStringConverter.class)
     private List<Point> screenSpacePoints = new ArrayList<>(4);
+
+    @Convert(converter = PointListToStringConverter.class)
     private List<Point> worldSpacePoints = new ArrayList<>(4);
+
+    @XmlTransient
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "camera_config_id", nullable = false)
+    private CameraConfig cameraConfig;
 
     public void addScreenSpacePoint(Point point) {
         if (screenSpacePoints.size() == 4) {
@@ -60,6 +82,30 @@ public class PointMapping {
 
     public List<Point> getWorldSpacePoints() {
         return worldSpacePoints;
+    }
+
+    public void setScreenSpacePoints(List<Point> screenSpacePoints) {
+        this.screenSpacePoints = screenSpacePoints;
+    }
+
+    public void setWorldSpacePoints(List<Point> worldSpacePoints) {
+        this.worldSpacePoints = worldSpacePoints;
+    }
+
+    public CameraConfig getCameraConfig() {
+        return cameraConfig;
+    }
+
+    public void setCameraConfig(CameraConfig cameraConfig) {
+        this.cameraConfig = cameraConfig;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     @Override

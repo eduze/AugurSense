@@ -26,9 +26,10 @@ import org.eduze.fyp.api.StateManager;
 import org.eduze.fyp.api.annotations.AutoStart;
 import org.eduze.fyp.api.annotations.Mode;
 import org.eduze.fyp.api.listeners.ConfigurationListener;
+import org.eduze.fyp.api.model.CameraConfig;
+import org.eduze.fyp.api.model.PointMapping;
 import org.eduze.fyp.api.model.Zone;
-import org.eduze.fyp.api.resources.CameraConfig;
-import org.eduze.fyp.api.resources.PointMapping;
+import org.eduze.fyp.core.db.dao.CameraConfigDAO;
 import org.eduze.fyp.core.db.dao.ZoneDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +51,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import static org.eduze.fyp.core.Constants.Properties.FLOOR_MAP_IMAGE;
+import static org.eduze.fyp.api.Constants.Properties.FLOOR_MAP_IMAGE;
 
 /**
  * {@link ConfigurationManager} implementation which is doing all operations using in-memory data storage.
@@ -67,18 +69,27 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     private BufferedImage map;
 
     private Set<Integer> cameraIds = new HashSet<>();
-    private Map<Integer, CameraConfig> cameraConfigs = new ConcurrentHashMap<>();
     private Set<ConfigurationListener> configurationListeners = new HashSet<>();
-    private ZoneDAO zoneDAO = null;
+    private CameraConfigDAO cameraConfigDAO;
+    private Map<Integer, CameraConfig> cameraConfigs = new ConcurrentHashMap<>();
     // TODO: 1/5/18 If zones are deleted through UI, it is not reflected here
-    private List<Zone> zones = null;
+    private List<Zone> zones = new ArrayList<>();
+    private ZoneDAO zoneDAO;
 
     public ConfigurationManagerImpl() { }
 
-    private void loadProperties() throws IOException {
+    private void loadConfiguration() throws IOException {
+        logger.info("Loading configurations");
+
         try (InputStream propertiesFile = new FileInputStream(this.propertiesFile)) {
             System.getProperties().load(propertiesFile);
         }
+
+        this.zones.clear();
+        this.zones.addAll(zoneDAO.list());
+
+        this.cameraConfigDAO.list()
+                .forEach(cameraConfig -> this.cameraConfigs.put(cameraConfig.getCameraId(), cameraConfig));
     }
 
     public synchronized void addCameraConfig(CameraConfig cameraConfig) {
@@ -105,16 +116,6 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 
         cameraIds.add(nextInt);
         return nextInt;
-    }
-
-    public ZoneDAO getZoneDAO() {
-        return zoneDAO;
-    }
-
-    public void setZoneDAO(ZoneDAO zoneDAO) {
-        this.zoneDAO = zoneDAO;
-        this.zones = zoneDAO.list();
-        notifyConfigurationChange();
     }
 
     @Override
@@ -185,11 +186,6 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         configurationListeners.forEach(listener -> listener.configurationChanged(this));
     }
 
-    public void setPropertiesFile(String propertiesFile) {
-        this.propertiesFile = propertiesFile;
-    }
-
-
     @Override
     public void start() {
         stateManager.checkState(State.STOPPED);
@@ -199,7 +195,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         }
 
         try {
-            loadProperties();
+            loadConfiguration();
         } catch (IOException e) {
             logger.error("Error occurred when loading configuration", e);
             throw new IllegalArgumentException("Unable to load properties", e);
@@ -219,6 +215,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         }
 
         stateManager.setState(State.STARTED);
+        notifyConfigurationChange();
     }
 
     @Override
@@ -228,7 +225,19 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
         stateManager.setState(State.STOPPED);
     }
 
+    public void setPropertiesFile(String propertiesFile) {
+        this.propertiesFile = propertiesFile;
+    }
+
     public void setConfigurationListeners(Set<ConfigurationListener> configurationListeners) {
         this.configurationListeners = configurationListeners;
+    }
+
+    public void setZoneDAO(ZoneDAO zoneDAO) {
+        this.zoneDAO = zoneDAO;
+    }
+
+    public void setCameraConfigDAO(CameraConfigDAO cameraConfigDAO) {
+        this.cameraConfigDAO = cameraConfigDAO;
     }
 }

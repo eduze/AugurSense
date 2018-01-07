@@ -21,8 +21,8 @@ package org.eduze.fyp.api;
 import org.eduze.fyp.api.config.Startable;
 import org.eduze.fyp.api.listeners.ConfigurationListener;
 import org.eduze.fyp.api.model.Zone;
-import org.eduze.fyp.api.resources.CameraConfig;
-import org.eduze.fyp.api.resources.PointMapping;
+import org.eduze.fyp.api.model.CameraConfig;
+import org.eduze.fyp.api.model.PointMapping;
 
 import java.awt.image.BufferedImage;
 import java.net.InetSocketAddress;

@@ -27,10 +27,10 @@ import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.api.State;
 import org.eduze.fyp.api.resources.LocalMap;
 import org.eduze.fyp.api.resources.PersonCoordinate;
-import org.eduze.fyp.api.resources.PointMapping;
-import org.eduze.fyp.core.util.ImageUtils;
+import org.eduze.fyp.api.model.PointMapping;
+import org.eduze.fyp.api.util.ImageUtils;
 import org.eduze.fyp.api.resources.Camera;
-import org.eduze.fyp.api.resources.CameraConfig;
+import org.eduze.fyp.api.model.CameraConfig;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +57,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.eduze.fyp.core.Constants.CAMERA_NOTIFICATION_PATH;
+import static org.eduze.fyp.api.Constants.CAMERA_NOTIFICATION_PATH;
 
 public class CHASSTest {
 

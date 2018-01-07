@@ -16,10 +16,10 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-package org.eduze.fyp.api.resources;
+package org.eduze.fyp.api.model;
 
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.IOException;
 
 /**
  * Configuration on a given camera's view.
@@ -34,17 +34,31 @@ import java.io.IOException;
  * @author Imesha Sudasingha
  */
 @XmlRootElement
+@Entity
+@Table(name = "camera_configs")
 public class CameraConfig {
+
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int id;
+
+    @Column(unique = true)
     private int cameraId;
     private String ipAndPort;
+
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
     private byte[] view;
+
+    @OneToOne(mappedBy = "cameraConfig", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private PointMapping pointMapping = new PointMapping();
 
     public byte[] getView() {
         return view;
     }
 
-    public void setView(byte[] bytes) throws IOException {
+    public void setView(byte[] bytes) {
         this.view = bytes;
     }
 
@@ -70,6 +84,14 @@ public class CameraConfig {
 
     public void setCameraId(int cameraId) {
         this.cameraId = cameraId;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String toString() {

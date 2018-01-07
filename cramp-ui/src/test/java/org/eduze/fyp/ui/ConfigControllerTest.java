@@ -20,10 +20,10 @@ package org.eduze.fyp.ui;
 
 import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.api.resources.Camera;
-import org.eduze.fyp.api.resources.CameraConfig;
+import org.eduze.fyp.api.model.CameraConfig;
 import org.eduze.fyp.api.resources.Point;
-import org.eduze.fyp.api.resources.PointMapping;
-import org.eduze.fyp.core.util.ImageUtils;
+import org.eduze.fyp.api.model.PointMapping;
+import org.eduze.fyp.api.util.ImageUtils;
 import org.eduze.fyp.web.resources.MapConfiguration;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.junit.Assert;

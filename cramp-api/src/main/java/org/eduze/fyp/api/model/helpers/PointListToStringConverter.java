@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Eduze
+ * Copyright 2018 Eduze
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
@@ -16,53 +16,35 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-package org.eduze.fyp.web.resources;
 
-import org.eduze.fyp.api.model.PointMapping;
+/*
+ * <Paste your header here>
+ */
+package org.eduze.fyp.api.model.helpers;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import org.eduze.fyp.api.resources.Point;
 
-@XmlRootElement
-public class MapConfiguration extends Status {
+import javax.persistence.AttributeConverter;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-    private byte[] mapImage;
-    private PointMapping mapping;
-    private int mapWidth;
-    private int mapHeight;
+public class PointListToStringConverter implements AttributeConverter<List<Point>, String> {
 
-    public MapConfiguration() {
-        super(true);
+    @Override
+    public String convertToDatabaseColumn(List<Point> points) {
+        return points.stream()
+                .map(point -> String.format("%f,%f", point.getX(), point.getY()))
+                .collect(Collectors.joining(";"));
     }
 
-    public byte[] getMapImage() {
-        return mapImage;
-    }
-
-    public void setMapImage(byte[] mapImage) {
-        this.mapImage = mapImage;
-    }
-
-    public PointMapping getMapping() {
-        return mapping;
-    }
-
-    public void setMapping(PointMapping mapping) {
-        this.mapping = mapping;
-    }
-
-    public int getMapWidth() {
-        return mapWidth;
-    }
-
-    public void setMapWidth(int mapWidth) {
-        this.mapWidth = mapWidth;
-    }
-
-    public int getMapHeight() {
-        return mapHeight;
-    }
-
-    public void setMapHeight(int mapHeight) {
-        this.mapHeight = mapHeight;
+    @Override
+    public List<Point> convertToEntityAttribute(String stringPoints) {
+        return Stream.of(stringPoints.split(";"))
+                .map(str -> {
+                    String[] parts = str.split(",");
+                    return new Point(Double.parseDouble(parts[0]), Double.parseDouble(parts[1]));
+                })
+                .collect(Collectors.toList());
     }
 }

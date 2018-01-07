@@ -20,11 +20,12 @@ package org.eduze.fyp.web.services;
 
 import org.eduze.fyp.api.AnalyticsEngine;
 import org.eduze.fyp.api.ConfigurationManager;
+import org.eduze.fyp.api.model.CameraConfig;
 import org.eduze.fyp.api.model.Zone;
 import org.eduze.fyp.api.resources.Camera;
-import org.eduze.fyp.api.resources.CameraConfig;
+import org.eduze.fyp.api.util.ImageUtils;
+import org.eduze.fyp.core.db.dao.CameraConfigDAO;
 import org.eduze.fyp.core.db.dao.ZoneDAO;
-import org.eduze.fyp.core.util.ImageUtils;
 import org.eduze.fyp.web.resources.MapConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,11 +37,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.eduze.fyp.api.Constants.CAMERA_VIEW_HEIGHT;
+import static org.eduze.fyp.api.Constants.CAMERA_VIEW_WIDTH;
+
 public class ConfigService {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigService.class);
 
     private ZoneDAO zoneDAO;
+    private CameraConfigDAO cameraConfigDAO;
 
     @Autowired
     private ConfigurationManager configurationManager;
@@ -63,7 +68,20 @@ public class ConfigService {
      * @throws IOException
      */
     public void addCameraConfig(CameraConfig cameraConfig) throws IOException {
-        logger.debug("Configuring camera view - {}", cameraConfig);
+        logger.debug("Adding camera configuration - {}", cameraConfig);
+
+        // resizing camera view
+        byte[] resized = ImageUtils.resize(cameraConfig.getView(), CAMERA_VIEW_WIDTH, CAMERA_VIEW_HEIGHT);
+        cameraConfig.setView(resized);
+
+        cameraConfig.getPointMapping().setCameraConfig(cameraConfig);
+        CameraConfig existing = cameraConfigDAO.findByCameraId(cameraConfig.getCameraId());
+        if (existing != null) {
+            cameraConfigDAO.delete(existing);
+            cameraConfigDAO.save(cameraConfig);
+        } else {
+            cameraConfigDAO.save(cameraConfig);
+        }
         configurationManager.addCameraConfig(cameraConfig);
     }
 
@@ -138,5 +156,9 @@ public class ConfigService {
 
     public void setZoneDAO(ZoneDAO zoneDAO) {
         this.zoneDAO = zoneDAO;
+    }
+
+    public void setCameraConfigDAO(CameraConfigDAO cameraConfigDAO) {
+        this.cameraConfigDAO = cameraConfigDAO;
     }
 }

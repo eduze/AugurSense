@@ -20,7 +20,7 @@
 package org.eduze.fyp.core.resources;
 
 import org.apache.commons.math3.util.Pair;
-import org.eduze.fyp.core.Constants;
+import org.eduze.fyp.api.Constants;
 import org.eduze.fyp.api.resources.Coordinate;
 import org.eduze.fyp.api.resources.LocalMap;
 import org.eduze.fyp.api.resources.PersonCoordinate;

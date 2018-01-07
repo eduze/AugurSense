@@ -39,8 +39,8 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static org.eduze.fyp.core.Constants.MAP_REFRESH_INTERVAL;
-import static org.eduze.fyp.core.Constants.MAP_REFRESH_THRESHOLD;
+import static org.eduze.fyp.api.Constants.MAP_REFRESH_INTERVAL;
+import static org.eduze.fyp.api.Constants.MAP_REFRESH_THRESHOLD;
 
 @AutoStart(startOrder = 1)
 public class MapProcessorImpl implements MapProcessor {

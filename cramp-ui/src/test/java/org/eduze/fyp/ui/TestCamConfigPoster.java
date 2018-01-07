@@ -2,10 +2,10 @@
 package org.eduze.fyp.ui;
 
 import org.eduze.fyp.api.resources.Camera;
-import org.eduze.fyp.api.resources.CameraConfig;
+import org.eduze.fyp.api.model.CameraConfig;
 import org.eduze.fyp.api.resources.Point;
-import org.eduze.fyp.api.resources.PointMapping;
-import org.eduze.fyp.core.util.ImageUtils;
+import org.eduze.fyp.api.model.PointMapping;
+import org.eduze.fyp.api.util.ImageUtils;
 import org.glassfish.jersey.client.JerseyClientBuilder;
 
 import javax.imageio.ImageIO;
@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Random;
 
-public class TestCamViewPoster {
+public class TestCamConfigPoster {
 
     public static void main(String[] args) throws IOException {
         Client client = JerseyClientBuilder.createClient();

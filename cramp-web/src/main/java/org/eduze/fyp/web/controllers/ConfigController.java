@@ -20,7 +20,7 @@ package org.eduze.fyp.web.controllers;
 
 import org.eduze.fyp.api.model.Zone;
 import org.eduze.fyp.api.resources.Camera;
-import org.eduze.fyp.api.resources.CameraConfig;
+import org.eduze.fyp.api.model.CameraConfig;
 import org.eduze.fyp.web.resources.MapConfiguration;
 import org.eduze.fyp.web.resources.Status;
 import org.eduze.fyp.web.services.ConfigService;

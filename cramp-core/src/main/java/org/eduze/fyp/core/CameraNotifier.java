@@ -37,8 +37,8 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import static org.eduze.fyp.core.Constants.CAMERA_NOTIFICATION_PATH_PATTERN;
-import static org.eduze.fyp.core.Constants.CAMERA_NOTIFY_TIMEOUT;
+import static org.eduze.fyp.api.Constants.CAMERA_NOTIFICATION_PATH_PATTERN;
+import static org.eduze.fyp.api.Constants.CAMERA_NOTIFY_TIMEOUT;
 
 /**
  * Class responsible for notifying and retrieving processed local maps corresponding to a timestamp.

@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 
-import static org.eduze.fyp.core.Constants.FRAME_PROCESSING_INTERVAL;
+import static org.eduze.fyp.api.Constants.FRAME_PROCESSING_INTERVAL;
 
 @AutoStart(startOrder = 2)
 public class CentralizedCameraCoordinator implements CameraCoordinator, ConfigurationListener {

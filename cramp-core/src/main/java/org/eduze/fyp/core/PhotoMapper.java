@@ -3,7 +3,7 @@ package org.eduze.fyp.core;
 import org.eduze.fyp.api.resources.PersonCoordinate;
 import org.eduze.fyp.api.resources.PersonSnapshot;
 import org.eduze.fyp.core.resources.GlobalMap;
-import org.eduze.fyp.core.util.ImageUtils;
+import org.eduze.fyp.api.util.ImageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

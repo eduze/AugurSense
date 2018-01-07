@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Eduze
+ * Copyright 2018 Eduze
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
@@ -16,53 +16,24 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-package org.eduze.fyp.web.resources;
 
-import org.eduze.fyp.api.model.PointMapping;
+package org.eduze.fyp.core.db.dao;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import org.eduze.fyp.api.model.CameraConfig;
 
-@XmlRootElement
-public class MapConfiguration extends Status {
+import java.util.List;
 
-    private byte[] mapImage;
-    private PointMapping mapping;
-    private int mapWidth;
-    private int mapHeight;
+public interface CameraConfigDAO {
 
-    public MapConfiguration() {
-        super(true);
-    }
+    CameraConfig findById(int id);
 
-    public byte[] getMapImage() {
-        return mapImage;
-    }
+    CameraConfig findByCameraId(int cameraId);
 
-    public void setMapImage(byte[] mapImage) {
-        this.mapImage = mapImage;
-    }
+    void save(CameraConfig cameraConfig);
 
-    public PointMapping getMapping() {
-        return mapping;
-    }
+    void delete(CameraConfig cameraConfig);
 
-    public void setMapping(PointMapping mapping) {
-        this.mapping = mapping;
-    }
+    List<CameraConfig> list();
 
-    public int getMapWidth() {
-        return mapWidth;
-    }
-
-    public void setMapWidth(int mapWidth) {
-        this.mapWidth = mapWidth;
-    }
-
-    public int getMapHeight() {
-        return mapHeight;
-    }
-
-    public void setMapHeight(int mapHeight) {
-        this.mapHeight = mapHeight;
-    }
+    void update(CameraConfig cameraConfig);
 }

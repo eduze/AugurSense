@@ -31,7 +31,7 @@ import org.eduze.fyp.core.db.dao.PersonDAO;
 import org.eduze.fyp.core.db.dao.ZoneDAO;
 import org.eduze.fyp.web.resources.TimelineZone;
 import org.eduze.fyp.web.resources.ZoneStatistics;
-import org.eduze.fyp.core.util.ImageUtils;
+import org.eduze.fyp.api.util.ImageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

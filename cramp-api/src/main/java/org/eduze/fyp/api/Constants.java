@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Eduze
+ * Copyright 2018 Eduze
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
@@ -16,7 +16,7 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-package org.eduze.fyp.core;
+package org.eduze.fyp.api;
 
 public class Constants {
 
@@ -39,6 +39,10 @@ public class Constants {
 
     /** Time out for notifying cameras by camera coordinator */
     public static final int CAMERA_NOTIFY_TIMEOUT = 5000;
+
+    /** Width and hight of the standardized camera views */
+    public static final int CAMERA_VIEW_WIDTH = 500;
+    public static final int CAMERA_VIEW_HEIGHT = 500;
 
     public static class Properties {
         public static final String FLOOR_MAP_IMAGE = "org.eduze.fyp.config.map";
