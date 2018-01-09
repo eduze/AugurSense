@@ -46,5 +46,6 @@ public class Constants {
 
     public static class Properties {
         public static final String FLOOR_MAP_IMAGE = "org.eduze.fyp.config.map";
+        public static final String STARTING_MODE = "org.eduze.fyp.mode";
     }
 }

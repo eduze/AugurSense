@@ -20,5 +20,5 @@
 package org.eduze.fyp.api.annotations;
 
 public enum Mode {
-    ACTIVE, PASSIVE
+    PASSIVE, ACTIVE
 }

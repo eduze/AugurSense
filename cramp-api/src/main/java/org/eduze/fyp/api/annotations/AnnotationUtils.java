@@ -42,20 +42,20 @@ public abstract class AnnotationUtils {
      *
      * @param context spring application context
      */
-    public static void startAnnotatedElements(ApplicationContext context) {
+    public static void startAnnotatedElements(ApplicationContext context, Mode mode) {
         context.getBeansOfType(Startable.class)
                 .values().stream()
                 .filter(bean -> bean.getClass().isAnnotationPresent(AutoStart.class))
-                .filter(bean -> getAnnotation(bean.getClass(), AutoStart.class).mode().equals(Mode.PASSIVE))
+                .filter(bean -> getAnnotation(bean.getClass(), AutoStart.class).mode().compareTo(mode) <= 0)
                 .sorted(Comparator.comparingInt(i -> getAnnotation(i.getClass(), AutoStart.class).startOrder()))
                 .forEach(Startable::start);
     }
 
-    public static void stopAnnotatedElements(ApplicationContext context) {
+    public static void stopAnnotatedElements(ApplicationContext context, Mode mode) {
         context.getBeansOfType(Startable.class)
                 .values().stream()
                 .filter(bean -> bean.getClass().isAnnotationPresent(AutoStart.class))
-                .filter(bean -> getAnnotation(bean.getClass(), AutoStart.class).mode().equals(Mode.PASSIVE))
+                .filter(bean -> getAnnotation(bean.getClass(), AutoStart.class).mode().compareTo(mode) <= 0)
                 .sorted((s1, s2) -> Integer.compare(
                         getAnnotation(s2.getClass(), AutoStart.class).startOrder(),
                         getAnnotation(s1.getClass(), AutoStart.class).startOrder())

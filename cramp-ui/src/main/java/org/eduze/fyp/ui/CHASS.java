@@ -22,10 +22,13 @@ package org.eduze.fyp.ui;
 import org.eduze.fyp.api.State;
 import org.eduze.fyp.api.StateManager;
 import org.eduze.fyp.api.annotations.AnnotationUtils;
+import org.eduze.fyp.api.annotations.Mode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import static org.eduze.fyp.api.Constants.Properties.STARTING_MODE;
 
 public class CHASS {
 
@@ -34,20 +37,23 @@ public class CHASS {
     private static final String ROOT_CONFIG = "etc/spring.xml";
 
     private static CHASS chass;
+
     private ApplicationContext applicationContext;
+    private Mode mode;
     private StateManager stateManager = new StateManager(State.STOPPED);
 
     private CHASS() {
         applicationContext = new ClassPathXmlApplicationContext(ROOT_CONFIG);
+        mode = Mode.valueOf(System.getProperty(STARTING_MODE, Mode.PASSIVE.toString()));
     }
 
     public void start() {
         stateManager.checkState(State.STOPPED);
         stateManager.setState(State.STARTING);
 
-        logger.debug("Starting auto annotated beans");
+        logger.debug("Starting auto annotated beans in {} mode", mode);
         try {
-            AnnotationUtils.startAnnotatedElements(applicationContext);
+            AnnotationUtils.startAnnotatedElements(applicationContext, mode);
             logger.info("Started auto annotated beans");
             Runtime.getRuntime().addShutdownHook(new Thread(CHASS.this::stop));
         } catch (Exception e) {
@@ -63,7 +69,7 @@ public class CHASS {
 
         logger.debug("Stopping auto annotated beans");
         try {
-            AnnotationUtils.stopAnnotatedElements(applicationContext);
+            AnnotationUtils.stopAnnotatedElements(applicationContext, mode);
             logger.debug("Stopped auto annotated beans");
         } catch (Exception e) {
             logger.error("Error occurred when stopping application", e);

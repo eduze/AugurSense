@@ -10,8 +10,13 @@ if [[ -z "${DB_PASSWORD}" ]]; then
     DB_PASSWORD="root"
 fi
 
+if [[ -z "${CRAMP_MODE}" ]]; then
+    CRAMP_MODE="PASSIVE"
+fi
+
 echo "DB_URL: ${DB_URL}"
 echo "DB_USER: ${DB_USER}"
+echo "MODE: ${CRAMP_MODE}"
 
 CRAMP_HOME=.
 
@@ -28,6 +33,7 @@ $JAVA_HOME/bin/java \
         	-Ddb.user=${DB_USER} \
         	-Ddb.password=${DB_PASSWORD} \
         	-Ddb.jdbc.url=${DB_URL} \
+        	-Dorg.eduze.fyp.mode=${CRAMP_MODE} \
         	org.eduze.fyp.ui.CHASS "$@"
 
 echo "FINISHED"
