@@ -18,11 +18,6 @@
         <property name="cameraCoordinator" ref="camera-coordinator"/>
     </bean>
 
-    <!-- Analytics Engine UI -->
-    <!--<bean id="analytics-engine-ui" class="org.eduze.fyp.ui.App">-->
-    <!--<property name="analyticsEngine" ref="analytics-engine"/>-->
-    <!--</bean>-->
-
     <bean id="configuration-manager" class="org.eduze.fyp.core.ConfigurationManagerImpl">
         <property name="propertiesFile" value="etc/analytics.properties"/>
         <property name="zoneDAO" ref="zoneDAO"/>
@@ -76,9 +71,9 @@
         <constructor-arg>
             <bean class="com.mysql.jdbc.Driver"/>
         </constructor-arg>
-        <constructor-arg value="jdbc:mysql://localhost:3306/analytics?createDatabaseIfNotExist=true"/>
-        <constructor-arg value="root"/>
-        <constructor-arg value="root"/>
+        <constructor-arg value="#{ systemProperties['db.jdbc.url']}"/>
+        <constructor-arg value="#{ systemProperties['db.user']}"/>
+        <constructor-arg value="#{ systemProperties['db.password']}"/>
     </bean>
 
     <bean id="hibernateAnnotatedSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">

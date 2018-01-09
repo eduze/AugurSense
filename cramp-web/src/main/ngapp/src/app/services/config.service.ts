@@ -30,7 +30,7 @@ import {CameraView} from "../resources/camera-view";
 @Injectable()
 export class ConfigService {
 
-  private baseUrl: string = "http://localhost:8000/api/v1/config/";
+  private baseUrl: string = "/api/v1/config/";
 
   constructor(private http: HttpClient) {
   }
