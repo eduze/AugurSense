@@ -162,7 +162,7 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
     public void addLocalMap(LocalMap map) {
         map.setTimestamp(realTimestamp);
         map.getPersonCoordinates()
-                .forEach(personCoordinate -> personCoordinate.setTimestamp(currentTimestamp));
+                .forEach(personCoordinate -> personCoordinate.setTimestamp(realTimestamp));
 
         mapProcessor.addLocalMap(map);
     }

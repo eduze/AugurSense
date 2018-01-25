@@ -52,7 +52,7 @@ public class PointMapping {
     private List<Point> worldSpacePoints = new ArrayList<>(4);
 
     @XmlTransient
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "camera_config_id", nullable = false)
     private CameraConfig cameraConfig;
 

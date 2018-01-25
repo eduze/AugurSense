@@ -12,6 +12,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.eduze.fyp.api.Constants.ZONE_NAME_WORLD;
+
 public class ZoneMapper implements ConfigurationListener {
     private ZoneDAO zoneDAO = null;
     private List<Zone> zonesList = null;
@@ -78,13 +80,13 @@ public class ZoneMapper implements ConfigurationListener {
                 if (polygon.contains(new Point((int) personLocation.getSnapshot().getX(), (int) personLocation.getSnapshot().getY()))) {
                     selectedZone[0] = zone;
                     selectedPolygon[0] = polygon;
-
                 }
             });
 
             if (selectedZone[0] == null) {
                 // identify rest of the world zone here! Its not contained in any of the polygons
-                zonesList.stream().filter(zone -> zone.getId() == 0).findFirst().ifPresent((c) -> selectedZone[0] = c);
+                zonesList.stream().filter(zone -> zone.getZoneName().equals(ZONE_NAME_WORLD))
+                        .findFirst().ifPresent((c) -> selectedZone[0] = c);
             }
 
             if (selectedZone[0] != null) {

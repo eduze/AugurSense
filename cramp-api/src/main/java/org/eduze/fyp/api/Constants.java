@@ -44,6 +44,9 @@ public class Constants {
     public static final int CAMERA_VIEW_WIDTH = 500;
     public static final int CAMERA_VIEW_HEIGHT = 500;
 
+    /** Represents the zone -> world*/
+    public static final String ZONE_NAME_WORLD = "World";
+
     public static class Properties {
         public static final String FLOOR_MAP_IMAGE = "org.eduze.fyp.config.map";
         public static final String STARTING_MODE = "org.eduze.fyp.mode";

@@ -71,7 +71,8 @@ public class ConfigService {
         logger.debug("Adding camera configuration - {}", cameraConfig);
 
         // resizing camera view
-        byte[] resized = ImageUtils.resize(cameraConfig.getView(), CAMERA_VIEW_WIDTH, CAMERA_VIEW_HEIGHT);
+//        byte[] resized = ImageUtils.resize(cameraConfig.getView(), CAMERA_VIEW_WIDTH, CAMERA_VIEW_HEIGHT);
+        byte[] resized = cameraConfig.getView();
         cameraConfig.setView(resized);
 
         cameraConfig.getPointMapping().setCameraConfig(cameraConfig);
