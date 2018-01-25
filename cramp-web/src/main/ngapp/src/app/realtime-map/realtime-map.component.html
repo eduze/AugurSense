@@ -53,8 +53,10 @@
   <mat-card-title *ngIf="showAllInInfo==true">Live Photos</mat-card-title>
 
   <mat-card-content>
-    <app-realtime-info [useRealtimeEndpoint]="true" [showAll]="showAllInInfo" [reIDOnClick]="!showAllInInfo"
-                       [refreshToggle]="updateToggle" [id]="selectedTrackIndex"
-                       (personClicked)="personClicked($event)"></app-realtime-info>
+    <div class="container-fluid">
+      <app-realtime-info [useRealtimeEndpoint]="true" [showAll]="showAllInInfo" [reIDOnClick]="!showAllInInfo"
+                         [refreshToggle]="updateToggle" [id]="selectedTrackIndex"
+                         (personClicked)="personClicked($event)"></app-realtime-info>
+    </div>
   </mat-card-content>
 </mat-card>

@@ -17,11 +17,11 @@
  * IN THE SOFTWARE.
  */
 
-import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core'
+import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
 
-import {AnalyticsService} from "../services/analytics.service";
-import {SimpleHeatMap} from "../lib/simple-heat-map";
-import {CanvasUtils} from "../lib/utils/canvas-utils";
+import {AnalyticsService} from '../services/analytics.service';
+import {SimpleHeatMap} from '../lib/simple-heat-map';
+import {CanvasUtils} from '../lib/utils/canvas-utils';
 
 @Component({
   selector: 'app-heatmap',
@@ -30,6 +30,26 @@ import {CanvasUtils} from "../lib/utils/canvas-utils";
 })
 
 export class HeatmapComponent implements AfterViewInit {
+
+  mapImage: string;
+  canvasConfigured = false;
+
+  private _startTime: Date;
+  private _endTime: Date;
+
+  private _offset = 0;
+  private _secondRange: number[] = [0, 60];
+
+  @ViewChild('canvas') private canvas: ElementRef;
+  private cx: CanvasRenderingContext2D;
+
+
+  constructor(private analyticsService: AnalyticsService) {
+    this.endTime = new Date();
+    this.startTime = new Date();
+    this.startTime.setDate(this.startTime.getDate() - 7);
+  }
+
   get offset(): number {
     return this._offset;
   }
@@ -41,14 +61,6 @@ export class HeatmapComponent implements AfterViewInit {
 
   get secondRange(): number[] {
     return this._secondRange;
-  }
-
-  private get startString(): string {
-    return new Date(this.from).toLocaleString();
-  }
-
-  private get endString(): string {
-    return new Date(this.from).toLocaleString();
   }
 
   set secondRange(value: number[]) {
@@ -74,41 +86,26 @@ export class HeatmapComponent implements AfterViewInit {
     this.generateHeatMap();
   }
 
-  mapImage: string;
-  canvasConfigured: boolean = false;
-  // Date picker for heat map range
-
-
-  private _startTime: Date = new Date(0);
-  private _endTime: Date = new Date(0);
-
-  private _offset: number = 0;
-  private _secondRange: number[] = [0, 60];
-
-
   private get from(): number {
-    if (this.startTime == null || this.secondRange[0] == null)
+    if (this.startTime == null || this.secondRange[0] == null) {
       return null;
+    }
     return this.startTime.getTime() + this.secondRange[0] * 1000 + this.offset * 1000;
   }
 
+
   private get to(): number {
-    if (this.endTime == null || this.secondRange[1] == null)
+    if (this.endTime == null || this.secondRange[1] == null) {
       return null;
+    }
     return this.endTime.getTime() + this.secondRange[1] * 1000 + this.offset * 1000;
-  }
-
-
-  @ViewChild('canvas') private canvas: ElementRef;
-  private cx: CanvasRenderingContext2D;
-
-  constructor(private analyticsService: AnalyticsService) {
   }
 
   ngAfterViewInit(): void {
     const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
     this.cx = canvasEl.getContext('2d');
     this.getMapImage();
+    this.generateHeatMap();
   }
 
   /**
@@ -116,22 +113,22 @@ export class HeatmapComponent implements AfterViewInit {
    */
   generateHeatMap(): void {
     if (this.from == null || this.to == null) {
-      console.error("Dates are not set");
+      console.error('Dates are not set');
       return;
     }
 
     if (!this.canvasConfigured) {
-      console.error("Canvas is not configured yet");
+      console.error('Canvas is not configured yet');
       return;
     }
 
     this.analyticsService.getHeatMap(this.from, this.to)
       .then(points => {
-        let p = [];
-        let max: number = 0;
+        const p = [];
+        let max = 0;
         for (let y = 0; y < points.length; y++) {
           for (let x = 0; x < points[0].length; x++) {
-            if (points[y][x] != 0) {
+            if (points[y][x] !== 0) {
               p.push([x, y, points[y][x]]);
               if (points[y][x] > max) {
                 max = points[y][x];
@@ -140,7 +137,7 @@ export class HeatmapComponent implements AfterViewInit {
           }
         }
 
-        let heatmap: SimpleHeatMap = new SimpleHeatMap(this.canvas);
+        const heatmap: SimpleHeatMap = new SimpleHeatMap(this.canvas);
         heatmap.data(p);
         heatmap.max(max);
         heatmap.resize();
@@ -165,7 +162,7 @@ export class HeatmapComponent implements AfterViewInit {
   private getMapImage(): void {
     this.analyticsService.getMap()
       .then(image => {
-        this.mapImage = "data:image/JPEG;base64," + image;
+        this.mapImage = 'data:image/JPEG;base64,' + image;
         CanvasUtils.setBackgroundImage(this.canvas.nativeElement, this.mapImage, this.configureCanvas, this);
       })
       .catch(reason => console.error(reason));
