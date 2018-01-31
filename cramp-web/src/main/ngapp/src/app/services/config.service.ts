@@ -18,32 +18,32 @@
  */
 
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http'
+import {HttpClient} from '@angular/common/http';
 import 'rxjs/add/operator/toPromise';
-import {Zone} from "../resources/zone";
-import {GlobalMap} from "../resources/global-map";
-import {CameraConfig} from "../resources/camera-config";
-import {PointMapping} from "../resources/point-mapping";
-import {Point} from "../resources/point";
-import {CameraView} from "../resources/camera-view";
+import {Zone} from '../resources/zone';
+import {GlobalMap} from '../resources/global-map';
+import {CameraConfig} from '../resources/camera-config';
+import {PointMapping} from '../resources/point-mapping';
+import {Point} from '../resources/point';
+import {CameraView} from '../resources/camera-view';
 
 @Injectable()
 export class ConfigService {
 
-  private baseUrl: string = "/api/v1/config/";
+  private baseUrl = 'http://localhost:8000/api/v1/config/';
 
   constructor(private http: HttpClient) {
   }
 
   getCameraConfigs(): Promise<CameraConfig[]> {
-    return this.http.get(this.baseUrl + "cameraConfigs")
+    return this.http.get(this.baseUrl + 'cameraConfigs')
       .toPromise()
       .then(response => {
         console.log(response);
-        let configs: Map<number, CameraConfig> = response as Map<number, CameraConfig>;
-        let cameraConfigs: CameraConfig[] = [];
-        for (let key in configs) {
-          let cameraConfig: CameraConfig = ConfigService.toCameraConfig(configs[key]);
+        const configs: Map<number, CameraConfig> = response as Map<number, CameraConfig>;
+        const cameraConfigs: CameraConfig[] = [];
+        for (const key in configs) {
+          const cameraConfig: CameraConfig = ConfigService.toCameraConfig(configs[key]);
           cameraConfigs.push(cameraConfig);
         }
         return cameraConfigs;
@@ -52,20 +52,20 @@ export class ConfigService {
   }
 
   addCameraConfig(cameraConfig: CameraConfig): Promise<boolean> {
-    return this.http.post(this.baseUrl + "cameraConfig", cameraConfig)
+    return this.http.post(this.baseUrl + 'cameraConfig', cameraConfig)
       .toPromise()
       .then(response => {
         return true;
-      }).catch(ConfigService.handleError)
+      }).catch(ConfigService.handleError);
   }
 
   getMap(): Promise<GlobalMap> {
-    return this.http.get(this.baseUrl + "getMap")
+    return this.http.get(this.baseUrl + 'getMap')
       .toPromise()
       .then(response => {
         console.log(response);
-        let views: Map<string, string> = response as Map<string, string>;
-        let base64: string = "data:image/JPEG;base64," + views["mapImage"];
+        const views: Map<string, string> = response as Map<string, string>;
+        const base64: string = 'data:image/JPEG;base64,' + views['mapImage'];
 
         return new GlobalMap(base64);
       })
@@ -73,37 +73,37 @@ export class ConfigService {
   }
 
   addZone(zone: Zone): Promise<Zone> {
-    return this.http.post(this.baseUrl + "zone", zone)
+    return this.http.post(this.baseUrl + 'zone', zone)
       .toPromise()
       .then(response => {
-        let z = response as Zone;
+        const z = response as Zone;
         return new Zone(z.id, z.zoneName, z.xCoordinates, z.yCoordinates, z.zoneLimit);
-      }).catch(ConfigService.handleError)
+      }).catch(ConfigService.handleError);
   }
 
   updateZone(zone: Zone): Promise<boolean> {
-    return this.http.put(this.baseUrl + "zone", zone)
+    return this.http.put(this.baseUrl + 'zone', zone)
       .toPromise()
       .then(response => {
         return true;
-      }).catch(ConfigService.handleError)
+      }).catch(ConfigService.handleError);
   }
 
   deleteZone(zoneId: number): Promise<boolean> {
-    return this.http.delete(this.baseUrl + "zone/" + zoneId)
+    return this.http.delete(this.baseUrl + 'zone/' + zoneId)
       .toPromise()
       .then(response => {
         return true;
-      }).catch(ConfigService.handleError)
+      }).catch(ConfigService.handleError);
   }
 
   getZones(): Promise<Zone[]> {
-    return this.http.get<Zone[]>(this.baseUrl + "zones")
+    return this.http.get<Zone[]>(this.baseUrl + 'zones')
       .toPromise()
       .then(response => {
-        let arr = response as Zone[];
-        let zones: Zone[] = [];
-        for (let z of arr) {
+        const arr = response as Zone[];
+        const zones: Zone[] = [];
+        for (const z of arr) {
           zones.push(new Zone(z.id, z.zoneName, z.xCoordinates, z.yCoordinates, z.zoneLimit));
         }
 
@@ -113,23 +113,23 @@ export class ConfigService {
   }
 
   private static toCameraConfig(config: any): CameraConfig {
-    let cameraId = config.cameraId;
-    let view = "data:image/JPEG;base64," + config.view;
-    let ipPort = config.ipAndPort;
-    let cameraConfig = new CameraConfig(cameraId, ipPort, new PointMapping(), new CameraView(view));
+    const cameraId = config.cameraId;
+    const view = 'data:image/JPEG;base64,' + config.view;
+    const ipPort = config.ipAndPort;
+    const cameraConfig = new CameraConfig(cameraId, ipPort, new PointMapping(), new CameraView(view));
 
-    for (let i in config.pointMapping.screenSpacePoints) {
-      let screenSpacePoint = new Point(config.pointMapping.screenSpacePoints[i].x, config.pointMapping.screenSpacePoints[i].y);
+    for (const i in config.pointMapping.screenSpacePoints) {
+      const screenSpacePoint = new Point(config.pointMapping.screenSpacePoints[i].x, config.pointMapping.screenSpacePoints[i].y);
       cameraConfig.pointMapping.screenSpacePoints.push(screenSpacePoint);
-      let worldSpacePoint = new Point(config.pointMapping.worldSpacePoints[i].x, config.pointMapping.worldSpacePoints[i].y);
+      const worldSpacePoint = new Point(config.pointMapping.worldSpacePoints[i].x, config.pointMapping.worldSpacePoints[i].y);
       cameraConfig.pointMapping.worldSpacePoints.push(worldSpacePoint);
     }
     return cameraConfig;
   }
 
   private static stringToNumberArray(str: string): number[] {
-    let arr: number[] = [];
-    for (let s of str.split(",")) {
+    const arr: number[] = [];
+    for (const s of str.split(',')) {
       arr.push(parseInt(s));
     }
     return arr;

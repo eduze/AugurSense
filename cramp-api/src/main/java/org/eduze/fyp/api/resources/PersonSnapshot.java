@@ -30,20 +30,12 @@ public class PersonSnapshot extends Coordinate {
     private int trackSegmentIndex;
     private Set<Integer> ids = new HashSet<>();
     private Zone instanceZone;
-
     private static int generatedStaticId = 0;
-
     private Zone persistantZone;
-
     private Zone pastPersistantZone;
-
     private static Random idGenerator = new Random();
-
     private String uuid;
-
-    public String getUuid() {
-        return uuid;
-    }
+    private boolean stored = false;
 
     public PersonSnapshot() { }
 
@@ -67,14 +59,16 @@ public class PersonSnapshot extends Coordinate {
         this.trackSegmentIndex = trackSegmentIndex;
     }
 
-    private boolean stored = false;
-
     public boolean isStored() {
         return stored;
     }
 
     public void setPastPersistantZone(Zone pastPersistantZone) {
         this.pastPersistantZone = pastPersistantZone;
+    }
+
+    public String getUuid() {
+        return uuid;
     }
 
     public Zone getPastPersistantZone() {

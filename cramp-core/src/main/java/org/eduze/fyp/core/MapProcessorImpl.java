@@ -114,7 +114,6 @@ public class MapProcessorImpl implements MapProcessor {
 
     @Override
     public void start() {
-
         globalMap.setZoneMapper(zoneMapper);
         globalMap.setPhotoMapper(photoMapper);
         globalMap.setAccuracyTester(accuracyTester);
@@ -150,8 +149,8 @@ public class MapProcessorImpl implements MapProcessor {
                         globalMap.update(nextMap);
                     }
 
-                    if (cameraCoordinator.getCurrentTimestamp() - lastTimestamp > MAP_REFRESH_INTERVAL) {
-                        lastTimestamp = cameraCoordinator.getCurrentTimestamp();
+                    if (cameraCoordinator.getRealTimestamp() - lastTimestamp > MAP_REFRESH_INTERVAL) {
+                        lastTimestamp = cameraCoordinator.getRealTimestamp();
                         long minTimestamp = lastTimestamp - MAP_REFRESH_THRESHOLD;
                         globalMap.refresh(minTimestamp);
                     }

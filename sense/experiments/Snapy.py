@@ -1,7 +1,6 @@
 '''
 Obtains snaps of persons when required for Re-Id
 '''
-import cv2
 import logging
 
 from Util import restEncodeImage

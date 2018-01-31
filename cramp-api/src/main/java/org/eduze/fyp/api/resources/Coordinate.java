@@ -29,6 +29,11 @@ public class Coordinate extends Point {
         super(0, 0);
     }
 
+    public Coordinate(double x, double y, long timestamp) {
+        super(x, y);
+        this.timestamp = timestamp;
+    }
+
     public Coordinate(double x, double y, long timestamp, double sitProbability, double standProbability, double headDirectionX, double headDirectionY) {
         super(x, y);
         this.timestamp = timestamp;

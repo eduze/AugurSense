@@ -173,16 +173,22 @@ def loadTownCenterTest():
 
 def load_ntb_middle():
     cap = cv2.VideoCapture("/home/imesha/Desktop/city branch/Organized/Middle-1.dav")
-    width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
-    height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+    markers = [(238, 158), (433, 119), (556, 204), (342, 269)]
+    map_markers = [(206, 120), (308, 120), (230, 206), (148, 207)]
+    return cap, markers, map_markers
 
-    markers = [(238.000000, 158.000000), (433.000000, 119.000000), (556.000000, 204.000000), (342.000000, 269.000000)]
-    # markers = [((x[0] / 500) * width, (x[1] / 500) * height) for x in markers]
-    # markers = [(615, 340), (13, 334), (175, 90), (430, 85)]  # Scale = 0.5
-    # markers = [(int(x * 0.5/0.3),int(y * 0.5/0.3)) for (x,y) in markers]
 
-    map_markers = [(206.000000, 120.000000), (308.00, 120.00), (230.000000, 206.000000), (148.0000, 207.00)]
-    # map_markers = [(400, 350), (200, 350), (200, 100), (400, 100)]
+def load_ntb_entrance():
+    cap = cv2.VideoCapture("/home/imesha/Desktop/city branch/Organized/Entrance-1.dav")
+    markers = [(141, 213), (304, 82), (452, 145), (419, 279)]
+    map_markers = [(110, 460), (112, 308), (197, 362), (197, 461)]
+    return cap, markers, map_markers
+
+
+def load_ntb_server_room():
+    cap = cv2.VideoCapture("/home/imesha/Desktop/city branch/Organized/Server_Room-1.dav")
+    markers = [(238, 158), (433, 119), (556, 204), (342, 269)]
+    map_markers = [(206, 120), (308, 120), (230, 206), (148, 207)]
     return cap, markers, map_markers
 
 
@@ -190,11 +196,8 @@ def load_ntb_counter_1():
     cap = cv2.VideoCapture("/home/imesha/Desktop/city branch/Organized/Cash_Counter_1-1.dav")
     width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
     height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
-
     markers = [(433.000000, 129.000000), (544.000000, 80.000000), (648.000000, 72.000000), (616.000000, 158.000000)]
-
     map_markers = [(204.00, 118.00), (307.000000, 117.000000), (336.000000, 136.000000), (206.0000, 188.00)]
-    # map_markers = [(400, 350), (200, 350), (200, 100), (400, 100)]
     return cap, markers, map_markers
 
 
