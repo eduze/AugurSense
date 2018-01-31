@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 
 from WorldSpaceTracker import MappedPerson
@@ -16,9 +18,11 @@ class SensedPerson:
 
 
 class Sense:
-    '''
+    """
     Core engine which interconnects detection, mapping, tracking and re_id
-    '''
+    """
+
+    logger = logging.getLogger("Sense")
 
     def __init__(self, detector, position_mapper, angle_mapper, tracker, re_id):
         '''
@@ -63,6 +67,7 @@ class Sense:
 
         # Detect persons
         persons = self.detector.detectPersons(colour_frame, gray_frame)
+        self.logger.debug("Found %d persons", len(persons))
 
         if self.position_mapper.isReady():
             mapped_persons = []

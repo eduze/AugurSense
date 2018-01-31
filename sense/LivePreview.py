@@ -1,12 +1,13 @@
 import logging
-from logging import INFO
+import time
 
 import cv2
 
-from SenseMapViewer import SenseMapViewer
+from OpenPersonDetector import OpenPersonDetector
 from PTEMapper import PTEMapper
 from ScreenSpacePreview import ScreenSpacePreview
 from Sense import Sense
+from SenseMapViewer import SenseMapViewer
 from WorldSpaceTracker import WorldSpaceTracker
 from detectors.TFODDetector.TFODPersonDetector import TFODPersonDetector
 from experiments.AngleMapper import AngleMapper
@@ -14,11 +15,7 @@ from experiments.AngleMapper import AngleMapper
 from experiments.MapAggregator import MapAggregator
 from experiments.MergedMapViewer import MergedMapViewer
 from experiments.Snapy import Snapy
-from re_id.cvpr_reid.ReIDAPI import ReIDAPI
-from test_videos.VideoLoader import loadOfficeRoomTest, loadTownCenterTest, loadAroundRectangleTest2, loadCam29, \
-    loadCam89, loadCam39, loadCam59, loadPETS09S2L1V7, loadPETS09S2L1V1, loadPETS09S2L1V5, loadPETS09S2L1V6, \
-    loadPETS09S2L1V8, loadPETS09S2L1V4, loadPETS09S0RF1403V2, loadCSELounge
-from detectors.TFOPDetector.TFOPDetector import TFOPersonDetector
+from test_videos.VideoLoader import loadPETS09S2L1V5, load_ntb_middle
 
 # logging.basicConfig(level=INFO)
 
@@ -48,7 +45,7 @@ def app():
     frames = []
     position_mappers = []
 
-    background_image = cv2.imread("test_videos/PETSMap.png")
+    background_image = cv2.imread("test_videos/ntb_branch.png")
 
     for i in range(1):
         if i == 0:
@@ -57,7 +54,7 @@ def app():
 
             # background_image = cv2.resize(background_image, (0,0), fx=0.7, fy=0.7)
 
-            (cap, markers, map_markers) = loadOfficeRoomTest()
+            (cap, markers, map_markers) = load_ntb_middle()
             # (cap, markers, map_markers) = loadCSELounge()
         elif i == 1:
             (cap, markers, map_markers) = loadPETS09S2L1V5()
@@ -130,7 +127,9 @@ def app():
             # Denoise gray
             # gray = cv2.fastNlMeansDenoising(gray)
 
+            start = time.time()
             senses[i].processFrame(frame, gray, frame_msec)
+            logging.info("Time: %f", time.time() - start)
 
             screen_previews[i].renderFrame(senses[i], frame, gray)
 
@@ -164,10 +163,10 @@ def app():
         for person in tracked_frame.persons.values():
             for i in range(len(person.detection)):
                 d = person.detection[i]
-                cv2.imwrite("output/" + str(int(frame_msec)) + "_" + str(int(person.position[0])) + "_" + str(
-                    int(person.position[1])) + "_" + str(int(i)) + ".jpg", d.roi)
+                # cv2.imwrite("output/" + str(int(frame_msec)) + "_" + str(int(person.position[0])) + "_" + str(
+                #     int(person.position[1])) + "_" + str(int(i)) + ".jpg", d.roi)
 
-        merged_map_viewer.showMap(tracked_frame.persons.values(), map_merge.merged_map)
+        # merged_map_viewer.showMap(tracked_frame.persons.values(), map_merge.merged_map)
 
         # hmdv.processFrame(list(tracked_frame.persons.values()))
 
@@ -191,4 +190,5 @@ def app():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
     app()

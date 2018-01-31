@@ -160,6 +160,7 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
     }
 
     public void addLocalMap(LocalMap map) {
+        // todo We have a problem with timestamp
         map.setTimestamp(realTimestamp);
         map.getPersonCoordinates()
                 .forEach(personCoordinate -> personCoordinate.setTimestamp(realTimestamp));
@@ -168,8 +169,8 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
     }
 
     @Override
-    public long getCurrentTimestamp() {
-        return currentTimestamp;
+    public long getRealTimestamp() {
+        return realTimestamp;
     }
 
     public MapProcessor getMapProcessor() {

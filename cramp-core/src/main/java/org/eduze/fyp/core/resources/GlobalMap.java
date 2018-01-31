@@ -88,20 +88,25 @@ public class GlobalMap {
             });
         });
 
+        personLocations.forEach(personLocation -> {
+            tuples.add(new LocationPair(null, personLocation));
+        });
         Collections.sort(tuples);
-        Set<PersonCoordinate> usedKNew = new HashSet<>();
-        Set<PersonLocation> usedVPL = new HashSet<>();
+
+        Set<PersonCoordinate> usedPersonCoordinates = new HashSet<>();
+        Set<PersonLocation> usedPersonLocations = new HashSet<>();
         Set<PersonLocation> newPeople = new HashSet<>();
         tuples.forEach(pair -> {
             boolean added = false;
             if (pair.distance() < Constants.DISTANCE_THRESHOLD) {
 
-                if (!usedKNew.contains(pair.getKey()) && !usedVPL.contains(pair.getValue())) {
-                    if (this.accuracyTester != null)
+                if (!usedPersonCoordinates.contains(pair.getKey()) && !usedPersonLocations.contains(pair.getValue())) {
+                    if (this.accuracyTester != null) {
                         this.accuracyTester.reportPointDeviation(pair.getKey(), pair.getValue(), localMap.getCameraId(), localMap.getTimestamp());
+                    }
 
-                    usedKNew.add(pair.getKey());
-                    usedVPL.add(pair.getValue());
+                    usedPersonCoordinates.add(pair.getKey());
+                    usedPersonLocations.add(pair.getValue());
                     PersonSnapshot ps = pair.getValue().addPoint(localMap.getCameraId(), pair.getKey().toCoordinate());
 
                     pair.getKey().setUuid(ps.getUuid()); //passing uuid into personCoordinate
@@ -113,22 +118,20 @@ public class GlobalMap {
 
                         photoMapper.addSnapshot(pair.getKey(), pair.getValue().getIds(), ps);
                     }
-
                     added = true;
-                } else if (usedVPL.contains(pair.getValue())) {
+                } else if (usedPersonLocations.contains(pair.getValue())) {
                     if (pair.distance() < Constants.DISTANCE_CONFLICT_THRESHOLD) {
                         //We have another point very close to an assigned pair. Increment segment index to break tracking
                         pair.getValue().incrementTrackSegmentIndex();
                     }
-                } else if (usedKNew.contains(pair.getKey())) {
+                } else if (usedPersonCoordinates.contains(pair.getKey())) {
                     if (pair.distance() < Constants.DISTANCE_CONFLICT_THRESHOLD) {
                         //We have another point very close to an assigned pair. Increment segment index to break tracking
                         pair.getValue().incrementTrackSegmentIndex();
                     }
                 }
-
             }
-            if (!added && !usedKNew.contains(pair.getKey()) && pair.getValue() == null) {
+            if (!added && !usedPersonCoordinates.contains(pair.getKey()) && pair.getValue() == null) {
                 int id = nextID();
                 Set<Integer> idd = new HashSet<>();
                 idd.add(id);
@@ -137,7 +140,7 @@ public class GlobalMap {
                 PersonLocation newPL = new PersonLocation(id);
                 PersonSnapshot ps = newPL.addPoint(localMap.getCameraId(), pair.getKey().toCoordinate());
                 newPeople.add(newPL);
-                usedKNew.add(pair.getKey());
+                usedPersonCoordinates.add(pair.getKey());
 
                 pair.getKey().setUuid(ps.getUuid()); //passing uuid into person coordinate
                 pair.getKey().setIds(idd);
@@ -198,6 +201,7 @@ public class GlobalMap {
     }
 
     private class LocationPair extends Pair<PersonCoordinate, PersonLocation> implements Comparable<LocationPair> {
+
         public LocationPair(PersonCoordinate personCoordinate, PersonLocation personLocation) {
             super(personCoordinate, personLocation);
             if (personCoordinate == null && personLocation == null) {

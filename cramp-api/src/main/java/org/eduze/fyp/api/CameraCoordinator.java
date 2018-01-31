@@ -29,5 +29,5 @@ import org.eduze.fyp.api.config.Startable;
  */
 public interface CameraCoordinator extends Startable {
 
-    long getCurrentTimestamp();
+    long getRealTimestamp();
 }

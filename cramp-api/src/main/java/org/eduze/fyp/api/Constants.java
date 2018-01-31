@@ -29,12 +29,12 @@ public class Constants {
     public static final String CAMERA_NOTIFICATION_PATH = "/getMap/";
 
     /** Threshold to be used to determine whether two points are the same */
-    public static final double DISTANCE_THRESHOLD = 50;
+    public static final double DISTANCE_THRESHOLD = 100;
 
     public static final double DISTANCE_CONFLICT_THRESHOLD = 15;
 
     /** Global map refresh interval */
-    public static final long MAP_REFRESH_INTERVAL = 5;
+    public static final long MAP_REFRESH_INTERVAL = 30000;
     public static final long MAP_REFRESH_THRESHOLD = 3000;
 
     /** Time out for notifying cameras by camera coordinator */

@@ -5,7 +5,6 @@ import cv2
 from flask import Flask, jsonify
 
 from CamServer import CamServer
-from OpenPersonDetector import OpenPersonDetector
 from PTEMapper import PTEMapper
 from ScreenSpacePreview import ScreenSpacePreview
 from Sense import Sense
@@ -13,9 +12,10 @@ from SenseMapViewer import SenseMapViewer
 from WorldSpaceTracker import WorldSpaceTracker
 from communication.ServerSession import ServerSession
 from communication.ServerSession import config_my_port
+from detectors.TFODDetector.TFODPersonDetector import TFODPersonDetector
 from experiments.AngleMapper import AngleMapper
 from experiments.Snapy import Snapy
-from test_videos.VideoLoader import load_ntb_middle, load_ntb_counter_1
+from test_videos.VideoLoader import load_ntb_middle, load_ntb_entrance
 
 serve_count = 2
 
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     # Test snippet
     logging.basicConfig(level=logging.INFO)
 
-    person_detector = OpenPersonDetector(preview=False)
+    person_detector = TFODPersonDetector(preview=False)
 
     processEventsLock = RLock()
 
@@ -52,7 +52,7 @@ if __name__ == "__main__":
         if i == 0:
             cap, markers, map_markers = load_ntb_middle()
         else:
-            cap, markers, map_markers = load_ntb_counter_1()
+            cap, markers, map_markers = load_ntb_entrance()
         position_mapper = PTEMapper(markers, map_markers)
         sense = Sense(person_detector, position_mapper, AngleMapper(position_mapper), WorldSpaceTracker(), Snapy())
 
