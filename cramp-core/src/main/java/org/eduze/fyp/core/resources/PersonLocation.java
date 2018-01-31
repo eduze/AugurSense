@@ -105,7 +105,7 @@ public class PersonLocation {
         }
 
         // Another camera may have sent a person location earlier, which should now be replaced
-        if (snapshots.getFirst().getTimestamp() == timestamp) {
+        if (snapshots.size()>0 && snapshots.getFirst().getTimestamp() == timestamp) {
             snapshots.removeFirst();
         }
         snapshots.addFirst(result);
