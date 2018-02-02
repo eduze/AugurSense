@@ -114,6 +114,10 @@ class LightWeightCamServer:
             "timestamp": current_frame_time,
             "personCoordinates": result_coordinates
         }
+
+        cv2.imshow("output",frame)
+        cv2.waitKey(1)
+
         return result
 
     def start_cam_server(self):
@@ -140,7 +144,7 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     cap, markers, map_markers = load_ntb_entrance()
 
-    person_detector = TFODPersonDetector(preview=False)
+    person_detector = TFODPersonDetector(preview=True)
     position_mapper = PTEMapper(markers, map_markers)
     sense = Sense(person_detector, position_mapper, AngleMapper(position_mapper), WorldSpaceTracker(), Snapy())
 
