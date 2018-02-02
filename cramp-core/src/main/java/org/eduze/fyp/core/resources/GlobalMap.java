@@ -67,7 +67,21 @@ public class GlobalMap {
         localMap.getPersonCoordinates().forEach(personCoordinate -> {
             try {
                 BufferedImage image = ImageUtils.byteArrayToBufferedImage(personCoordinate.getImage());
-                int id = reIdentifier.identify(image);
+                // find closeby person locations
+                List<Integer> closeByIndices = new ArrayList<>();
+                personLocations.forEach((k,v)->{
+                    double x2 = v.getSnapshot().getX();
+                    double y2 = v.getSnapshot().getY();
+
+                    double x1 = personCoordinate.getX();
+                    double y1 = personCoordinate.getY();
+
+                    double d = Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)* (y2-y1));
+                    if(d < 100)
+                        closeByIndices.add(k);
+                });
+
+                int id = reIdentifier.identify(image, closeByIndices);
                 logger.debug("Identified - {}", id);
                 if (newIds.contains(id)) {
                     logger.warn("Id conflict. Same person have been matched before - {}", id);

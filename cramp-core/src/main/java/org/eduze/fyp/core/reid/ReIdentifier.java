@@ -40,12 +40,15 @@ public class ReIdentifier {
         this.session = savedModelBundle.session();
     }
 
-    public int identify(BufferedImage image) {
+    public int identify(BufferedImage image, List<Integer> candidate_indices) {
         image = ImageUtils.resize(image, IMAGE_WIDTH, IMAGE_HEIGHT);
         float[][][] matrix = ImageUtils.imageToMatrix(image);
 
         List<GalleryComparisonResult> comparisonResults = new ArrayList<>();
         for (GalleryPerson person : gallery) {
+            if(!candidate_indices.contains(person.getId()))
+                continue;
+
             float confidence = getConfidence(matrix, person.getMatrixImage());
             GalleryComparisonResult result = new GalleryComparisonResult(person, confidence);
             comparisonResults.add(result);
