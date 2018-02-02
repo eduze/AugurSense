@@ -1,13 +1,15 @@
-import tensorflow as tf
-import numpy as np
-import cv2
-from re_id.cvpr_reid import cuhk03_dataset
 import os
+
+import cv2
+import numpy as np
+import tensorflow as tf
+
+from re_id.cvpr_reid import cuhk03_dataset
 
 FLAGS = tf.flags.FLAGS
 tf.flags.DEFINE_integer('batch_size', '50', 'batch size for training')
 tf.flags.DEFINE_integer('max_steps', '10000', 'max steps for training')
-tf.flags.DEFINE_string('logs_dir', 're_id/cvpr_reid/logs/', 'path to logs directory')
+tf.flags.DEFINE_string('logs_dir', 'sense/re_id/cvpr_reid/logs/', 'path to logs directory')
 tf.flags.DEFINE_string('data_dir', 'data/', 'path to dataset')
 tf.flags.DEFINE_float('learning_rate', '0.01', '')
 tf.flags.DEFINE_string('mode', 'train', 'Mode train, val, test')
@@ -18,6 +20,7 @@ tf.flags.DEFINE_string('gallery', '', 'Gallery location')
 
 IMAGE_WIDTH = 60
 IMAGE_HEIGHT = 160
+
 
 def preprocess(images, is_train):
     def train():
@@ -37,7 +40,8 @@ def preprocess(images, is_train):
                 split[i][j] = tf.image.random_contrast(split[i][j], lower=0.5, upper=1.5)
                 split[i][j] = tf.image.per_image_standardization(split[i][j])
         return [tf.reshape(tf.concat(split[0], axis=0), [FLAGS.batch_size, IMAGE_HEIGHT, IMAGE_WIDTH, 3]),
-            tf.reshape(tf.concat(split[1], axis=0), [FLAGS.batch_size, IMAGE_HEIGHT, IMAGE_WIDTH, 3])]
+                tf.reshape(tf.concat(split[1], axis=0), [FLAGS.batch_size, IMAGE_HEIGHT, IMAGE_WIDTH, 3])]
+
     def val():
         split = tf.split(images, [1, 1])
         shape = [1 for _ in range(split[0].get_shape()[1])]
@@ -49,23 +53,25 @@ def preprocess(images, is_train):
                 split[i][j] = tf.reshape(split[i][j], [IMAGE_HEIGHT, IMAGE_WIDTH, 3])
                 split[i][j] = tf.image.per_image_standardization(split[i][j])
         return [tf.reshape(tf.concat(split[0], axis=0), [FLAGS.batch_size, IMAGE_HEIGHT, IMAGE_WIDTH, 3]),
-            tf.reshape(tf.concat(split[1], axis=0), [FLAGS.batch_size, IMAGE_HEIGHT, IMAGE_WIDTH, 3])]
+                tf.reshape(tf.concat(split[1], axis=0), [FLAGS.batch_size, IMAGE_HEIGHT, IMAGE_WIDTH, 3])]
+
     return tf.cond(is_train, train, val)
+
 
 def network(images1, images2, weight_decay):
     with tf.variable_scope('network'):
-        # Tied Convolution
+        # # Tied Convolution
         conv1_1 = tf.layers.conv2d(images1, 20, [5, 5], activation=tf.nn.relu,
-            kernel_regularizer=tf.contrib.layers.l2_regularizer(weight_decay), name='conv1_1')
+                                   kernel_regularizer=tf.contrib.layers.l2_regularizer(weight_decay), name='conv1_1')
         pool1_1 = tf.layers.max_pooling2d(conv1_1, [2, 2], [2, 2], name='pool1_1')
         conv1_2 = tf.layers.conv2d(pool1_1, 25, [5, 5], activation=tf.nn.relu,
-            kernel_regularizer=tf.contrib.layers.l2_regularizer(weight_decay), name='conv1_2')
+                                   kernel_regularizer=tf.contrib.layers.l2_regularizer(weight_decay), name='conv1_2')
         pool1_2 = tf.layers.max_pooling2d(conv1_2, [2, 2], [2, 2], name='pool1_2')
         conv2_1 = tf.layers.conv2d(images2, 20, [5, 5], activation=tf.nn.relu,
-            kernel_regularizer=tf.contrib.layers.l2_regularizer(weight_decay), name='conv2_1')
+                                   kernel_regularizer=tf.contrib.layers.l2_regularizer(weight_decay), name='conv2_1')
         pool2_1 = tf.layers.max_pooling2d(conv2_1, [2, 2], [2, 2], name='pool2_1')
         conv2_2 = tf.layers.conv2d(pool2_1, 25, [5, 5], activation=tf.nn.relu,
-            kernel_regularizer=tf.contrib.layers.l2_regularizer(weight_decay), name='conv2_2')
+                                   kernel_regularizer=tf.contrib.layers.l2_regularizer(weight_decay), name='conv2_2')
         pool2_2 = tf.layers.max_pooling2d(conv2_2, [2, 2], [2, 2], name='pool2_2')
 
         # Cross-Input Neighborhood Differences
@@ -81,7 +87,7 @@ def network(images1, images2, weight_decay):
         pad = tf.pad(reshape, [[0, 0], [0, 0], [0, 0], [2, 2], [2, 2]])
         for i in range(shape[2]):
             for j in range(shape[3]):
-                g.append(pad[:,:,:,i:i+5,j:j+5])
+                g.append(pad[:, :, :, i:i + 5, j:j + 5])
 
         concat = tf.concat(g, axis=0)
         reshape = tf.reshape(concat, [shape[2], shape[3], shape[0], shape[1], 5, 5])
@@ -93,16 +99,16 @@ def network(images1, images2, weight_decay):
 
         # Patch Summary Features
         l1 = tf.layers.conv2d(k1, 25, [5, 5], (5, 5), activation=tf.nn.relu,
-            kernel_regularizer=tf.contrib.layers.l2_regularizer(weight_decay), name='l1')
+                              kernel_regularizer=tf.contrib.layers.l2_regularizer(weight_decay), name='l1')
         l2 = tf.layers.conv2d(k2, 25, [5, 5], (5, 5), activation=tf.nn.relu,
-            kernel_regularizer=tf.contrib.layers.l2_regularizer(weight_decay), name='l2')
+                              kernel_regularizer=tf.contrib.layers.l2_regularizer(weight_decay), name='l2')
 
         # Across-Patch Features
         m1 = tf.layers.conv2d(l1, 25, [3, 3], activation=tf.nn.relu,
-            kernel_regularizer=tf.contrib.layers.l2_regularizer(weight_decay), name='m1')
+                              kernel_regularizer=tf.contrib.layers.l2_regularizer(weight_decay), name='m1')
         pool_m1 = tf.layers.max_pooling2d(m1, [2, 2], [2, 2], padding='same', name='pool_m1')
         m2 = tf.layers.conv2d(l2, 25, [3, 3], activation=tf.nn.relu,
-            kernel_regularizer=tf.contrib.layers.l2_regularizer(weight_decay), name='m2')
+                              kernel_regularizer=tf.contrib.layers.l2_regularizer(weight_decay), name='m2')
         pool_m2 = tf.layers.max_pooling2d(m2, [2, 2], [2, 2], padding='same', name='pool_m2')
 
         # Higher-Order Relationships
@@ -112,6 +118,7 @@ def network(images1, images2, weight_decay):
         fc2 = tf.layers.dense(fc1, 2, name='fc2')
 
         return fc2
+
 
 def main(argv=None):
     if FLAGS.mode == 'test' or FLAGS.mode == "match":
@@ -154,9 +161,9 @@ def main(argv=None):
             step = sess.run(global_step)
             for i in range(step, FLAGS.max_steps + 1):
                 batch_images, batch_labels = cuhk03_dataset.read_data(FLAGS.data_dir, 'train', tarin_num_id,
-                    IMAGE_WIDTH, IMAGE_HEIGHT, FLAGS.batch_size)
+                                                                      IMAGE_WIDTH, IMAGE_HEIGHT, FLAGS.batch_size)
                 feed_dict = {learning_rate: lr, images: batch_images,
-                    labels: batch_labels, is_train: True}
+                             labels: batch_labels, is_train: True}
                 sess.run(train, feed_dict=feed_dict)
                 train_loss = sess.run(loss, feed_dict=feed_dict)
                 print('Step: %d, Learning rate: %f, Train loss: %f' % (i, lr, train_loss))
@@ -168,7 +175,7 @@ def main(argv=None):
             total = 0.
             for _ in range(10):
                 batch_images, batch_labels = cuhk03_dataset.read_data(FLAGS.data_dir, 'val', val_num_id,
-                    IMAGE_WIDTH, IMAGE_HEIGHT, FLAGS.batch_size)
+                                                                      IMAGE_WIDTH, IMAGE_HEIGHT, FLAGS.batch_size)
                 feed_dict = {images: batch_images, labels: batch_labels, is_train: False}
                 prediction = sess.run(inference, feed_dict=feed_dict)
                 prediction = np.argmax(prediction, axis=1)
@@ -210,9 +217,9 @@ def main(argv=None):
                 feed_dict = {images: test_images, is_train: False}
                 prediction = sess.run(inference, feed_dict=feed_dict)
                 if bool(not np.argmax(prediction[0])):
-                    cv2.imshow("match",image2_orig)
+                    cv2.imshow("match", image2_orig)
                     cv2.waitKey(0)
-                print(file,"=>", bool(not np.argmax(prediction[0])))
+                print(file, "=>", bool(not np.argmax(prediction[0])))
         elif FLAGS.mode == 'test':
             image1 = cv2.imread(FLAGS.image1)
             image1 = cv2.resize(image1, (IMAGE_WIDTH, IMAGE_HEIGHT))
@@ -227,6 +234,7 @@ def main(argv=None):
             feed_dict = {images: test_images, is_train: False}
             prediction = sess.run(inference, feed_dict=feed_dict)
             print(bool(not np.argmax(prediction[0])))
+
 
 if __name__ == '__main__':
     tf.app.run()
