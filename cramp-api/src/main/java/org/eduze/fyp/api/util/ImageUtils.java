@@ -68,4 +68,19 @@ public class ImageUtils {
         BufferedImage resized = resize(image, newW, newH);
         return bufferedImageToByteArray(resized);
     }
+
+    public static float[][][] imageToMatrix(BufferedImage bi) {
+        float[][][] C = new float[bi.getHeight()][bi.getWidth()][3];
+        for (int i = 0; i < bi.getHeight(); i++) {
+            for (int j = 0; j < bi.getWidth(); j++) {
+                int rgb = bi.getRGB(j, i);
+
+                C[i][j][0] = (rgb >> 16) & 0x000000FF;
+                C[i][j][1] = (rgb >> 8) & 0x000000FF;
+                C[i][j][2] = (rgb) & 0x000000FF;
+            }
+        }
+
+        return C;
+    }
 }

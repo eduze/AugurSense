@@ -106,8 +106,8 @@
             <artifactId>libtensorflow_jni</artifactId>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>org.tensorflow</groupId>-->
-            <!--<artifactId>libtensorflow_jni_gpu</artifactId>-->
+        <!--<groupId>org.tensorflow</groupId>-->
+        <!--<artifactId>libtensorflow_jni_gpu</artifactId>-->
         <!--</dependency>-->
 
         <dependency>
@@ -116,5 +116,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    
+
 </project>

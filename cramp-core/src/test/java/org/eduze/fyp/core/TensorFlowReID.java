@@ -88,8 +88,8 @@ public class TensorFlowReID {
 
         img1 = ImageUtils.resize(img1, IMAGE_WIDTH, IMAGE_HEIGHT);
         img2 = ImageUtils.resize(img2, IMAGE_WIDTH, IMAGE_HEIGHT);
-        float[][][] image1 = img2matriz(img1);
-        float[][][] image2 = img2matriz(img2);
+        float[][][] image1 = imageToMatrix(img1);
+        float[][][] image2 = imageToMatrix(img2);
         float[][][][][] input = new float[][][][][]{
                 {image1},
                 {image2}
@@ -114,7 +114,7 @@ public class TensorFlowReID {
         return confidence;
     }
 
-    private static float[][][] img2matriz(BufferedImage bi) {
+    private static float[][][] imageToMatrix(BufferedImage bi) {
         float[][][] C = new float[bi.getHeight()][bi.getWidth()][3];
         for (int i = 0; i < bi.getHeight(); i++) {
             for (int j = 0; j < bi.getWidth(); j++) {
