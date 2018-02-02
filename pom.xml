@@ -166,6 +166,23 @@
                 <artifactId>hibernate-jpa-2.1-api</artifactId>
                 <version>${hibernate.jpa.version}</version>
             </dependency>
+
+            <!-- TensorFlow -->
+            <dependency>
+                <groupId>org.tensorflow</groupId>
+                <artifactId>libtensorflow</artifactId>
+                <version>1.5.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.tensorflow</groupId>
+                <artifactId>libtensorflow_jni</artifactId>
+                <version>1.5.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.tensorflow</groupId>
+                <artifactId>libtensorflow_jni_gpu</artifactId>
+                <version>1.5.0</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

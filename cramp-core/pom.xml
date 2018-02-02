@@ -96,6 +96,20 @@
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
+        <!-- TensorFlow -->
+        <dependency>
+            <groupId>org.tensorflow</groupId>
+            <artifactId>libtensorflow</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.tensorflow</groupId>
+            <artifactId>libtensorflow_jni</artifactId>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.tensorflow</groupId>-->
+            <!--<artifactId>libtensorflow_jni_gpu</artifactId>-->
+        <!--</dependency>-->
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
