@@ -19,25 +19,25 @@
 
 package org.eduze.fyp.core.resources;
 
-import org.apache.commons.math3.util.Pair;
-import org.eduze.fyp.api.Constants;
 import org.eduze.fyp.api.resources.Coordinate;
 import org.eduze.fyp.api.resources.LocalMap;
-import org.eduze.fyp.api.resources.PersonCoordinate;
 import org.eduze.fyp.api.resources.PersonSnapshot;
+import org.eduze.fyp.api.util.ImageUtils;
 import org.eduze.fyp.core.PhotoMapper;
 import org.eduze.fyp.core.ZoneMapper;
+import org.eduze.fyp.core.reid.ReIdentifier;
 import org.eduze.fyp.core.util.AccuracyTester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -50,123 +50,54 @@ public class GlobalMap {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalMap.class);
 
-    private List<PersonLocation> personLocations = new ArrayList<>();
-    private volatile int id = 0;
-
-    private PhotoMapper photoMapper = null;
-    private ZoneMapper zoneMapper = null;
+    private Map<Integer, PersonLocation> personLocations = new HashMap<>();
+    private PhotoMapper photoMapper;
+    private ZoneMapper zoneMapper;
     private AccuracyTester accuracyTester;
+    private ReIdentifier reIdentifier;
 
-    private Random idGenerator = new Random();
-
-    public void setZoneMapper(ZoneMapper zoneMapper) {
-        this.zoneMapper = zoneMapper;
-    }
-
-    public ZoneMapper getZoneMapper() {
-        return zoneMapper;
-    }
-
-    public synchronized List<List<PersonSnapshot>> getSnapshot() {
-        return personLocations.stream()
-                .map(PersonLocation::getSnapshots)
-                .collect(Collectors.toList());
-    }
-
-    private int nextID() {
-        return Math.abs(this.idGenerator.nextInt());
+    public GlobalMap() {
+        reIdentifier = new ReIdentifier();
     }
 
     public synchronized void update(LocalMap localMap) {
         logger.debug("Updating global map with {} coordinates in local map", localMap.getPersonCoordinates().size());
 
-        List<LocationPair> tuples = new ArrayList<>();
+        Set<Integer> newIds = new HashSet<>();
         localMap.getPersonCoordinates().forEach(personCoordinate -> {
-            tuples.add(new LocationPair(personCoordinate, null));
-            personLocations.forEach(personLocation -> {
-                tuples.add(new LocationPair(personCoordinate, personLocation));
-            });
-        });
-
-        personLocations.forEach(personLocation -> {
-            tuples.add(new LocationPair(null, personLocation));
-        });
-        Collections.sort(tuples);
-
-        Set<PersonCoordinate> usedPersonCoordinates = new HashSet<>();
-        Set<PersonLocation> usedPersonLocations = new HashSet<>();
-        Set<PersonLocation> newPeople = new HashSet<>();
-        tuples.forEach(pair -> {
-            boolean added = false;
-            if (pair.distance() < Constants.DISTANCE_THRESHOLD) {
-
-                if (!usedPersonCoordinates.contains(pair.getKey()) && !usedPersonLocations.contains(pair.getValue())) {
-                    if (this.accuracyTester != null) {
-                        this.accuracyTester.reportPointDeviation(pair.getKey(), pair.getValue(), localMap.getCameraId(), localMap.getTimestamp());
-                    }
-
-                    usedPersonCoordinates.add(pair.getKey());
-                    usedPersonLocations.add(pair.getValue());
-                    PersonSnapshot ps = pair.getValue().addPoint(localMap.getCameraId(), pair.getKey().toCoordinate());
-
-                    pair.getKey().setUuid(ps.getUuid()); //passing uuid into personCoordinate
-                    pair.getKey().setIds(pair.getValue().getIds());
-
-                    if (pair.getKey().getImage() != null) {
-                        logger.debug("Found an image for person {}", pair.getValue().getIds());
-                        // TODO: 10/3/17 Do the re-id part here
-
-                        photoMapper.addSnapshot(pair.getKey(), pair.getValue().getIds(), ps);
-                    }
-                    added = true;
-                } else if (usedPersonLocations.contains(pair.getValue())) {
-                    if (pair.distance() < Constants.DISTANCE_CONFLICT_THRESHOLD) {
-                        //We have another point very close to an assigned pair. Increment segment index to break tracking
-                        pair.getValue().incrementTrackSegmentIndex();
-                    }
-                } else if (usedPersonCoordinates.contains(pair.getKey())) {
-                    if (pair.distance() < Constants.DISTANCE_CONFLICT_THRESHOLD) {
-                        //We have another point very close to an assigned pair. Increment segment index to break tracking
-                        pair.getValue().incrementTrackSegmentIndex();
+            try {
+                BufferedImage image = ImageUtils.byteArrayToBufferedImage(personCoordinate.getImage());
+                int id = reIdentifier.identify(image);
+                logger.debug("Identified - {}", id);
+                if (newIds.contains(id)) {
+                    logger.warn("Id conflict. Same person have been matched before - {}", id);
+                } else {
+                    if (personLocations.containsKey(id)) {
+                        logger.debug("Found another point for person - {}", id);
+                        personLocations.get(id).addPoint(localMap.getCameraId(), personCoordinate.toCoordinate());
+                    } else {
+                        newIds.add(id);
+                        PersonLocation newPL = new PersonLocation(id);
+                        newPL.addPoint(localMap.getCameraId(), personCoordinate.toCoordinate());
+                        personLocations.put(id, newPL);
                     }
                 }
-            }
-            if (!added && !usedPersonCoordinates.contains(pair.getKey()) && pair.getValue() == null) {
-                int id = nextID();
-                Set<Integer> idd = new HashSet<>();
-                idd.add(id);
-
-
-                PersonLocation newPL = new PersonLocation(id);
-                PersonSnapshot ps = newPL.addPoint(localMap.getCameraId(), pair.getKey().toCoordinate());
-                newPeople.add(newPL);
-                usedPersonCoordinates.add(pair.getKey());
-
-                pair.getKey().setUuid(ps.getUuid()); //passing uuid into person coordinate
-                pair.getKey().setIds(idd);
-
-                if (pair.getKey().getImage() != null) {
-                    logger.debug("Found a new person with image");
-
-                    photoMapper.addSnapshot(pair.getKey(), idd, ps);
-                    // TODO: 10/3/17 DO the re-id part here
-                }
+            } catch (IOException e) {
+                logger.error("Unable to decode image: {}", e);
             }
         });
-
-        personLocations.addAll(newPeople);
 
         if (this.zoneMapper != null) {
-            zoneMapper.processPersonLocations(personLocations);
+            zoneMapper.processPersonLocations(new ArrayList<>(personLocations.values()));
         }
     }
 
     public synchronized void refresh(long minTimestamp) {
         logger.debug("Refreshing global map with minimum timestamp {}", minTimestamp);
 
-        Iterator<PersonLocation> iterator = personLocations.iterator();
+        Iterator<Map.Entry<Integer, PersonLocation>> iterator = personLocations.entrySet().iterator();
         while (iterator.hasNext()) {
-            PersonLocation personLocation = iterator.next();
+            PersonLocation personLocation = iterator.next().getValue();
             Map<Integer, Coordinate> coordinates = personLocation.getContributingCoordinates();
             List<Integer> toRemove = coordinates.keySet().stream()
                     .filter(id -> coordinates.get(id).getTimestamp() < minTimestamp)
@@ -182,6 +113,11 @@ public class GlobalMap {
                 iterator.remove();
             }
         }
+    }
+
+    @Override
+    public void finalize() {
+        reIdentifier.close();
     }
 
     public PhotoMapper getPhotoMapper() {
@@ -200,39 +136,17 @@ public class GlobalMap {
         this.accuracyTester = accuracyTester;
     }
 
-    private class LocationPair extends Pair<PersonCoordinate, PersonLocation> implements Comparable<LocationPair> {
+    public void setZoneMapper(ZoneMapper zoneMapper) {
+        this.zoneMapper = zoneMapper;
+    }
 
-        public LocationPair(PersonCoordinate personCoordinate, PersonLocation personLocation) {
-            super(personCoordinate, personLocation);
-            if (personCoordinate == null && personLocation == null) {
-                throw new IllegalArgumentException("Both points cannot be null");
-            }
-        }
+    public ZoneMapper getZoneMapper() {
+        return zoneMapper;
+    }
 
-        public LocationPair(Pair<? extends PersonCoordinate, ? extends PersonLocation> entry) {
-            this(entry.getKey(), entry.getValue());
-        }
-
-        public double distance() {
-            PersonSnapshot snapshot = null;
-            if (getValue() != null) {
-                snapshot = getValue().getSnapshot();
-            }
-
-            if (getKey() == null || getValue() == null || snapshot == null) {
-                // To match bounds
-                return Float.MAX_VALUE;
-            }
-
-            double x = getKey().getX() - snapshot.getX();
-            double y = getKey().getY() - snapshot.getY();
-
-            return Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
-        }
-
-        @Override
-        public int compareTo(LocationPair pair) {
-            return (int) Math.ceil(this.distance() - pair.distance());
-        }
+    public synchronized List<List<PersonSnapshot>> getSnapshot() {
+        return personLocations.values().stream()
+                .map(PersonLocation::getSnapshots)
+                .collect(Collectors.toList());
     }
 }

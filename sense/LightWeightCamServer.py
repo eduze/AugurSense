@@ -95,22 +95,13 @@ class LightWeightCamServer:
                     result["headDirectionY"] = person.head_direction[1].tolist()[0]
 
                 detection = sensed_person.tracked_person.detection
+                print(detection.person_bound)
                 (dc_x, dc_y, dc_w, dc_h) = map(int, detection.person_bound)
 
-                # Expand bounds
-                width = (dc_w - dc_x) / 2
-                height = (dc_h - dc_y) / 2
-
-                (dc_x, dc_y, dc_w, dc_h) = map(int, (
-                    dc_x - width / 2, dc_y - height / 2, dc_w + width / 2, dc_h + height / 2))
-
-                if dc_x < 0 or dc_y < 0 or dc_w >= frame.shape[1] or dc_h >= frame.shape[0]:
-                    pass
-                else:
-                    snap = frame[dc_y:dc_h, dc_x:dc_w]
-                    if snap.shape[0] > 0 and snap.shape[1] > 0:
-                        logging.debug("Snapping person")
-                        result["image"] = restEncodeImage(snap)
+                snap = frame[dc_y:dc_h, dc_x:dc_w]
+                if snap.shape[0] > 0 and snap.shape[1] > 0:
+                    logging.debug("Snapping person")
+                    result["image"] = restEncodeImage(snap)
                 result_coordinates.append(result)
 
         else:
