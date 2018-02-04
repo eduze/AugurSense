@@ -120,7 +120,7 @@ class OpenPersonDetector:
         results = person_detector_api.detect(colour_frame)
 
         # Obtain scale factors
-        results_height, results_width = person_detector_api.getOutputHeight(), person_detector_api.getOutputHeight()
+        results_height, results_width = person_detector_api.getOutputHeight(), person_detector_api.getOutputWidth()
         frame_height, frame_width = colour_frame.shape[:2]
         scale_factor = frame_height / results_height
 
