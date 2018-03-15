@@ -54,6 +54,9 @@ public class CameraConfig {
     @OneToOne(mappedBy = "cameraConfig", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private PointMapping pointMapping = new PointMapping();
 
+    @ManyToOne
+    private CameraGroup cameraGroup;
+
     public byte[] getView() {
         return view;
     }
@@ -92,6 +95,14 @@ public class CameraConfig {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public CameraGroup getCameraGroup() {
+        return cameraGroup;
+    }
+
+    public void setCameraGroup(CameraGroup cameraGroup) {
+        this.cameraGroup = cameraGroup;
     }
 
     public String toString() {

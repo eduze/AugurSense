@@ -3,15 +3,15 @@ import logging
 import cv2
 from flask import Flask, jsonify
 
+from OpenPersonDetector import OpenPersonDetector
 from PTEMapper import PTEMapper
 from Sense import Sense
 from Util import restEncodeImage
 from WorldSpaceTracker import WorldSpaceTracker
 from communication.ServerSession import ServerSession
-from detectors.TFODDetector.TFODPersonDetector import TFODPersonDetector
 from experiments.AngleMapper import AngleMapper
 from experiments.Snapy import Snapy
-from test_videos.VideoLoader import load_ntb_entrance
+from test_videos.VideoLoader import load_video
 
 cam_server_instance = None
 
@@ -115,7 +115,7 @@ class LightWeightCamServer:
             "personCoordinates": result_coordinates
         }
 
-        cv2.imshow("output",frame)
+        cv2.imshow("output", frame)
         cv2.waitKey(1)
 
         return result
@@ -142,9 +142,9 @@ class LightWeightCamServer:
 if __name__ == "__main__":
     # Test snippet
     logging.basicConfig(level=logging.DEBUG)
-    cap, markers, map_markers = load_ntb_entrance()
+    cap, markers, map_markers = load_video("bia.pier2")
 
-    person_detector = TFODPersonDetector(preview=True)
+    person_detector = OpenPersonDetector(preview=True)
     position_mapper = PTEMapper(markers, map_markers)
     sense = Sense(person_detector, position_mapper, AngleMapper(position_mapper), WorldSpaceTracker(), Snapy())
 

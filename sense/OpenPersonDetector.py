@@ -62,7 +62,6 @@ head_direction_map[(True, False, False, True, False)] = (225, 45)
 
 lock = RLock()
 
-
 class OpenPersonDetector:
     '''
     Person Detector and Leg Estimator based on OpenPose Project.
@@ -120,7 +119,7 @@ class OpenPersonDetector:
         results = person_detector_api.detect(colour_frame)
 
         # Obtain scale factors
-        results_height, results_width = person_detector_api.getOutputHeight(), person_detector_api.getOutputWidth()
+        results_height, results_width = person_detector_api.getOutputHeight(), person_detector_api.getOutputHeight()
         frame_height, frame_width = colour_frame.shape[:2]
         scale_factor = frame_height / results_height
 
@@ -162,8 +161,8 @@ class OpenPersonDetector:
             for j in range(len(_person)):
                 # Do scale correction
                 coordinate = _person[j]
-                coordinate[0] = coordinate[0] * scale_factor
-                coordinate[1] = coordinate[1] * scale_factor
+                # coordinate[0] = coordinate[0] * scale_factor
+                # coordinate[1] = coordinate[1] * scale_factor
 
                 if coordinate[2] > 0:  # In presence of point
                     person_detection.tracked_points[coordinates_mapping[j]] = coordinate[:]
@@ -231,6 +230,13 @@ class OpenPersonDetector:
             neck = findAverage(["Neck"])
             ankle = findAverage(["RAnkle", "LAnkle"])
             knee = findAverage(["RKnee", "LKnee"])
+            elbow = findAverage(["RElbow","LElbow"])
+
+            if hip is not None:
+                person_detection.hip_point = hip
+
+            if elbow is not None:
+                person_detection.elbow_point = elbow
 
             if hip is not None and neck is not None:
                 # Estimate leg Y using hip,neck,leg ratio
@@ -241,7 +247,7 @@ class OpenPersonDetector:
                 #                                        (person_detection.upper_body_bound[3] - person_detection.upper_body_bound[1])* 2)
             else:
                 # Estimate leg y using bounds
-                logging.info("Poor Estimate of Leg Point")
+                logging.debug("Poor Estimate of Leg Point")
                 person_detection.estimated_leg_point = (person_detection.central_point[0],
                                                         person_detection.central_bound[1] +
                                                         (person_detection.central_bound[3] -
@@ -277,6 +283,8 @@ class PersonDetection:
         self.central_bound = None  # Boundary of central body of person (no hands and feet for X coordinate)
         self.upper_body_bound = None  # Boundary of upper body of person
         self.central_point = None  # Central point of person
+        self.hip_point = None
+        self.elbow_point = None
         self.leg_point = None  # Average Feet point of person
         self.leg_count = None  # Number of detected feet
         self.estimated_leg_point = None  # Estimated feet point of person

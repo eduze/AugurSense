@@ -1,9 +1,45 @@
 <div class="container-fluid">
+
   <helper-message [message]="message"></helper-message>
+
+  <div class="box box-primary box-solid">
+    <div class="box-body">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-6" *ngFor="let group of cameraGroups">
+            <h4>{{group.name}}</h4>
+            <img [src]="group.map.image" class="img-responsive center-block" width="50%">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="box-footer">
+      <div class="row container-fluid">
+        <div class="col-md-4">
+          <input type="text" [(ngModel)]="cameraGroup.name">
+        </div>
+        <div class="col-md-4">
+          <input type="file" accept="image/png" #map (change)="mapChanged(map.files)">
+        </div>
+        <div class="col-md-4">
+          <button class="btn btn-primary" (click)="addCameraGroup()">Add Camera Group</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="box box-primary" *ngFor="let config of cameraConfigs; let j = index">
     <div class="box-header">
-      <h4 class="box-title"> Configure point mappings for {{config.cameraId}}</h4>
+      <div class="col-md-6">
+        <h4 class="box-title"> Configure point mappings for {{config.cameraId}} {{config.cameraGroup.name}}</h4>
+      </div>
+      <div class="col-md-4 col-md-offset-2">
+        <select [compareWith]="compare" class="form-control" [(ngModel)]="config.cameraGroup">
+          <option *ngFor="let group of cameraGroups" [ngValue]="group">
+            {{group.name}}
+          </option>
+        </select>
+      </div>
     </div>
     <div class="box-body">
       <div class="row">
@@ -30,18 +66,20 @@
 
         <div class="col-md-6 col-sm-6 col-xs-12">
           <div class="box box-primary box-solid">
-            <div class="box-body">
-              <svg x="0" y="0" [attr.width]="globalMap.width" [attr.height]="globalMap.height" class="center-block"
-                   *ngIf="globalMap">
-                <g width="100%" height="100%">
-                  <image [attr.xlink:href]="globalMap.image" x="0" y="0" (click)="mapClicked($event, config)"></image>
+            <div class="box-body container-fluid">
+              <svg x="0" y="0" [attr.width]="config.cameraGroup.map.width" [attr.height]="config.cameraGroup.map.height"
+                   *ngIf="config.cameraGroup" class="center-block">
 
-                  <g *ngFor="let point of config.pointMapping.worldSpacePoints; let i = index">
-                    <circle r="10" [attr.cx]="point.x" [attr.cy]="point.y" fill="red"></circle>
-                    <text [attr.x]="point.x" [attr.y]="point.y" fill="yellow" font-size="20" text-anchor="middle">
-                      {{i+1}}
-                    </text>
-                  </g>
+                <image [attr.xlink:href]="config.cameraGroup.map.image" (click)="mapClicked($event, config)"></image>
+
+                <rect [attr.width]="config.cameraGroup.map.width" [attr.height]="config.cameraGroup.map.height"
+                      stroke="black" fill="none"></rect>
+
+                <g *ngFor=" let point of config.pointMapping.worldSpacePoints; let i=index">
+                  <circle r="10" [attr.cx]="point.x" [attr.cy]="point.y" fill="red"></circle>
+                  <text [attr.x]="point.x" [attr.y]="point.y" fill="yellow" font-size="20" text-anchor="middle">
+                    {{i+1}}
+                  </text>
                 </g>
               </svg>
             </div>

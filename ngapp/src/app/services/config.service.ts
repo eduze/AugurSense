@@ -23,9 +23,7 @@ import 'rxjs/add/operator/toPromise';
 import {Zone} from '../resources/zone';
 import {GlobalMap} from '../resources/global-map';
 import {CameraConfig} from '../resources/camera-config';
-import {PointMapping} from '../resources/point-mapping';
-import {Point} from '../resources/point';
-import {CameraView} from '../resources/camera-view';
+import {CameraGroup} from "../resources/camera-group";
 
 @Injectable()
 export class ConfigService {
@@ -35,15 +33,27 @@ export class ConfigService {
   constructor(private http: HttpClient) {
   }
 
+  private static stringToNumberArray(str: string): number[] {
+    const arr: number[] = [];
+    for (const s of str.split(',')) {
+      arr.push(parseInt(s));
+    }
+    return arr;
+  }
+
+  private static handleError(error: any): Promise<any> {
+    console.error('An error occurred', error);
+    return Promise.reject(error.message || error);
+  }
+
   getCameraConfigs(): Promise<CameraConfig[]> {
     return this.http.get(this.baseUrl + 'cameraConfigs')
       .toPromise()
       .then(response => {
-        console.log(response);
         const configs: Map<number, CameraConfig> = response as Map<number, CameraConfig>;
         const cameraConfigs: CameraConfig[] = [];
         for (const key in configs) {
-          const cameraConfig: CameraConfig = ConfigService.toCameraConfig(configs[key]);
+          const cameraConfig: CameraConfig = CameraConfig.fromJSON(configs[key]);
           cameraConfigs.push(cameraConfig);
         }
         return cameraConfigs;
@@ -59,15 +69,38 @@ export class ConfigService {
       }).catch(ConfigService.handleError);
   }
 
+  getCameraGroups(): Promise<CameraGroup[]> {
+    return this.http.get(this.baseUrl + 'cameraGroups')
+      .toPromise()
+      .then(response => {
+        const groups = response as CameraGroup[];
+        console.log(groups);
+        const cameraGroups = [];
+        for (let g of groups) {
+          cameraGroups.push(CameraGroup.fromJSON(g));
+        }
+        return cameraGroups;
+      })
+      .catch(ConfigService.handleError);
+  }
+
+  addCameraGroup(cameraGroup: CameraGroup): Promise<boolean> {
+    return this.http.post(this.baseUrl + 'cameraGroups', cameraGroup)
+      .toPromise()
+      .then(response => {
+        console.log(response);
+        return true;
+      })
+      .catch(ConfigService.handleError);
+  }
+
   getMap(): Promise<GlobalMap> {
     return this.http.get(this.baseUrl + 'getMap')
       .toPromise()
       .then(response => {
         console.log(response);
         const views: Map<string, string> = response as Map<string, string>;
-        const base64: string = 'data:image/JPEG;base64,' + views['mapImage'];
-
-        return new GlobalMap(base64);
+        return GlobalMap.fromJSON(views['mapImage']);
       })
       .catch(ConfigService.handleError);
   }
@@ -111,33 +144,4 @@ export class ConfigService {
       })
       .catch(ConfigService.handleError);
   }
-
-  private static toCameraConfig(config: any): CameraConfig {
-    const cameraId = config.cameraId;
-    const view = 'data:image/JPEG;base64,' + config.view;
-    const ipPort = config.ipAndPort;
-    const cameraConfig = new CameraConfig(cameraId, ipPort, new PointMapping(), new CameraView(view));
-
-    for (const i in config.pointMapping.screenSpacePoints) {
-      const screenSpacePoint = new Point(config.pointMapping.screenSpacePoints[i].x, config.pointMapping.screenSpacePoints[i].y);
-      cameraConfig.pointMapping.screenSpacePoints.push(screenSpacePoint);
-      const worldSpacePoint = new Point(config.pointMapping.worldSpacePoints[i].x, config.pointMapping.worldSpacePoints[i].y);
-      cameraConfig.pointMapping.worldSpacePoints.push(worldSpacePoint);
-    }
-    return cameraConfig;
-  }
-
-  private static stringToNumberArray(str: string): number[] {
-    const arr: number[] = [];
-    for (const s of str.split(',')) {
-      arr.push(parseInt(s));
-    }
-    return arr;
-  }
-
-  private static handleError(error: any): Promise<any> {
-    console.error('An error occurred', error);
-    return Promise.reject(error.message || error);
-  }
-
 }

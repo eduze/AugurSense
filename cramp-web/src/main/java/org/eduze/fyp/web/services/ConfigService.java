@@ -20,9 +20,12 @@ package org.eduze.fyp.web.services;
 
 import org.eduze.fyp.api.AnalyticsEngine;
 import org.eduze.fyp.api.ConfigurationManager;
+import org.eduze.fyp.api.Constants;
 import org.eduze.fyp.api.model.CameraConfig;
+import org.eduze.fyp.api.model.CameraGroup;
 import org.eduze.fyp.api.model.Zone;
 import org.eduze.fyp.api.resources.Camera;
+import org.eduze.fyp.api.util.Args;
 import org.eduze.fyp.api.util.ImageUtils;
 import org.eduze.fyp.core.db.dao.CameraConfigDAO;
 import org.eduze.fyp.core.db.dao.ZoneDAO;
@@ -36,9 +39,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.eduze.fyp.api.Constants.CAMERA_VIEW_HEIGHT;
-import static org.eduze.fyp.api.Constants.CAMERA_VIEW_WIDTH;
 
 public class ConfigService {
 
@@ -71,8 +71,7 @@ public class ConfigService {
         logger.debug("Adding camera configuration - {}", cameraConfig);
 
         // resizing camera view
-//        byte[] resized = ImageUtils.resize(cameraConfig.getView(), CAMERA_VIEW_WIDTH, CAMERA_VIEW_HEIGHT);
-        byte[] resized = cameraConfig.getView();
+        byte[] resized = ImageUtils.resize(cameraConfig.getView(), Constants.CAMERA_VIEW_WIDTH, Constants.CAMERA_VIEW_HEIGHT);
         cameraConfig.setView(resized);
 
         cameraConfig.getPointMapping().setCameraConfig(cameraConfig);
@@ -119,6 +118,36 @@ public class ConfigService {
 
     public Map<Integer, CameraConfig> getCameraConfigs() {
         return configurationManager.getCameraConfigs();
+    }
+
+    /**
+     * Get the available camera groups
+     *
+     * @return groups
+     */
+    public List<CameraGroup> getCameraGroups() {
+        return cameraConfigDAO.cameraGroups();
+    }
+
+    /**
+     * Adds a new camera group
+     *
+     * @param cameraGroup camera group
+     */
+    public void addCameraGroup(CameraGroup cameraGroup) {
+        Args.notNull(cameraGroup.getMap(), "Map");
+        Args.notNull(cameraGroup.getName(), "Name");
+
+        logger.debug("Adding camera group: {}", cameraGroup);
+
+        try {
+            byte[] resized = ImageUtils.resize(cameraGroup.getMap(),
+                    Constants.MAP_IMAGE_WIDTH, Constants.MAP_IMAGE_HEIGHT);
+            cameraGroup.setMap(resized);
+        } catch (IOException e) {
+            logger.error("Unable to resize image for camera group: {}", cameraGroup, e);
+        }
+        cameraConfigDAO.addCameraGroup(cameraGroup);
     }
 
     public Zone addZone(Zone zone) {

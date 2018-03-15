@@ -1,3 +1,6 @@
+import ast
+import configparser
+
 import cv2
 
 '''
@@ -12,6 +15,41 @@ Input: 1
 Screen:  [(339, 312), (200, 268), (450, 200), (706, 238)]
 World:  [(161, 241), (104, 195), (137, 121), (217, 182)]
 '''
+
+
+def load_video(name, scale=1):
+    config = configparser.ConfigParser()
+    config.read("test_videos/videos.conf")
+
+    video = config[name]
+    cap = cv2.VideoCapture(video['path'])
+
+    print(video['path'])
+    print(video['markers'])
+    print(video['map_markers'])
+
+    markers = ast.literal_eval(video['markers'])
+    marker_scale = float(video.get('marker_scale', '1'))
+    markers = [x * (scale / marker_scale) for x in markers]
+
+    map_markers = ast.literal_eval(video['map_markers'])
+    map_marker_scale = float(video.get('map_marker_scale', '1'))
+    map_markers = [x * (scale / map_marker_scale) for x in map_markers]
+
+    return cap, markers, map_markers
+
+
+def save_config(name, markers, map_markers, marker_scale=1, map_marker_scale=1):
+    config = configparser.ConfigParser()
+    config.read("videos.conf")
+
+    config[name]['markers'] = str(markers)
+    config[name]['map_markers'] = str(map_markers)
+    config[name]['marker_scale'] = str(marker_scale)
+    config[name]['map_marker_scale'] = str(map_marker_scale)
+
+    with open('test_videos/videos.conf', 'w') as configfile:
+        config.write(configfile)
 
 
 def loadOfficeRoomTest():

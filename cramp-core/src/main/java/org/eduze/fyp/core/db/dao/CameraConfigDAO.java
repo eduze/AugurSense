@@ -20,16 +20,19 @@
 package org.eduze.fyp.core.db.dao;
 
 import org.eduze.fyp.api.model.CameraConfig;
+import org.eduze.fyp.api.model.CameraGroup;
 
 import java.util.List;
 
-public interface CameraConfigDAO {
+public interface CameraConfigDAO extends AbstractDAO {
+
+    List<CameraGroup> cameraGroups();
+
+    void addCameraGroup(CameraGroup cameraGroup);
 
     CameraConfig findById(int id);
 
     CameraConfig findByCameraId(int cameraId);
-
-    void save(CameraConfig cameraConfig);
 
     void delete(CameraConfig cameraConfig);
 

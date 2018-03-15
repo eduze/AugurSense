@@ -3,19 +3,19 @@ import time
 
 import cv2
 
+from OpenPersonDetector import OpenPersonDetector
 from PTEMapper import PTEMapper
 from ScreenSpacePreview import ScreenSpacePreview
 from Sense import Sense
 from WorldSpaceTracker import WorldSpaceTracker
-from detectors.TFODDetector.TFODPersonDetector import TFODPersonDetector
 from experiments.AngleMapper import AngleMapper
 from experiments.Snapy import Snapy
-from test_videos.VideoLoader import load_ntb_entrance
+from test_videos.VideoLoader import load_video
 
 
 def app():
-    person_detector = TFODPersonDetector(preview=True)
-    (cap, markers, map_markers) = load_ntb_entrance()
+    person_detector = OpenPersonDetector(preview=False)
+    (cap, markers, map_markers) = load_video("bia.pier2")
 
     mapper = PTEMapper(markers, map_markers)
 

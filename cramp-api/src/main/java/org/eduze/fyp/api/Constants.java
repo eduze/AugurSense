@@ -43,8 +43,11 @@ public class Constants {
     /** Width and hight of the standardized camera views */
     public static final int CAMERA_VIEW_WIDTH = 500;
     public static final int CAMERA_VIEW_HEIGHT = 500;
+    /** Width and height of map images */
+    public static final int MAP_IMAGE_WIDTH = 500;
+    public static final int MAP_IMAGE_HEIGHT = 500;
 
-    /** Represents the zone -> world*/
+    /** Represents the zone -> world */
     public static final String ZONE_NAME_WORLD = "World";
 
     public static class Properties {

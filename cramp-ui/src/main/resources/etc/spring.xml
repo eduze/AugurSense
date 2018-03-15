@@ -85,6 +85,7 @@
                 <value>org.eduze.fyp.api.model.CaptureStamp</value>
                 <value>org.eduze.fyp.api.model.PointMapping</value>
                 <value>org.eduze.fyp.api.model.CameraConfig</value>
+                <value>org.eduze.fyp.api.model.CameraGroup</value>
             </list>
         </property>
         <property name="hibernateProperties">

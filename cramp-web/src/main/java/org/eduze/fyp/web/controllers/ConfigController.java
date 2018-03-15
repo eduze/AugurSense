@@ -18,9 +18,10 @@
  */
 package org.eduze.fyp.web.controllers;
 
+import org.eduze.fyp.api.model.CameraConfig;
+import org.eduze.fyp.api.model.CameraGroup;
 import org.eduze.fyp.api.model.Zone;
 import org.eduze.fyp.api.resources.Camera;
-import org.eduze.fyp.api.model.CameraConfig;
 import org.eduze.fyp.web.resources.MapConfiguration;
 import org.eduze.fyp.web.resources.Status;
 import org.eduze.fyp.web.services.ConfigService;
@@ -141,6 +142,29 @@ public class ConfigController {
         }
 
         return Response.status(200).entity(mapConfiguration).build();
+    }
+
+    @GET
+    @Path("/cameraGroups")
+    public Response getCameraGroups() {
+        try {
+            return Response.ok(configService.getCameraGroups()).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining camera configs", e);
+            return Response.status(500).build();
+        }
+    }
+
+    @POST
+    @Path("/cameraGroups")
+    public Response addCameraGroup(CameraGroup cameraGroup) {
+        try {
+            configService.addCameraGroup(cameraGroup);
+            return Response.ok().build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining camera configs", e);
+            return Response.status(500).build();
+        }
     }
 
     @GET

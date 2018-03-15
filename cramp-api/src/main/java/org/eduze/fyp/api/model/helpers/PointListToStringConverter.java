@@ -23,8 +23,10 @@
 package org.eduze.fyp.api.model.helpers;
 
 import org.eduze.fyp.api.resources.Point;
+import org.springframework.util.StringUtils;
 
 import javax.persistence.AttributeConverter;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,6 +42,10 @@ public class PointListToStringConverter implements AttributeConverter<List<Point
 
     @Override
     public List<Point> convertToEntityAttribute(String stringPoints) {
+        if (StringUtils.isEmpty(stringPoints)) {
+            return Collections.emptyList();
+        }
+
         return Stream.of(stringPoints.split(";"))
                 .map(str -> {
                     String[] parts = str.split(",");

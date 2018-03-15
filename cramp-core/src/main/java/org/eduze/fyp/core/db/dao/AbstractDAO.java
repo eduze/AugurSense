@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Eduze
+ * Copyright 2018 Eduze
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
  * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
@@ -17,18 +17,9 @@
  * IN THE SOFTWARE.
  */
 
-import {inject, TestBed} from '@angular/core/testing';
+package org.eduze.fyp.core.db.dao;
 
-import {ConfigService} from './config.service';
+public interface AbstractDAO {
 
-describe('ConfigService', () => {
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [ConfigService]
-    });
-  });
-
-  it('should be created', inject([ConfigService], (service: ConfigService) => {
-    expect(service).toBeTruthy();
-  }));
-});
+    void save(Object object);
+}

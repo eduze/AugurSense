@@ -23,19 +23,32 @@
 package org.eduze.fyp.core.db.dao;
 
 import org.eduze.fyp.api.model.CameraConfig;
+import org.eduze.fyp.api.model.CameraGroup;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class CameraConfigDAOImpl implements CameraConfigDAO {
+public class CameraConfigDAOImpl extends AbstractDAOImpl implements CameraConfigDAO {
 
     private static final Logger logger = LoggerFactory.getLogger(CameraConfigDAO.class);
 
-    private SessionFactory sessionFactory;
+
+    @Override
+    public List<CameraGroup> cameraGroups() {
+        Session session = this.sessionFactory.openSession();
+        List<CameraGroup> cameraGroups = session.createQuery("from CameraGroup", CameraGroup.class)
+                .list();
+        session.close();
+        return cameraGroups;
+    }
+
+    @Override
+    public void addCameraGroup(CameraGroup cameraGroup) {
+        this.save(cameraGroup);
+    }
 
     @Override
     public CameraConfig findById(int id) {
@@ -60,15 +73,6 @@ public class CameraConfigDAOImpl implements CameraConfigDAO {
             session.getTransaction().commit();
         }
         return null;
-    }
-
-    @Override
-    public void save(CameraConfig cameraConfig) {
-        Session session = this.sessionFactory.openSession();
-        session.beginTransaction();
-        session.persist(cameraConfig);
-        session.getTransaction().commit();
-        session.close();
     }
 
     @Override
@@ -97,7 +101,7 @@ public class CameraConfigDAOImpl implements CameraConfigDAO {
     }
 
     @Override
-    public void delete(CameraConfig cameraConfig){
+    public void delete(CameraConfig cameraConfig) {
         Session session = this.sessionFactory.openSession();
         session.beginTransaction();
         try {
@@ -110,9 +114,5 @@ public class CameraConfigDAOImpl implements CameraConfigDAO {
         } finally {
             session.close();
         }
-    }
-
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
     }
 }

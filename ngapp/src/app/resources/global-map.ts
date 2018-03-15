@@ -25,12 +25,20 @@ export class GlobalMap {
   constructor(image: string) {
     this.image = image;
 
-    let obj = this;
-    let img = new Image();
+    const obj = this;
+    const img = new Image();
     img.onload = function () {
       obj.height = img.height;
       obj.width = img.width;
     };
     img.src = image;
+  }
+
+  public static fromJSON(image: string) {
+    return new GlobalMap('data:image/png;base64,' + image);
+  }
+
+  public toJSON() {
+    return this.image.split(',')[1];
   }
 }
