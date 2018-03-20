@@ -5,6 +5,7 @@ package org.eduze.fyp.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -33,7 +34,7 @@ public class CameraGroup {
     private byte[] map;
 
     @XmlTransient
-    @OneToMany(mappedBy = "cameraGroup")
+    @OneToMany(mappedBy = "cameraGroup", cascade = {CascadeType.REMOVE})
     private Set<CameraConfig> cameraConfigs;
 
     public int getId() {

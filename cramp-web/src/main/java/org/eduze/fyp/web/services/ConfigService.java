@@ -29,7 +29,6 @@ import org.eduze.fyp.api.util.Args;
 import org.eduze.fyp.api.util.ImageUtils;
 import org.eduze.fyp.core.db.dao.CameraConfigDAO;
 import org.eduze.fyp.core.db.dao.ZoneDAO;
-import org.eduze.fyp.web.resources.MapConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,24 +64,45 @@ public class ConfigService {
      * configuration
      *
      * @param cameraConfig {@link CameraConfig} instance to be configured
+     * @return camera id
      * @throws IOException
      */
-    public void addCameraConfig(CameraConfig cameraConfig) throws IOException {
+    public int addCameraConfig(CameraConfig cameraConfig) throws IOException {
         logger.debug("Adding camera configuration - {}", cameraConfig);
 
         // resizing camera view
         byte[] resized = ImageUtils.resize(cameraConfig.getView(), Constants.CAMERA_VIEW_WIDTH, Constants.CAMERA_VIEW_HEIGHT);
         cameraConfig.setView(resized);
 
+        cameraConfig.setId(0);
         cameraConfig.getPointMapping().setCameraConfig(cameraConfig);
-        CameraConfig existing = cameraConfigDAO.findByCameraId(cameraConfig.getCameraId());
+        CameraConfig existing = cameraConfigDAO.findByCameraIpAndPort(cameraConfig.getIpAndPort());
         if (existing != null) {
+            logger.warn("Found existing camera config {}. Deleting", existing);
+
+            cameraConfig.setCameraId(existing.getCameraId());
+
+            if (cameraConfig.getPointMapping() == null
+                    || cameraConfig.getPointMapping().getScreenSpacePoints().size() == 0
+                    || cameraConfig.getPointMapping().getWorldSpacePoints().size() == 0) {
+                cameraConfig.setPointMapping(existing.getPointMapping().clone());
+                cameraConfig.getPointMapping().setCameraConfig(cameraConfig);
+            }
+
+            if (cameraConfig.getCameraGroup() == null) {
+                cameraConfig.setCameraGroup(existing.getCameraGroup());
+            }
+
             cameraConfigDAO.delete(existing);
             cameraConfigDAO.save(cameraConfig);
         } else {
+            cameraConfig.setCameraId(configurationManager.getNextCameraId());
             cameraConfigDAO.save(cameraConfig);
+            logger.debug("Added camera configuration: {}", cameraConfig);
         }
+
         configurationManager.addCameraConfig(cameraConfig);
+        return cameraConfig.getCameraId();
     }
 
     /**
@@ -91,21 +111,18 @@ public class ConfigService {
      * @param cameraId camera ID
      * @return byte array of the map image
      */
-    public MapConfiguration getMap(int cameraId) throws IOException {
+    public CameraConfig getCameraConfig(int cameraId) {
         if (!configurationManager.isConfigured()) {
             return null;
         }
 
-        BufferedImage map = configurationManager.getMap();
-        byte[] mapImageBytes = ImageUtils.bufferedImageToByteArray(map);
+        CameraConfig cameraConfig = configurationManager.getCameraConfig(cameraId);
+        cameraConfig.getPointMapping().getScreenSpacePoints().forEach(p -> {
+            p.setX(p.getX() * cameraConfig.getWidth() / Constants.CAMERA_VIEW_WIDTH);
+            p.setY(p.getY() * cameraConfig.getHeight() / Constants.CAMERA_VIEW_HEIGHT);
+        });
 
-        MapConfiguration mapConfiguration = new MapConfiguration();
-        mapConfiguration.setMapImage(mapImageBytes);
-        mapConfiguration.setMapping(configurationManager.getPointMapping(cameraId));
-        mapConfiguration.setMapHeight(map.getHeight());
-        mapConfiguration.setMapWidth(map.getWidth());
-
-        return mapConfiguration;
+        return cameraConfig;
     }
 
     public Map<String, byte[]> getMap() throws IOException {
@@ -176,10 +193,6 @@ public class ConfigService {
         return zoneDAO.list();
     }
 
-    public CameraConfig getCameraConfig(int cameraId) {
-        return configurationManager.getCameraConfig(cameraId);
-    }
-
     public void setConfigurationManager(ConfigurationManager configurationManager) {
         this.configurationManager = configurationManager;
     }
@@ -191,4 +204,5 @@ public class ConfigService {
     public void setCameraConfigDAO(CameraConfigDAO cameraConfigDAO) {
         this.cameraConfigDAO = cameraConfigDAO;
     }
+
 }

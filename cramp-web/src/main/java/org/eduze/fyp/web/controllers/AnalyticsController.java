@@ -46,25 +46,11 @@ public class AnalyticsController {
     private static final Logger logger = LoggerFactory.getLogger(AnalyticsController.class);
 
     private AnalyticsService analyticsService;
-
     private ReIDSearchService reIDSearchService;
-
     private DirectionAnalyticsService directionAnalyticsService;
 
-    public DirectionAnalyticsService getDirectionAnalyticsService() {
-        return directionAnalyticsService;
-    }
-
-    public void setDirectionAnalyticsService(DirectionAnalyticsService directionAnalyticsService) {
-        this.directionAnalyticsService = directionAnalyticsService;
-    }
-
-    public void setReIDSearchService(ReIDSearchService reIDSearchService) {
-        this.reIDSearchService = reIDSearchService;
-    }
-
-    public ReIDSearchService getReIDSearchService() {
-        return reIDSearchService;
+    public AnalyticsController(AnalyticsService analyticsService) {
+        this.analyticsService = analyticsService;
     }
 
     @GET
@@ -396,10 +382,10 @@ public class AnalyticsController {
     }
 
     @GET
-    @Path("/realTimeMap")
-    public Response getRealTimeMap() {
+    @Path("/realTimeMap/{cameraGroupId}")
+    public Response getRealTimeMap(@PathParam("cameraGroupId") int cameraGroupId) {
         try {
-            return Response.ok(analyticsService.getRealTimeMap()).build();
+            return Response.ok(analyticsService.getRealTimeMap(cameraGroupId)).build();
         } catch (Exception e) {
             logger.error("Error occurred when obtaining real time map. {}", e);
             return Response.status(500).build();
@@ -471,7 +457,7 @@ public class AnalyticsController {
     }
 
     @GET
-    @Path("/realTimeMap/{id}")
+    @Path("/realTimePhotos/{id}")
     public Response getRealTimeInfo(@PathParam("id") int id) {
         try {
             return Response.ok(analyticsService.getRealtimePhotos(id)).build();
@@ -527,8 +513,19 @@ public class AnalyticsController {
         }
     }
 
+    public DirectionAnalyticsService getDirectionAnalyticsService() {
+        return directionAnalyticsService;
+    }
 
-    public AnalyticsController(AnalyticsService analyticsService) {
-        this.analyticsService = analyticsService;
+    public void setDirectionAnalyticsService(DirectionAnalyticsService directionAnalyticsService) {
+        this.directionAnalyticsService = directionAnalyticsService;
+    }
+
+    public void setReIDSearchService(ReIDSearchService reIDSearchService) {
+        this.reIDSearchService = reIDSearchService;
+    }
+
+    public ReIDSearchService getReIDSearchService() {
+        return reIDSearchService;
     }
 }

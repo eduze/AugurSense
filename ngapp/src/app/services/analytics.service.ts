@@ -61,8 +61,8 @@ export class AnalyticsService {
       .catch(AnalyticsService.handleError);
   }
 
-  getRealTimeMap(): Promise<PersonSnapshot[][]> {
-    return this.http.get(this.baseUrl + 'realTimeMap')
+  getRealTimeMap(cameraGroupId: number): Promise<PersonSnapshot[][]> {
+    return this.http.get(`${this.baseUrl}realTimeMap/${cameraGroupId}`)
       .toPromise()
       .then(response => {
         return response as PersonSnapshot[][];
@@ -346,7 +346,7 @@ export class AnalyticsService {
   }
 
   getRealtimeInfo(trackingId: number): Promise<PersonImage[]> {
-    return this.http.get(this.baseUrl + 'realTimeMap/' + trackingId)
+    return this.http.get(this.baseUrl + 'realTimePhotos/' + trackingId)
       .toPromise()
       .then(response => {
         let results = response as PersonImage[];

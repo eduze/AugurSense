@@ -23,13 +23,14 @@ package org.eduze.fyp.core.db;
 
 import org.eduze.fyp.api.annotations.AutoStart;
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
+import org.eduze.fyp.api.model.CameraGroup;
+import org.eduze.fyp.api.model.CaptureStamp;
+import org.eduze.fyp.api.model.Person;
 import org.eduze.fyp.api.resources.PersonSnapshot;
 import org.eduze.fyp.core.PhotoMapper;
 import org.eduze.fyp.core.db.dao.CaptureStampDAO;
 import org.eduze.fyp.core.db.dao.PersonDAO;
 import org.eduze.fyp.core.db.dao.ZoneDAO;
-import org.eduze.fyp.api.model.CaptureStamp;
-import org.eduze.fyp.api.model.Person;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,8 +67,8 @@ public class DBHandler implements ProcessedMapListener {
     }
 
     @Override
-    public void mapProcessed(List<List<PersonSnapshot>> snapshots) {
-        //Nothing to do here. Code moved to on Frame.
+    public void mapProcessed(CameraGroup cameraGroup, List<List<PersonSnapshot>> snapshots) {
+        // Nothing here
     }
 
     @Override

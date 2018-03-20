@@ -31,7 +31,7 @@
   <div class="box box-primary" *ngFor="let config of cameraConfigs; let j = index">
     <div class="box-header">
       <div class="col-md-6">
-        <h4 class="box-title"> Configure point mappings for {{config.cameraId}} {{config.cameraGroup.name}}</h4>
+        <h4 class="box-title"> Configure point mappings for {{config.cameraId}}</h4>
       </div>
       <div class="col-md-4 col-md-offset-2">
         <select [compareWith]="compare" class="form-control" [(ngModel)]="config.cameraGroup">

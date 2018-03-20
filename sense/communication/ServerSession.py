@@ -1,3 +1,4 @@
+import logging
 from time import sleep
 
 from communication.APIAccess import APIAccess
@@ -41,16 +42,22 @@ class ServerSession:
         self.api_access = APIAccess(host, port)
         self.my_ip = my_ip
         self.my_port = my_port
-        self.camera_id = self.api_access.requestCameraId()
+        self.camera_id = -1
         self.mapping = None
+        self.logger = logging.getLogger("ServerSession")
 
-    def configureMapping(self, captured_image, markers = None, map_markers = None):
+    def configureMapping(self, captured_image, w, h, markers=None, map_markers=None):
         '''
         Send camera view to analytics engine
-        :param captured_image: 
+        :param markers:
+        :param map_markers:
+        :param captured_image:
         :return: 
         '''
-        self.api_access.postCameraView(self.camera_id, captured_image, self.my_ip, self.my_port, markers, map_markers)
+        id = self.api_access.postCameraView(self.camera_id, captured_image,
+                                            self.my_ip, self.my_port, w, h, markers, map_markers)
+        self.logger.info("Got camera ID: %d", id)
+        self.camera_id = id
 
     def obtainMapping(self):
         '''
@@ -58,20 +65,20 @@ class ServerSession:
         :return: 
         '''
         results = self.api_access.getMap(self.camera_id)
-        while results["status"] == False:
+        while not results:
             results = self.api_access.getMap(self.camera_id)
-            sleep(1)
+            sleep(10)
 
         self.mapping = Mapping()
-        screenSpaceList = results["mapping"]["screenSpacePoints"]
-        worldSpaceList = results["mapping"]["worldSpacePoints"]
+        screenSpaceList = results["pointMapping"]["screenSpacePoints"]
+        worldSpaceList = results["pointMapping"]["worldSpacePoints"]
         for p in screenSpaceList:
             self.mapping.screen_space_points.append((int(p["x"]), int(p["y"])))
         for p in worldSpaceList:
             self.mapping.world_space_points.append((int(p["x"]), int(p["y"])))
 
-        self.mapping.map_width = results["mapWidth"]
-        self.mapping.map_height = results["mapHeight"]
+        # self.mapping.map_width = results["mapWidth"]
+        # self.mapping.map_height = results["mapHeight"]
 
         return self.mapping
 

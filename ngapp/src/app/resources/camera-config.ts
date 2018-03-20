@@ -9,13 +9,19 @@ export class CameraConfig {
   pointMapping: PointMapping;
   cameraView: CameraView;
   cameraGroup: CameraGroup;
+  width: number;
+  height: number;
 
-  constructor(cameraId: number, ipAndPort: string, pointMapping: PointMapping, cameraView: CameraView, cameraGroup: CameraGroup) {
+
+  constructor(cameraId: number, ipAndPort: string, pointMapping: PointMapping, cameraView: CameraView,
+              cameraGroup: CameraGroup, width: number, height: number) {
     this.cameraId = cameraId;
     this.ipAndPort = ipAndPort;
     this.pointMapping = pointMapping;
     this.cameraView = cameraView;
     this.cameraGroup = cameraGroup;
+    this.width = width;
+    this.height = height;
   }
 
   public static fromJSON(config: any): CameraConfig {
@@ -23,7 +29,8 @@ export class CameraConfig {
     const view = 'data:image/JPEG;base64,' + config.view;
     const ipPort = config.ipAndPort;
     const cameraGroup = CameraGroup.fromJSON(config.cameraGroup);
-    const cameraConfig = new CameraConfig(cameraId, ipPort, new PointMapping(), new CameraView(view), cameraGroup);
+    const cameraConfig = new CameraConfig(cameraId, ipPort, new PointMapping(), new CameraView(view), cameraGroup,
+      config.width, config.height);
 
     for (const i in config.pointMapping.screenSpacePoints) {
       const screenSpacePoint = new Point(config.pointMapping.screenSpacePoints[i].x, config.pointMapping.screenSpacePoints[i].y);
@@ -40,7 +47,9 @@ export class CameraConfig {
       ipAndPort: this.ipAndPort,
       pointMapping: this.pointMapping,
       view: this.cameraView.view.split(',')[1],
-      cameraGroup: this.cameraGroup
+      cameraGroup: this.cameraGroup,
+      width: this.width,
+      height: this.height
     };
   }
 }

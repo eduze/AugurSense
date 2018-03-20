@@ -22,4 +22,12 @@ package org.eduze.fyp.core.db.dao;
 public interface AbstractDAO {
 
     void save(Object object);
+
+    void update(Object object);
+
+    Object merge(Object object);
+
+    void persist(Object object);
+
+    void saveOrUpdate(Object object);
 }

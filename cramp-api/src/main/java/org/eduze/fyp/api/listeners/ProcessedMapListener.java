@@ -20,6 +20,7 @@
  */
 package org.eduze.fyp.api.listeners;
 
+import org.eduze.fyp.api.model.CameraGroup;
 import org.eduze.fyp.api.resources.PersonSnapshot;
 
 import java.util.Date;
@@ -27,7 +28,7 @@ import java.util.List;
 
 public interface ProcessedMapListener {
 
-    void mapProcessed(List<List<PersonSnapshot>> snapshots);
+    void mapProcessed(CameraGroup cameraGroup, List<List<PersonSnapshot>> snapshots);
 
     void onFrame(List<List<PersonSnapshot>> snapshots, Date timestamp);
 }

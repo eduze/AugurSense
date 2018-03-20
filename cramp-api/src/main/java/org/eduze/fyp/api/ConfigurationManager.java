@@ -20,9 +20,10 @@ package org.eduze.fyp.api;
 
 import org.eduze.fyp.api.config.Startable;
 import org.eduze.fyp.api.listeners.ConfigurationListener;
-import org.eduze.fyp.api.model.Zone;
 import org.eduze.fyp.api.model.CameraConfig;
+import org.eduze.fyp.api.model.CameraGroup;
 import org.eduze.fyp.api.model.PointMapping;
+import org.eduze.fyp.api.model.Zone;
 
 import java.awt.image.BufferedImage;
 import java.net.InetSocketAddress;
@@ -37,6 +38,11 @@ import java.util.Set;
  */
 public interface ConfigurationManager extends Startable {
 
+    /**
+     * Adds a new camera configuration.
+     *
+     * @param cameraConfig {@link CameraConfig} to be added
+     */
     void addCameraConfig(CameraConfig cameraConfig);
 
     /**
@@ -70,4 +76,6 @@ public interface ConfigurationManager extends Startable {
     boolean isConfigured();
 
     List<Zone> getZones();
+
+    Map<Integer, CameraGroup> getCameraGroups();
 }

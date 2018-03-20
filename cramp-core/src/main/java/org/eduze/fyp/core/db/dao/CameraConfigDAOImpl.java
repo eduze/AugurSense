@@ -62,7 +62,7 @@ public class CameraConfigDAOImpl extends AbstractDAOImpl implements CameraConfig
     @Override
     public CameraConfig findByCameraId(int cameraId) {
         Session session = this.sessionFactory.getCurrentSession();
-        session.beginTransaction();
+        session.getTransaction();
         try {
             List<CameraConfig> cameraConfigs = session.createQuery("from CameraConfig where cameraId=:cameraId",
                     CameraConfig.class).setParameter("cameraId", cameraId).list();
@@ -76,28 +76,30 @@ public class CameraConfigDAOImpl extends AbstractDAOImpl implements CameraConfig
     }
 
     @Override
+    public CameraConfig findByCameraIpAndPort(String ipAndPort) {
+        Session session = this.sessionFactory.getCurrentSession();
+        session.beginTransaction();
+        CameraConfig cameraConfig;
+        try {
+            cameraConfig = session.createQuery("from CameraConfig where ipAndPort=:ipAndPort", CameraConfig.class)
+                    .setParameter("ipAndPort", ipAndPort).uniqueResult();
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+            logger.error("Error finding camera config by ip: {}", ipAndPort, e);
+            throw new IllegalStateException("Error executing query", e);
+        }
+
+        return cameraConfig;
+    }
+
+    @Override
     public List<CameraConfig> list() {
         Session session = this.sessionFactory.openSession();
         List<CameraConfig> cameraConfigs = session.createQuery("from CameraConfig", CameraConfig.class)
                 .list();
         session.close();
         return cameraConfigs;
-    }
-
-    @Override
-    public void update(CameraConfig cameraConfig) {
-        Session session = this.sessionFactory.openSession();
-        session.beginTransaction();
-        try {
-            session.update(cameraConfig);
-            session.getTransaction().commit();
-        } catch (HibernateException e) {
-            session.getTransaction().rollback();
-            logger.error("Error occurred when updating camera config - {}", cameraConfig, e);
-            throw new IllegalStateException("Unable to update camera config", e);
-        } finally {
-            session.close();
-        }
     }
 
     @Override

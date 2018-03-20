@@ -21,19 +21,7 @@ class APIAccess:
         self.config_root = self.api_root + "config/"
         self.realtime_root = self.api_root + "realtime"
 
-    def requestCameraId(self):
-        '''
-        Request a camera_id from analytics engine
-        :return: 
-        '''
-        response = requests.get(self.config_root + "cameraId")
-        if response.status_code == 200:
-            json_data = json.loads(response.text)
-            return json_data["id"]
-        else:
-            raise ConnectionError(response.status_code)
-
-    def postCameraView(self, camera_id, image, my_ip, my_port, markers=None, map_markers=None):
+    def postCameraView(self, camera_id, image, my_ip, my_port, w, h, markers=None, map_markers=None):
         '''
         Send camera captured image to analytics engine
         :param camera_id: camera_id
@@ -61,14 +49,17 @@ class APIAccess:
                 "screenSpacePoints": screenSpacePoints,
                 "worldSpacePoints": worldSpacePoints
             },
-            "view": viewBytes
+            "view": viewBytes,
+            "width": w,
+            "height": h
         }
 
-        print(json.dumps(params))
+        # print(json.dumps(params))
         response = requests.post(self.config_root + "cameraConfig", json=params)
+        print(response.text)
 
         if response.status_code == 200:
-            return True
+            return json.loads(response.text)
         else:
             raise ConnectionError(response.status_code)
 
@@ -81,6 +72,8 @@ class APIAccess:
         response = requests.get(self.config_root + str(camera_id))
         if response.status_code == 200:
             return json.loads(response.text)
+        elif response.status_code == 404:
+            return False
         else:
             raise ConnectionError(response.status_code)
 

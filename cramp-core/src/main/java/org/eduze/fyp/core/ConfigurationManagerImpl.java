@@ -27,6 +27,7 @@ import org.eduze.fyp.api.annotations.AutoStart;
 import org.eduze.fyp.api.annotations.Mode;
 import org.eduze.fyp.api.listeners.ConfigurationListener;
 import org.eduze.fyp.api.model.CameraConfig;
+import org.eduze.fyp.api.model.CameraGroup;
 import org.eduze.fyp.api.model.PointMapping;
 import org.eduze.fyp.api.model.Zone;
 import org.eduze.fyp.core.db.dao.CameraConfigDAO;
@@ -68,12 +69,13 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     private String propertiesFile;
     private BufferedImage map;
 
-    private Set<Integer> cameraIds = new HashSet<>();
     private Set<ConfigurationListener> configurationListeners = new HashSet<>();
-    private CameraConfigDAO cameraConfigDAO;
     private Map<Integer, CameraConfig> cameraConfigs = new ConcurrentHashMap<>();
+    private Map<Integer, CameraGroup> cameraGroups = new ConcurrentHashMap<>();
     // TODO: 1/5/18 If zones are deleted through UI, it is not reflected here
+
     private List<Zone> zones = new ArrayList<>();
+    private CameraConfigDAO cameraConfigDAO;
     private ZoneDAO zoneDAO;
 
     public ConfigurationManagerImpl() { }
@@ -90,37 +92,46 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 
         this.cameraConfigDAO.list()
                 .forEach(cameraConfig -> this.cameraConfigs.put(cameraConfig.getCameraId(), cameraConfig));
+
+        this.cameraConfigDAO.cameraGroups().forEach(cameraGroup -> cameraGroups.put(cameraGroup.getId(), cameraGroup));
     }
 
+    @Override
     public synchronized void addCameraConfig(CameraConfig cameraConfig) {
         stateManager.checkState(State.STARTED);
-        logger.debug("Adding camera config - {}", cameraConfig);
+        logger.debug("Adding camera config - {}. Total: {}", cameraConfig, cameraConfigs.size());
         cameraConfigs.put(cameraConfig.getCameraId(), cameraConfig);
         notifyConfigurationChange();
     }
 
+    @Override
     public synchronized void addPointMapping(int cameraId, PointMapping mappings) {
         stateManager.checkState(State.STARTED);
         cameraConfigs.get(cameraId).setPointMapping(mappings);
         notifyConfigurationChange();
     }
 
+    /**
+     * Returns the next camera ID to be taken by a camera
+     *
+     * @return next camera ID
+     */
+    @Override
     public synchronized int getNextCameraId() {
         stateManager.checkState(State.STARTED);
 
-        OptionalInt max = cameraIds.stream().mapToInt(Integer::intValue).max();
+        OptionalInt max = cameraConfigs.keySet().stream().mapToInt(Integer::intValue).max();
         int nextInt = 1;
         if (max.isPresent()) {
             nextInt = max.getAsInt() + 1;
         }
 
-        cameraIds.add(nextInt);
         return nextInt;
     }
 
     @Override
     public CameraConfig getCameraConfig(int cameraId) {
-        return cameraConfigs.get(cameraId);
+        return cameraConfigs.get(cameraId).clone();
     }
 
     @Override
@@ -149,7 +160,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 
     @Override
     public Set<Integer> getCameraIds() {
-        return cameraIds;
+        return cameraConfigs.keySet();
     }
 
     @Override
@@ -178,7 +189,8 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 
     @Override
     public boolean isConfigured() {
-        return cameraIds.size() > 0 && cameraIds.size() == cameraConfigs.keySet().size();
+        return cameraConfigs.values().size() > 0 && cameraConfigs.values().stream()
+                .noneMatch(cameraConfig -> cameraConfig.getCameraGroup() == null);
     }
 
     private void notifyConfigurationChange() {
@@ -239,5 +251,9 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 
     public void setCameraConfigDAO(CameraConfigDAO cameraConfigDAO) {
         this.cameraConfigDAO = cameraConfigDAO;
+    }
+
+    public Map<Integer, CameraGroup> getCameraGroups() {
+        return cameraGroups;
     }
 }

@@ -3,15 +3,8 @@ import logging
 import cv2
 from flask import Flask, jsonify
 
-from OpenPersonDetector import OpenPersonDetector
-from PTEMapper import PTEMapper
-from Sense import Sense
 from Util import restEncodeImage
-from WorldSpaceTracker import WorldSpaceTracker
 from communication.ServerSession import ServerSession
-from experiments.AngleMapper import AngleMapper
-from experiments.Snapy import Snapy
-from test_videos.VideoLoader import load_video
 
 cam_server_instance = None
 
@@ -31,6 +24,7 @@ class LightWeightCamServer:
         self.scale = scale
         self.port = 10005
         self.server_session = ServerSession(my_ip="localhost", my_port=self.port)
+        self.logger = logging.getLogger("CamServer")
 
     def load_config(self, default_markers=None, default_map_markers=None):
         """
@@ -43,10 +37,12 @@ class LightWeightCamServer:
 
         frame = cv2.resize(frame, (0, 0), fx=self.scale[0], fy=self.scale[1])
 
-        self.server_session.configureMapping(frame, default_markers, default_map_markers)
-
+        w, h, depth = frame.shape
+        self.server_session.configureMapping(frame, w, h, default_markers, default_map_markers)
         # Obtain marker points from server. Blocks until server responds marker points.
         mapping = self.server_session.obtainMapping()
+        self.logger.info("Obtained mapping: %s", mapping)
+
         self.sense.position_mapper.screen_points = mapping.screen_space_points
         # TODO: Do scaling correction
         self.sense.position_mapper.world_points = mapping.world_space_points
@@ -95,8 +91,14 @@ class LightWeightCamServer:
                     result["headDirectionY"] = person.head_direction[1].tolist()[0]
 
                 detection = sensed_person.tracked_person.detection
-                print(detection.person_bound)
+                # print(detection.person_bound)
                 (dc_x, dc_y, dc_w, dc_h) = map(int, detection.person_bound)
+                (f_x, f_y, f_w, f_h) = detection.person_bound
+                (l_x, l_y) = detection.leg_point
+                (el_x, el_y) = detection.estimated_leg_point
+                cv2.rectangle(frame, (f_x, f_y), (f_w, f_h), (0, 0, 0), 2)
+                cv2.drawMarker(frame, (int(l_x), int(l_y)), (255, 0, 255), cv2.MARKER_CROSS, thickness=3)
+                cv2.drawMarker(frame, (int(el_x), int(el_y)), (255, 0, 255), cv2.MARKER_DIAMOND)
 
                 snap = frame[dc_y:dc_h, dc_x:dc_w]
                 if snap.shape[0] > 0 and snap.shape[1] > 0:
@@ -137,17 +139,3 @@ class LightWeightCamServer:
 
         logging.info("Starting server at " + str(self.port))
         app.run(port=self.port)
-
-
-if __name__ == "__main__":
-    # Test snippet
-    logging.basicConfig(level=logging.DEBUG)
-    cap, markers, map_markers = load_video("bia.pier2")
-
-    person_detector = OpenPersonDetector(preview=True)
-    position_mapper = PTEMapper(markers, map_markers)
-    sense = Sense(person_detector, position_mapper, AngleMapper(position_mapper), WorldSpaceTracker(), Snapy())
-
-    server = LightWeightCamServer(sense, cap, (0.5, 0.5))
-    server.load_config(markers, map_markers)
-    server.start_cam_server()

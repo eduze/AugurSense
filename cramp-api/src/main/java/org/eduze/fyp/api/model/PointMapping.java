@@ -28,6 +28,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class to represent camera space to world space mappings of reference points (4 reference points usually). Points are
@@ -38,7 +39,7 @@ import java.util.List;
 @Entity
 @Table(name = "point_mappings")
 @JsonIgnoreProperties("cameraConfig")
-public class PointMapping {
+public class PointMapping implements Cloneable {
 
     @Id
     @Column(name = "id")
@@ -52,7 +53,7 @@ public class PointMapping {
     private List<Point> worldSpacePoints = new ArrayList<>(4);
 
     @XmlTransient
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @JoinColumn(name = "camera_config_id", nullable = false)
     private CameraConfig cameraConfig;
 
@@ -106,6 +107,21 @@ public class PointMapping {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    @Override
+    public PointMapping clone() {
+        try {
+            super.clone();
+        } catch (CloneNotSupportedException ignored) { }
+
+        PointMapping pointMapping = new PointMapping();
+        pointMapping.setCameraConfig(getCameraConfig());
+        // Not sending ID since clone used for write tasks
+        //        pointMapping.setId(getId());
+        pointMapping.setScreenSpacePoints(getScreenSpacePoints().stream().map(Point::clone).collect(Collectors.toList()));
+        pointMapping.setWorldSpacePoints(getWorldSpacePoints().stream().map(Point::clone).collect(Collectors.toList()));
+        return pointMapping;
     }
 
     @Override

@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @Entity
 @Table(name = "camera_configs")
-public class CameraConfig {
+public class CameraConfig implements Cloneable {
 
     @Id
     @Column(name = "id")
@@ -46,15 +46,17 @@ public class CameraConfig {
     @Column(unique = true)
     private int cameraId;
     private String ipAndPort;
+    private int width;
+    private int height;
 
     @Lob
     @Column(columnDefinition = "LONGBLOB")
     private byte[] view;
 
-    @OneToOne(mappedBy = "cameraConfig", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(mappedBy = "cameraConfig", cascade = {CascadeType.ALL}, fetch = FetchType.EAGER)
     private PointMapping pointMapping = new PointMapping();
 
-    @ManyToOne
+    @ManyToOne()
     private CameraGroup cameraGroup;
 
     public byte[] getView() {
@@ -105,7 +107,43 @@ public class CameraConfig {
         this.cameraGroup = cameraGroup;
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    @Override
+    public CameraConfig clone() {
+        try {
+            super.clone();
+        } catch (CloneNotSupportedException ignored) { }
+
+        CameraConfig cameraConfig = new CameraConfig();
+        cameraConfig.setView(getView());
+        cameraConfig.setCameraGroup(getCameraGroup());
+        cameraConfig.setPointMapping(getPointMapping().clone());
+        cameraConfig.setHeight(getHeight());
+        cameraConfig.setWidth(getWidth());
+        cameraConfig.setCameraId(getCameraId());
+        cameraConfig.setIpAndPort(getIpAndPort());
+        cameraConfig.setIpAndPort(getIpAndPort());
+
+        return cameraConfig;
+    }
+
     public String toString() {
-        return String.format("{ camera : %s, ipAndPort : %s, pointMappings: %s }", cameraId, ipAndPort, pointMapping);
+        return String.format("{ camera : %s, ipAndPort : %s, pointMappings: %s, cameraGroup: %s }",
+                cameraId, ipAndPort, pointMapping, cameraGroup);
     }
 }

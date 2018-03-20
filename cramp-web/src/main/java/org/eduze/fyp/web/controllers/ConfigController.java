@@ -22,8 +22,6 @@ import org.eduze.fyp.api.model.CameraConfig;
 import org.eduze.fyp.api.model.CameraGroup;
 import org.eduze.fyp.api.model.Zone;
 import org.eduze.fyp.api.resources.Camera;
-import org.eduze.fyp.web.resources.MapConfiguration;
-import org.eduze.fyp.web.resources.Status;
 import org.eduze.fyp.web.services.ConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,20 +126,20 @@ public class ConfigController {
 
     @GET
     @Path("/{cameraId}")
-    public Response getMap(@PathParam("cameraId") int cameraId) {
-        MapConfiguration mapConfiguration;
+    public Response getCameraConfig(@PathParam("cameraId") int cameraId) {
+        CameraConfig cameraConfig;
         try {
-            mapConfiguration = configService.getMap(cameraId);
+            cameraConfig = configService.getCameraConfig(cameraId);
         } catch (Exception e) {
             logger.error("Error occurred when obtaining map", e);
             return Response.status(500).build();
         }
 
-        if (mapConfiguration == null) {
-            return Response.status(200).entity(new Status(false)).build();
+        if (cameraConfig == null) {
+            return Response.status(404).build();
         }
 
-        return Response.status(200).entity(mapConfiguration).build();
+        return Response.ok(cameraConfig).build();
     }
 
     @GET
@@ -183,12 +181,11 @@ public class ConfigController {
     @Path("/cameraConfig")
     public Response postCameraConfig(CameraConfig cameraConfig) {
         try {
-            configService.addCameraConfig(cameraConfig);
+            return Response.ok(configService.addCameraConfig(cameraConfig)).build();
         } catch (Exception e) {
             logger.error("Error occurred when adding camera config : {}", cameraConfig, e);
             return Response.status(500).build();
         }
-        return Response.status(200).build();
     }
 
     public void setConfigService(ConfigService configService) {

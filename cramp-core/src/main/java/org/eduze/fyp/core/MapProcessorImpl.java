@@ -22,20 +22,31 @@
 package org.eduze.fyp.core;
 
 import org.eduze.fyp.api.CameraCoordinator;
+import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.api.MapProcessor;
 import org.eduze.fyp.api.State;
 import org.eduze.fyp.api.StateManager;
 import org.eduze.fyp.api.annotations.AutoStart;
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
-import org.eduze.fyp.core.resources.GlobalMap;
+import org.eduze.fyp.api.model.CameraConfig;
+import org.eduze.fyp.api.model.CameraGroup;
 import org.eduze.fyp.api.resources.LocalMap;
 import org.eduze.fyp.api.resources.PersonSnapshot;
 import org.eduze.fyp.api.util.Args;
+import org.eduze.fyp.core.resources.GlobalMap;
 import org.eduze.fyp.core.util.AccuracyTester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -47,7 +58,7 @@ public class MapProcessorImpl implements MapProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(MapProcessorImpl.class);
 
-    private final GlobalMap globalMap = new GlobalMap();
+    private final Map<Integer, GlobalMap> globalMaps = new HashMap<>();
     private final StateManager stateManager = new StateManager(State.STOPPED);
     private final Queue<LocalMap> localMapQueue = new LinkedList<>();
     private CameraCoordinator cameraCoordinator;
@@ -55,39 +66,23 @@ public class MapProcessorImpl implements MapProcessor {
     private ExecutorService processor;
 
     private AccuracyTester accuracyTester = null;
-
-    public AccuracyTester getAccuracyTester() {
-        return accuracyTester;
-    }
-
-    public void setAccuracyTester(AccuracyTester accuracyTester) {
-        this.accuracyTester = accuracyTester;
-    }
-
     private ZoneMapper zoneMapper = null;
-
     private PhotoMapper photoMapper = null;
 
-    public ZoneMapper getZoneMapper() {
-        return zoneMapper;
-    }
-
-    public PhotoMapper getPhotoMapper() {
-        return photoMapper;
-    }
-
-    public void setPhotoMapper(PhotoMapper photoMapper) {
-        this.photoMapper = photoMapper;
-    }
-
-    public void setZoneMapper(ZoneMapper zoneMapper) {
-        this.zoneMapper = zoneMapper;
-    }
+    @Autowired
+    private ConfigurationManager configurationManager;
 
     @Override
     public void addLocalMap(LocalMap map) {
         stateManager.checkState(State.STARTED);
         logger.debug("Adding a local map for camera : {}", map.getCameraId());
+
+        // Point mapping conversion
+        //        CameraConfig cameraConfig = configurationManager.getCameraConfig(map.getCameraId());
+        //        map.getPersonCoordinates().forEach(personCoordinate -> {
+        //            personCoordinate.setX(personCoordinate.getX() * Constants.CAMERA_VIEW_WIDTH / cameraConfig.getWidth());
+        //            personCoordinate.setY(personCoordinate.getY() * Constants.CAMERA_VIEW_HEIGHT / cameraConfig.getHeight());
+        //        });
 
         synchronized (this) {
             localMapQueue.add(map);
@@ -106,19 +101,28 @@ public class MapProcessorImpl implements MapProcessor {
 
     @Override
     public void nextFrame(Date timestamp) {
-        List<List<PersonSnapshot>> snapshots = globalMap.getSnapshot();
-        synchronized (this) {
-            mapListeners.forEach(listener -> listener.onFrame(snapshots,timestamp));
+        //TODO need to change
+        for (GlobalMap globalMap : globalMaps.values()) {
+            List<List<PersonSnapshot>> snapshots = globalMap.getSnapshot();
+            synchronized (this) {
+                mapListeners.forEach(listener -> listener.onFrame(snapshots, timestamp));
+            }
         }
     }
 
     @Override
     public void start() {
-        globalMap.setZoneMapper(zoneMapper);
-        globalMap.setPhotoMapper(photoMapper);
-        globalMap.setAccuracyTester(accuracyTester);
-
         Args.notNull(cameraCoordinator, "cameraCoordinator");
+
+        configurationManager.getCameraGroups().keySet()
+                .forEach(id -> {
+                    GlobalMap globalMap = new GlobalMap();
+
+                    globalMap.setZoneMapper(zoneMapper);
+                    globalMap.setPhotoMapper(photoMapper);
+                    globalMap.setAccuracyTester(accuracyTester);
+                    globalMaps.put(id, globalMap);
+                });
 
         stateManager.checkState(State.STOPPED);
         logger.debug("Starting map collector");
@@ -145,29 +149,30 @@ public class MapProcessorImpl implements MapProcessor {
                 }
 
                 try {
+                    GlobalMap globalMap = null;
                     if (nextMap != null) {
+                        CameraConfig cameraConfig = configurationManager.getCameraConfig(nextMap.getCameraId());
+                        CameraGroup cameraGroup = cameraConfig.getCameraGroup();
+                        globalMap = globalMaps.get(cameraGroup.getId());
                         globalMap.update(nextMap);
+
+                        List<List<PersonSnapshot>> snapshots = globalMap.getSnapshot();
+                        synchronized (this) {
+                            mapListeners.forEach(listener -> listener.mapProcessed(cameraGroup, snapshots));
+                        }
                     }
 
                     if (cameraCoordinator.getRealTimestamp() - lastTimestamp > MAP_REFRESH_INTERVAL) {
                         lastTimestamp = cameraCoordinator.getRealTimestamp();
                         long minTimestamp = lastTimestamp - MAP_REFRESH_THRESHOLD;
-                        globalMap.refresh(minTimestamp);
+                        globalMaps.values().forEach(map -> map.refresh(minTimestamp));
                     }
-
-
-                    if (nextMap != null) {
-                        List<List<PersonSnapshot>> snapshots = globalMap.getSnapshot();
-                        synchronized (this) {
-                            mapListeners.forEach(listener -> listener.mapProcessed(snapshots));
-                        }
-                    }
-
                 } catch (Exception e) {
                     logger.error("Error occurred in map processing", e);
                 }
             }
         });
+
 
         stateManager.setState(State.STARTED);
         logger.info("Map collector started");
@@ -192,5 +197,33 @@ public class MapProcessorImpl implements MapProcessor {
 
     public void setCameraCoordinator(CameraCoordinator cameraCoordinator) {
         this.cameraCoordinator = cameraCoordinator;
+    }
+
+    public void setConfigurationManager(ConfigurationManager configurationManager) {
+        this.configurationManager = configurationManager;
+    }
+
+    public AccuracyTester getAccuracyTester() {
+        return accuracyTester;
+    }
+
+    public void setAccuracyTester(AccuracyTester accuracyTester) {
+        this.accuracyTester = accuracyTester;
+    }
+
+    public ZoneMapper getZoneMapper() {
+        return zoneMapper;
+    }
+
+    public PhotoMapper getPhotoMapper() {
+        return photoMapper;
+    }
+
+    public void setPhotoMapper(PhotoMapper photoMapper) {
+        this.photoMapper = photoMapper;
+    }
+
+    public void setZoneMapper(ZoneMapper zoneMapper) {
+        this.zoneMapper = zoneMapper;
     }
 }

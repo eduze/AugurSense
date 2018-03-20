@@ -21,17 +21,18 @@ package org.eduze.fyp.web.services;
 
 import org.eduze.fyp.api.ConfigurationManager;
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
+import org.eduze.fyp.api.model.CameraGroup;
 import org.eduze.fyp.api.model.Person;
 import org.eduze.fyp.api.model.Zone;
 import org.eduze.fyp.api.resources.PersonCoordinate;
 import org.eduze.fyp.api.resources.PersonSnapshot;
+import org.eduze.fyp.api.util.ImageUtils;
 import org.eduze.fyp.core.PhotoMapper;
 import org.eduze.fyp.core.db.dao.CaptureStampDAO;
 import org.eduze.fyp.core.db.dao.PersonDAO;
 import org.eduze.fyp.core.db.dao.ZoneDAO;
 import org.eduze.fyp.web.resources.TimelineZone;
 import org.eduze.fyp.web.resources.ZoneStatistics;
-import org.eduze.fyp.api.util.ImageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,7 @@ public class AnalyticsService implements ProcessedMapListener {
 
     private static final Logger logger = LoggerFactory.getLogger(AnalyticsService.class);
 
-    private List<List<PersonSnapshot>> snapshots = new ArrayList<>();
+    private Map<Integer, List<List<PersonSnapshot>>> snapshots = new HashMap<>();
     private PersonDAO personDAO;
 
     private ZoneDAO zoneDAO;
@@ -60,30 +61,6 @@ public class AnalyticsService implements ProcessedMapListener {
     private int mapHeight = -1;
 
     private PhotoMapper photoMapper = null;
-
-    public PhotoMapper getPhotoMapper() {
-        return photoMapper;
-    }
-
-    public void setPhotoMapper(PhotoMapper photoMapper) {
-        this.photoMapper = photoMapper;
-    }
-
-    public void setCaptureStampDAO(CaptureStampDAO captureStampDAO) {
-        this.captureStampDAO = captureStampDAO;
-    }
-
-    public CaptureStampDAO getCaptureStampDAO() {
-        return captureStampDAO;
-    }
-
-    public void setZoneDAO(ZoneDAO zoneDAO) {
-        this.zoneDAO = zoneDAO;
-    }
-
-    public ZoneDAO getZoneDAO() {
-        return zoneDAO;
-    }
 
     public AnalyticsService() {
     }
@@ -327,8 +304,8 @@ public class AnalyticsService implements ProcessedMapListener {
         return response;
     }
 
-    public List<List<PersonSnapshot>> getRealTimeMap() {
-        return snapshots;
+    public List<List<PersonSnapshot>> getRealTimeMap(int cameraGroupId) {
+        return snapshots.computeIfAbsent(cameraGroupId, key -> new ArrayList<>());
     }
 
     public int[][] getHeatMap(long fromTimestamp, long toTimestamp) {
@@ -650,8 +627,8 @@ public class AnalyticsService implements ProcessedMapListener {
 
 
     @Override
-    public void mapProcessed(List<List<PersonSnapshot>> snapshots) {
-        this.snapshots = snapshots;
+    public void mapProcessed(CameraGroup cameraGroup, List<List<PersonSnapshot>> snapshots) {
+        this.snapshots.put(cameraGroup.getId(), snapshots);
     }
 
     @Override
@@ -884,5 +861,29 @@ public class AnalyticsService implements ProcessedMapListener {
             results.add(statistic);
         }
         return results;
+    }
+
+    public PhotoMapper getPhotoMapper() {
+        return photoMapper;
+    }
+
+    public void setPhotoMapper(PhotoMapper photoMapper) {
+        this.photoMapper = photoMapper;
+    }
+
+    public void setCaptureStampDAO(CaptureStampDAO captureStampDAO) {
+        this.captureStampDAO = captureStampDAO;
+    }
+
+    public CaptureStampDAO getCaptureStampDAO() {
+        return captureStampDAO;
+    }
+
+    public void setZoneDAO(ZoneDAO zoneDAO) {
+        this.zoneDAO = zoneDAO;
+    }
+
+    public ZoneDAO getZoneDAO() {
+        return zoneDAO;
     }
 }

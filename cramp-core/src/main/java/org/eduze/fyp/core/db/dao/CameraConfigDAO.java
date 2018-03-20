@@ -34,9 +34,9 @@ public interface CameraConfigDAO extends AbstractDAO {
 
     CameraConfig findByCameraId(int cameraId);
 
+    CameraConfig findByCameraIpAndPort(String ipAndPort);
+
     void delete(CameraConfig cameraConfig);
 
     List<CameraConfig> list();
-
-    void update(CameraConfig cameraConfig);
 }

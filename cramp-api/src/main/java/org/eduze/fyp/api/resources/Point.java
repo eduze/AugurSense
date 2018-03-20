@@ -25,7 +25,7 @@ package org.eduze.fyp.api.resources;
  *
  * @author Imesha Sudasingha
  */
-public class Point {
+public class Point implements Cloneable {
     private double x;
     private double y;
 
@@ -50,6 +50,15 @@ public class Point {
 
     public void setY(double y) {
         this.y = y;
+    }
+
+    @Override
+    public Point clone() {
+        try {
+            super.clone();
+        } catch (CloneNotSupportedException ignored) { }
+
+        return new Point(getX(), getY());
     }
 
     @Override

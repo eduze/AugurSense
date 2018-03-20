@@ -24,16 +24,16 @@ class Sense:
 
     logger = logging.getLogger("Sense")
 
-    def __init__(self, detector, position_mapper, angle_mapper, tracker, re_id):
+    def __init__(self, input_queue, output_queue, position_mapper, angle_mapper, tracker, re_id):
         '''
         Initialize Sense
-        :param detector: person detector  
         :param position_mapper: PTEMapper
         :param angle_mapper: AngleMapper
         :param tracker: World space tracker
         :param re_id: Re_Id support tool (Snapy)
         '''
-        self.detector = detector
+        self.input_queue = input_queue
+        self.output_queue = output_queue
         self.position_mapper = position_mapper
         self.angle_mapper = angle_mapper
         self.tracker = tracker
@@ -66,7 +66,8 @@ class Sense:
         new_tracked_trails = {}
 
         # Detect persons
-        persons = self.detector.detectPersons(colour_frame, gray_frame)
+        self.input_queue.put(colour_frame)
+        persons = self.output_queue.get()
         self.logger.debug("Found %d persons", len(persons))
 
         if self.position_mapper.isReady():
