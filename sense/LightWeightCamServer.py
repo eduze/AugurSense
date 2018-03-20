@@ -1,8 +1,10 @@
 import logging
 
 import cv2
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 
+from ScreenSpacePreview import ScreenSpacePreview
+from SenseMapViewer import SenseMapViewer
 from Util import restEncodeImage
 from communication.ServerSession import ServerSession
 
@@ -15,33 +17,39 @@ class LightWeightCamServer:
     todo: remove tracking - Imesha
     """
 
-    def __init__(self, sense, capture, scale=(0.5, 0.5)):
+    def __init__(self, port, sense, capture, scale=(0.5, 0.5)):
         """
         Initialize
         """
+        self.logger = logging.getLogger("CamServer")
+
+        self.app = Flask(__name__)
         self.sense = sense
         self.capture = capture
         self.scale = scale
-        self.port = 10005
+        self.port = port
         self.server_session = ServerSession(my_ip="localhost", my_port=self.port)
-        self.logger = logging.getLogger("CamServer")
+
+        self.screen_preview = ScreenSpacePreview(sense.position_mapper)
+        self.track_viewer = SenseMapViewer([sense.position_mapper], True)
 
     def load_config(self, default_markers=None, default_map_markers=None):
         """
         Connect to server and load configurations from it
         :return:
         """
+        self.track_viewer.setupWindows()
 
         # Obtain preview frame to be sent to server for configuration
         status, frame = self.capture.read()
 
         frame = cv2.resize(frame, (0, 0), fx=self.scale[0], fy=self.scale[1])
 
-        w, h, depth = frame.shape
+        h, w, depth = frame.shape
         self.server_session.configureMapping(frame, w, h, default_markers, default_map_markers)
         # Obtain marker points from server. Blocks until server responds marker points.
         mapping = self.server_session.obtainMapping()
-        self.logger.info("Obtained mapping: %s", mapping)
+        self.logger.info("Obtained mapping: {} - {}".format(mapping.screen_space_points, mapping.world_space_points))
 
         self.sense.position_mapper.screen_points = mapping.screen_space_points
         # TODO: Do scaling correction
@@ -78,7 +86,8 @@ class LightWeightCamServer:
             # Generate Response
             for sensed_person in self.sense.sensed_persons.values():
                 person = sensed_person.tracked_person
-                # Append to results
+
+                # self.logger.debug("Result: ({},{})".format(person.position[0], person.position[1]))
                 result = {
                     "x": int(person.position[0]),
                     "y": int(person.position[1]),
@@ -93,16 +102,9 @@ class LightWeightCamServer:
                 detection = sensed_person.tracked_person.detection
                 # print(detection.person_bound)
                 (dc_x, dc_y, dc_w, dc_h) = map(int, detection.person_bound)
-                (f_x, f_y, f_w, f_h) = detection.person_bound
-                (l_x, l_y) = detection.leg_point
-                (el_x, el_y) = detection.estimated_leg_point
-                cv2.rectangle(frame, (f_x, f_y), (f_w, f_h), (0, 0, 0), 2)
-                cv2.drawMarker(frame, (int(l_x), int(l_y)), (255, 0, 255), cv2.MARKER_CROSS, thickness=3)
-                cv2.drawMarker(frame, (int(el_x), int(el_y)), (255, 0, 255), cv2.MARKER_DIAMOND)
 
                 snap = frame[dc_y:dc_h, dc_x:dc_w]
                 if snap.shape[0] > 0 and snap.shape[1] > 0:
-                    logging.debug("Snapping person")
                     result["image"] = restEncodeImage(snap)
                 result_coordinates.append(result)
 
@@ -117,8 +119,15 @@ class LightWeightCamServer:
             "personCoordinates": result_coordinates
         }
 
-        cv2.imshow("output", frame)
-        cv2.waitKey(1)
+        self.screen_preview.renderFrame(self.sense, frame, None)
+        self.track_viewer.showMap([self.sense])
+
+        key = cv2.waitKey(1)
+        if key & 0xFF == ord('q'):
+            func = request.environ.get('werkzeug.server.shutdown')
+            if func is None:
+                raise RuntimeError('Not running with the Werkzeug Server')
+            func()
 
         return result
 
@@ -128,14 +137,12 @@ class LightWeightCamServer:
         :param cam_port: port of camera server
         :return:
         """
-        app = Flask(__name__)
-
         _self_shaddow = self
 
-        @app.route('/getMap/<int:frame_time>')
+        @self.app.route('/getMap/<int:frame_time>')
         def getMapFR(frame_time):
             logging.debug("Sending map for timestamp - %d", frame_time)
             return jsonify(_self_shaddow.get_map_at(frame_time))
 
         logging.info("Starting server at " + str(self.port))
-        app.run(port=self.port)
+        self.app.run(port=self.port)

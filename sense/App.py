@@ -16,13 +16,24 @@ from test_videos.VideoLoader import load_video
 logging.basicConfig(level=logging.DEBUG)
 
 
-def run_cam_server(input_queue, output_queue):
+def run_cam_server_pier2(input_queue, output_queue):
     cap, markers, map_markers = load_video("bia.pier2")
     position_mapper = PTEMapper(markers, map_markers)
     sense = Sense(input_queue, output_queue, position_mapper, AngleMapper(position_mapper), WorldSpaceTracker(),
                   Snapy())
 
-    server = LightWeightCamServer(sense, cap, (0.5, 0.5))
+    server = LightWeightCamServer(10005, sense, cap, (0.5, 0.5))
+    server.load_config(markers, map_markers)
+    server.start_cam_server()
+
+
+def run_cam_server_departure(input_queue, output_queue):
+    cap, markers, map_markers = load_video("bia.departure")
+    position_mapper = PTEMapper(markers, map_markers)
+    sense = Sense(input_queue, output_queue, position_mapper, AngleMapper(position_mapper), WorldSpaceTracker(),
+                  Snapy())
+
+    server = LightWeightCamServer(10004, sense, cap, (0.5, 0.5))
     server.load_config(markers, map_markers)
     server.start_cam_server()
 
@@ -36,20 +47,27 @@ def run_detector_service(queue_pairs):
 if __name__ == "__main__":
     multiprocessing.set_start_method("spawn")
 
-    input_queue = Queue()
-    output_queue = Queue()
+    pier2_input = Queue()
+    pier2_output = Queue()
 
-    queue_pairs = [(input_queue, output_queue)]
+    departure_input = Queue()
+    departure_output = Queue()
+
+    queue_pairs = [(pier2_input, pier2_output), (departure_input, departure_output)]
 
     service_process = Process(target=run_detector_service, args=([queue_pairs]))
     service_process.daemon = True
     service_process.start()
 
-    cam_process = Process(target=run_cam_server, args=(input_queue, output_queue))
-    cam_process.daemon = True
-    cam_process.start()
+    pier2_process = Process(target=run_cam_server_pier2, args=(pier2_input, pier2_output))
+    pier2_process.daemon = True
+    pier2_process.start()
 
-    processes = [service_process, cam_process]
+    departure_process = Process(target=run_cam_server_departure, args=(departure_input, departure_output))
+    departure_process.daemon = True
+    departure_process.start()
+
+    processes = [service_process, pier2_process, departure_process]
 
     running = True
     while running:

@@ -122,6 +122,7 @@ public class ConfigService {
             p.setY(p.getY() * cameraConfig.getHeight() / Constants.CAMERA_VIEW_HEIGHT);
         });
 
+        logger.debug("Get camera config: {}", cameraConfig);
         return cameraConfig;
     }
 

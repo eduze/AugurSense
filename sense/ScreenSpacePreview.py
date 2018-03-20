@@ -45,11 +45,11 @@ class ScreenSpacePreview:
             (l_x, l_y) = person.leg_point
             (el_x, el_y) = person.estimated_leg_point
             cv2.rectangle(colour_frame, (f_x, f_y), (f_w, f_h), (0, 0, 0), 2)
-            cv2.drawMarker(colour_frame, (int(l_x), int(l_y)), (255, 0, 255), cv2.MARKER_CROSS,thickness=3)
+            cv2.drawMarker(colour_frame, (int(l_x), int(l_y)), (255, 0, 255), cv2.MARKER_CROSS, thickness=3)
             cv2.drawMarker(colour_frame, (int(el_x), int(el_y)), (255, 0, 255), cv2.MARKER_DIAMOND)
 
-            for k,v in person.tracked_points.items():
-                cv2.drawMarker(colour_frame, (v[0],v[1]), (0, 0, 255),cv2.MARKER_TILTED_CROSS,10)
+            for k, v in person.tracked_points.items():
+                cv2.drawMarker(colour_frame, (v[0], v[1]), (0, 0, 255), cv2.MARKER_TILTED_CROSS, 10)
 
             # cv2.putText(frame, str(person.head_direction), (int(person.central_point[0]), int(person.central_point[1])),
             #        cv2.FONT_HERSHEY_COMPLEX, 0.4, (0, 255, 0))
@@ -57,7 +57,10 @@ class ScreenSpacePreview:
         if self.transform_mapper is not None:
             # Render markers
             for marker in self.transform_mapper.screen_points:
-                cv2.drawMarker(colour_frame, marker, (0, 0, 255))
+                # print(marker)
+                cv2.drawMarker(colour_frame, marker, (0, 125, 255), markerType=cv2.MARKER_STAR, thickness=3)
+        else:
+            print("No Mapper")
 
         for sensed_person in sense.sensed_persons.values():
             person = sensed_person.tracked_person
@@ -70,8 +73,6 @@ class ScreenSpacePreview:
             if person.stand_probability == 0:
                 colour = (0, 255, 0)  # Colour indicating sitting
                 pose_text = "Sit"
-
-
 
             # cv2.putText(colour_frame, str(person.label),
             #             (int(person.detection.central_point[0]), int(person.detection.central_point[1])),

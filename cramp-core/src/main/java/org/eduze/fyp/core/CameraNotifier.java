@@ -117,7 +117,7 @@ public class CameraNotifier implements FutureCallback<HttpResponse> {
 
     @Override
     public void failed(Exception e) {
-        logger.error("Error occurred when notifying camera with", e);
+        logger.error("Error occurred when notifying camera: {}", e.getMessage());
         setState(State.IDLE);
     }
 
