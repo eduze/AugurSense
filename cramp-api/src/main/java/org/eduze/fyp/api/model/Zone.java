@@ -28,6 +28,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -54,8 +55,25 @@ public class Zone {
     @ManyToOne(optional = false)
     private CameraGroup cameraGroup;
 
+    @OneToMany(mappedBy = "instantZone")
+    private List<Person> people;
+
+    public Zone() { }
+
+    public Zone(String zoneName, int zoneLimit, List<Integer> xCoordinates, List<Integer> yCoordinates, CameraGroup cameraGroup) {
+        this.zoneName = zoneName;
+        this.zoneLimit = zoneLimit;
+        this.xCoordinates = xCoordinates;
+        this.yCoordinates = yCoordinates;
+        this.cameraGroup = cameraGroup;
+    }
+
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getZoneName() {
@@ -98,6 +116,14 @@ public class Zone {
 
     public void setCameraGroup(CameraGroup cameraGroup) {
         this.cameraGroup = cameraGroup;
+    }
+
+    public List<Person> getPeople() {
+        return people;
+    }
+
+    public void setPeople(List<Person> people) {
+        this.people = people;
     }
 
     @Override

@@ -28,11 +28,8 @@ import java.util.Set;
 public class PersonCoordinate extends Coordinate {
 
     private byte[] image;
-
     private String uuid;
-
     private Set<Integer> ids;
-
     private int trackSegmentIndex;
 
     public int getTrackSegmentIndex() {
@@ -43,8 +40,7 @@ public class PersonCoordinate extends Coordinate {
         this.trackSegmentIndex = trackSegmentIndex;
     }
 
-    public PersonCoordinate() {
-    }
+    public PersonCoordinate() { }
 
     public PersonCoordinate(Person p, byte[] image) {
         super(p.getX(), p.getY(), p.getTimestamp().getTime(), p.getStandProbability(), p.getSitProbability(),

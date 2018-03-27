@@ -53,6 +53,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static org.eduze.fyp.api.Constants.Properties.FLOOR_MAP_IMAGE;
+import static org.eduze.fyp.api.Constants.ZONE_NAME_WORLD;
 
 /**
  * {@link ConfigurationManager} implementation which is doing all operations using in-memory data storage.
@@ -79,6 +80,50 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     private ZoneDAO zoneDAO;
 
     public ConfigurationManagerImpl() { }
+
+    @Override
+    public void start() {
+        stateManager.checkState(State.STOPPED);
+
+        if (propertiesFile == null) {
+            throw new IllegalArgumentException("No properties file is given");
+        }
+
+        setup();
+        try {
+            loadConfiguration();
+        } catch (IOException e) {
+            logger.error("Error occurred when loading configuration", e);
+            throw new IllegalArgumentException("Unable to load properties", e);
+        }
+
+        String mapPath = System.getProperty(FLOOR_MAP_IMAGE);
+        if (mapPath == null) {
+            throw new IllegalArgumentException("No Map File Path given");
+        }
+        logger.debug("Using map image : {}", mapPath);
+
+        try (InputStream in = getClass().getClassLoader().getResourceAsStream(mapPath)) {
+            map = ImageIO.read(in);
+        } catch (IOException e) {
+            logger.error("Unable to load the map image : {}", mapPath, e);
+            throw new IllegalArgumentException("Unable to load the map image");
+        }
+
+        stateManager.setState(State.STARTED);
+        notifyConfigurationChange();
+    }
+
+    private void setup() {
+        cameraConfigDAO.cameraGroups().forEach(cameraGroup -> {
+            Set<Zone> zones = cameraGroup.getZones();
+            if (zones.stream().noneMatch(zone -> ZONE_NAME_WORLD.equals(zone.getZoneName()))) {
+                Zone world = new Zone(ZONE_NAME_WORLD, Integer.MAX_VALUE, null, null, cameraGroup);
+                logger.debug("Adding zone: [{}] to camera group: [{}]", world, cameraGroup);
+                zoneDAO.save(world);
+            }
+        });
+    }
 
     private void loadConfiguration() throws IOException {
         logger.info("Loading configurations");
@@ -196,38 +241,6 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
     private void notifyConfigurationChange() {
         logger.debug("Notifying configuration change");
         configurationListeners.forEach(listener -> listener.configurationChanged(this));
-    }
-
-    @Override
-    public void start() {
-        stateManager.checkState(State.STOPPED);
-
-        if (propertiesFile == null) {
-            throw new IllegalArgumentException("No properties file is given");
-        }
-
-        try {
-            loadConfiguration();
-        } catch (IOException e) {
-            logger.error("Error occurred when loading configuration", e);
-            throw new IllegalArgumentException("Unable to load properties", e);
-        }
-
-        String mapPath = System.getProperty(FLOOR_MAP_IMAGE);
-        if (mapPath == null) {
-            throw new IllegalArgumentException("No Map File Path given");
-        }
-        logger.debug("Using map image : {}", mapPath);
-
-        try (InputStream in = getClass().getClassLoader().getResourceAsStream(mapPath)) {
-            map = ImageIO.read(in);
-        } catch (IOException e) {
-            logger.error("Unable to load the map image : {}", mapPath, e);
-            throw new IllegalArgumentException("Unable to load the map image");
-        }
-
-        stateManager.setState(State.STARTED);
-        notifyConfigurationChange();
     }
 
     @Override

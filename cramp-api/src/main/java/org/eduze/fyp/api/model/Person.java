@@ -21,15 +21,7 @@ package org.eduze.fyp.api.model;
 
 import org.eduze.fyp.api.model.helpers.PersonIdConverter;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -57,16 +49,88 @@ public class Person {
 
     private double x;
     private double y;
-    private int instantZoneId;
 
-    private int persistantZoneId;
-    private int pastPersistantZoneId;
+    @ManyToOne
+    private Zone instantZone;
+    @ManyToOne
+    private Zone persistentZone;
+    @ManyToOne
+    private Zone pastPersistentZone;
 
     private double sitProbability;
     private double standProbability;
 
     private double headDirectionX;
     private double headDirectionY;
+
+    protected Person() { }
+
+    public Person(Date timestamp, Set<Integer> ids, int trackSegmentIndex, String uuid, String previousUuid,
+            double x, double y, Zone instantZone, Zone persistentZone, Zone pastPersistentZone, double sitProbability,
+            double standProbability, double headDirectionX, double headDirectionY) {
+        this.timestamp = timestamp;
+        this.ids = ids;
+        this.trackSegmentIndex = trackSegmentIndex;
+        this.uuid = uuid;
+        this.previousUuid = previousUuid;
+        this.x = x;
+        this.y = y;
+        this.instantZone = instantZone;
+        this.persistentZone = persistentZone;
+        this.pastPersistentZone = pastPersistentZone;
+        this.sitProbability = sitProbability;
+        this.standProbability = standProbability;
+        this.headDirectionX = headDirectionX;
+        this.headDirectionY = headDirectionY;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public Set<Integer> getIds() {
+        return ids;
+    }
+
+    public void setIds(Set<Integer> ids) {
+        this.ids = new HashSet<>(ids);
+    }
+
+    public int getTrackSegmentIndex() {
+        return trackSegmentIndex;
+    }
+
+    public void setTrackSegmentIndex(int trackSegmentIndex) {
+        this.trackSegmentIndex = trackSegmentIndex;
+    }
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
@@ -116,95 +180,28 @@ public class Person {
         return uuid;
     }
 
-    protected Person() {
+    public Zone getInstantZone() {
+        return instantZone;
     }
 
-    public Person(Set<Integer> ids, long timestamp, double x, double y, double sitProbability, double standProbability, double headDirectionX, double headDirectionY, int instantZoneId, int persistantZoneId, int pastPersistantZoneId, String uuid, String previousUuid, int trackSegmentIndex) {
-        setIds(ids);
-        this.timestamp = new Date(timestamp);
-        this.x = x;
-        this.y = y;
-        this.instantZoneId = instantZoneId;
-        this.persistantZoneId = persistantZoneId;
-        this.pastPersistantZoneId = pastPersistantZoneId;
-
-        this.sitProbability = sitProbability;
-        this.standProbability = standProbability;
-        this.headDirectionX = headDirectionX;
-        this.headDirectionY = headDirectionY;
-        this.uuid = uuid;
-        this.trackSegmentIndex = trackSegmentIndex;
-        this.previousUuid = previousUuid;
+    public void setInstantZone(Zone instantZone) {
+        this.instantZone = instantZone;
     }
 
-    public int getInstantZoneId() {return instantZoneId;}
-
-    public void setInstantZoneId(int zoneId) {
-        this.instantZoneId = zoneId;
+    public Zone getPersistentZone() {
+        return persistentZone;
     }
 
-    public int getId() {
-        return id;
+    public void setPersistentZone(Zone persistentZone) {
+        this.persistentZone = persistentZone;
     }
 
-    public int getPastPersistantZoneId() {
-        return pastPersistantZoneId;
+    public Zone getPastPersistentZone() {
+        return pastPersistentZone;
     }
 
-    public int getPersistantZoneId() {
-        return persistantZoneId;
-    }
-
-    public void setPastPersistantZoneId(int pastPersistantZoneId) {
-        this.pastPersistantZoneId = pastPersistantZoneId;
-    }
-
-    public void setPersistantZoneId(int persistantZoneId) {
-        this.persistantZoneId = persistantZoneId;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Date getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Date timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    public Set<Integer> getIds() {
-        return ids;
-    }
-
-    public void setIds(Set<Integer> ids) {
-        this.ids = new HashSet<>(ids);
-    }
-
-    public int getTrackSegmentIndex() {
-        return trackSegmentIndex;
-    }
-
-    public void setTrackSegmentIndex(int trackSegmentIndex) {
-        this.trackSegmentIndex = trackSegmentIndex;
+    public void setPastPersistentZone(Zone pastPersistentZone) {
+        this.pastPersistentZone = pastPersistentZone;
     }
 }
 

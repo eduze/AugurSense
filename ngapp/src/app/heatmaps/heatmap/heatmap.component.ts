@@ -69,7 +69,7 @@ export class HeatmapComponent implements AfterViewInit {
       return;
     }
 
-    this.analyticsService.getHeatMap(this.from, this.to)
+    this.analyticsService.getHeatMap(this.cameraGroup.id, this.from, this.to)
       .then(points => {
         const p = [];
         let max = 0;

@@ -20,6 +20,7 @@
 package org.eduze.fyp.web.services;
 
 import org.eduze.fyp.api.ConfigurationManager;
+import org.eduze.fyp.api.Constants;
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
 import org.eduze.fyp.api.model.CameraGroup;
 import org.eduze.fyp.api.model.Person;
@@ -28,6 +29,7 @@ import org.eduze.fyp.api.resources.PersonCoordinate;
 import org.eduze.fyp.api.resources.PersonSnapshot;
 import org.eduze.fyp.api.util.ImageUtils;
 import org.eduze.fyp.core.PhotoMapper;
+import org.eduze.fyp.core.db.dao.CameraConfigDAO;
 import org.eduze.fyp.core.db.dao.CaptureStampDAO;
 import org.eduze.fyp.core.db.dao.PersonDAO;
 import org.eduze.fyp.core.db.dao.ZoneDAO;
@@ -51,19 +53,19 @@ public class AnalyticsService implements ProcessedMapListener {
     private PersonDAO personDAO;
 
     private ZoneDAO zoneDAO;
+    private CameraConfigDAO cameraConfigDAO;
 
     private int timeInterval = 10; //Every 10ms
 
     private CaptureStampDAO captureStampDAO;
 
     private ConfigurationManager configurationManager;
-    private int mapWidth = -1;
-    private int mapHeight = -1;
+    private int mapWidth = Constants.MAP_IMAGE_WIDTH;
+    private int mapHeight = Constants.MAP_IMAGE_HEIGHT;
 
     private PhotoMapper photoMapper = null;
 
-    public AnalyticsService() {
-    }
+    public AnalyticsService() { }
 
     public List<Person> getTrackingRouteFromUUID(Date start, Date end, String uuid, boolean segmented) {
         Person target = personDAO.getPerson(uuid);
@@ -196,9 +198,9 @@ public class AnalyticsService implements ProcessedMapListener {
             candidates.addAll(personDAO.getZoneOutflow(start, end, zoneId, useSegments));
         for (Object[] ps : candidates) {
             Person p2 = (Person) ps[1];
-            if (!availableZoneIds.contains(p2.getPastPersistantZoneId()))
+            if (!availableZoneIds.contains(p2.getPastPersistentZone().getId()))
                 continue;
-            if (!availableZoneIds.contains(p2.getPersistantZoneId()))
+            if (!availableZoneIds.contains(p2.getPersistentZone().getId()))
                 continue;
             Person p = (Person) ps[0];
             p.getIds().forEach((id) -> {
@@ -308,18 +310,15 @@ public class AnalyticsService implements ProcessedMapListener {
         return snapshots.computeIfAbsent(cameraGroupId, key -> new ArrayList<>());
     }
 
-    public int[][] getHeatMap(long fromTimestamp, long toTimestamp) {
-        if (mapHeight == -1 || mapWidth == -1) {
-            mapWidth = configurationManager.getMap().getWidth();
-            mapHeight = configurationManager.getMap().getHeight();
-        }
-
+    public int[][] getHeatMap(int cameraGroupId, long fromTimestamp, long toTimestamp) {
         logger.debug("Generating heat map for {}-{} (Map - {}x{})", fromTimestamp, toTimestamp, mapWidth, mapHeight);
         int[][] heatmap = new int[mapHeight][mapWidth];
 
+        CameraGroup cameraGroup = cameraConfigDAO.findCameraGroupById(cameraGroupId);
+        List<Zone> zones = new ArrayList<>(cameraGroup.getZones());
         Date from = new Date(fromTimestamp);
         Date to = new Date(toTimestamp);
-        List<Person> people = personDAO.list(from, to);
+        List<Person> people = personDAO.listByInstantZone(zones, from, to);
         if (people == null || people.size() == 0) {
             return heatmap;
         }
@@ -333,7 +332,6 @@ public class AnalyticsService implements ProcessedMapListener {
         });
         return heatmap;
     }
-
 
     public List<Object[]> getCrossCount(long fromTimestamp, long toTimestamp) {
 
@@ -381,14 +379,16 @@ public class AnalyticsService implements ProcessedMapListener {
                 Person prev = persons.get(i);
                 Person next = persons.get(i + 1);
 
-                TimelineZone timelineZone = new TimelineZone(next, zoneMap.get(prev.getPersistantZoneId()), prev.getTimestamp().getTime(), next.getTimestamp().getTime());
+                TimelineZone timelineZone = new TimelineZone(next, zoneMap.get(prev.getPersistentZone().getId()),
+                        prev.getTimestamp().getTime(), next.getTimestamp().getTime());
                 results.add(timelineZone);
             }
         } else {
             Person prev = persons.get(0);
             Person next = persons.get(0);
 
-            TimelineZone timelineZone = new TimelineZone(next, zoneMap.get(prev.getPersistantZoneId()), prev.getTimestamp().getTime() - 500, next.getTimestamp().getTime() + 500);
+            TimelineZone timelineZone = new TimelineZone(next, zoneMap.get(prev.getPersistentZone().getId()),
+                    prev.getTimestamp().getTime() - 500, next.getTimestamp().getTime() + 500);
             results.add(timelineZone);
         }
 
@@ -629,11 +629,6 @@ public class AnalyticsService implements ProcessedMapListener {
     @Override
     public void mapProcessed(CameraGroup cameraGroup, List<List<PersonSnapshot>> snapshots) {
         this.snapshots.put(cameraGroup.getId(), snapshots);
-    }
-
-    @Override
-    public void onFrame(List<List<PersonSnapshot>> snapshots, Date timestamp) {
-
     }
 
     /**
@@ -885,5 +880,13 @@ public class AnalyticsService implements ProcessedMapListener {
 
     public ZoneDAO getZoneDAO() {
         return zoneDAO;
+    }
+
+    public CameraConfigDAO getCameraConfigDAO() {
+        return cameraConfigDAO;
+    }
+
+    public void setCameraConfigDAO(CameraConfigDAO cameraConfigDAO) {
+        this.cameraConfigDAO = cameraConfigDAO;
     }
 }

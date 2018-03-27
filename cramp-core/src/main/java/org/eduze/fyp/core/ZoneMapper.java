@@ -1,9 +1,7 @@
 package org.eduze.fyp.core;
 
-import org.eduze.fyp.api.ConfigurationManager;
-import org.eduze.fyp.api.listeners.ConfigurationListener;
+import org.eduze.fyp.api.Constants;
 import org.eduze.fyp.api.model.Zone;
-import org.eduze.fyp.core.db.dao.ZoneDAO;
 import org.eduze.fyp.core.resources.PersonLocation;
 
 import java.awt.*;
@@ -12,66 +10,50 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.eduze.fyp.api.Constants.ZONE_NAME_WORLD;
+public class ZoneMapper {
 
-public class ZoneMapper implements ConfigurationListener {
-    private ZoneDAO zoneDAO = null;
-    private List<Zone> zonesList = null;
-    private HashMap<Zone, Polygon> zonePolygons = null;
+    private List<Zone> zones;
+    private Zone world;
+    private Map<Zone, Polygon> zonePolygons;
 
     private boolean initialized = false;
-    private int zonePersistantScanCount = 5;
+    private int zonePersistentScanCount = 5;
+    private int zonePersistentThreshold = 4;
 
-    private int zonePersistantThreshold = 4;
-
-    public int getZonePersistantScanCount() {
-        return zonePersistantScanCount;
-    }
-
-    public void setZonePersistantScanCount(int zonePersistantScanCount) {
-        this.zonePersistantScanCount = zonePersistantScanCount;
-    }
-
-    public int getZonePersistantThreshold() {
-        return zonePersistantThreshold;
-    }
-
-    public void setZonePersistantThreshold(int zonePersistantThreshold) {
-        this.zonePersistantThreshold = zonePersistantThreshold;
-    }
-
-    public ZoneMapper(ConfigurationManager configurationManager) {
-        this.zonesList = configurationManager.getZones();
+    public ZoneMapper(List<Zone> zones, int zonePersistentScanCount, int zonePersistentThreshold) {
+        this.zones = zones;
+        this.zonePersistentScanCount = zonePersistentScanCount;
+        this.zonePersistentThreshold = zonePersistentThreshold;
         initialize();
     }
 
     private void initialize() {
-        if (initialized)
+        if (initialized) {
             return;
-        if (zonesList == null)
-            return;
-
-        this.zonePolygons = new LinkedHashMap<>();
-        for (Zone zone : zonesList) {
-            List<Integer> xCoordinates = zone.getXCoordinates();
-            List<Integer> yCoordinates = zone.getYCoordinates();
-            Polygon p = new Polygon(xCoordinates.stream().mapToInt(i -> i).toArray(),
-                    yCoordinates.stream().mapToInt(i -> i).toArray(),
-                    xCoordinates.size());
-            zonePolygons.put(zone, p);
         }
+
+        if (zones == null) {
+            return;
+        }
+
+        this.zonePolygons = new HashMap<>();
+        zones.forEach(zone -> {
+            if (Constants.ZONE_NAME_WORLD.equals(zone.getZoneName())) {
+                world = zone;
+            } else {
+                List<Integer> xCoordinates = zone.getXCoordinates();
+                List<Integer> yCoordinates = zone.getYCoordinates();
+                Polygon p = new Polygon(xCoordinates.stream().mapToInt(i -> i).toArray(),
+                        yCoordinates.stream().mapToInt(i -> i).toArray(),
+                        xCoordinates.size());
+                zonePolygons.put(zone, p);
+            }
+        });
 
         initialized = true;
     }
 
-    public List<Zone> getZonesList() {
-        return zonesList;
-    }
-
-
     public void processPersonLocations(List<PersonLocation> personLocations) {
-        initialize();
-
         personLocations.forEach(personLocation -> {
             //TODO: identify rest of the world zone here! Its not contained in any of the polygons
             final Zone[] selectedZone = {null};
@@ -85,8 +67,7 @@ public class ZoneMapper implements ConfigurationListener {
 
             if (selectedZone[0] == null) {
                 // identify rest of the world zone here! Its not contained in any of the polygons
-                zonesList.stream().filter(zone -> zone.getZoneName().equals(ZONE_NAME_WORLD))
-                        .findFirst().ifPresent((c) -> selectedZone[0] = c);
+                selectedZone[0] = world;
             }
 
             if (selectedZone[0] != null) {
@@ -94,14 +75,16 @@ public class ZoneMapper implements ConfigurationListener {
                 personLocation.getSnapshot().setInstanceZone(zone);
                 // Obtain majority of last 5 zones
                 Map<Zone, Integer> polularityMap = new LinkedHashMap<>();
-                personLocation.getSnapshots().stream().limit(zonePersistantScanCount).forEach(personSnapshot -> {
-                            if (polularityMap.containsKey(personSnapshot.getInstanceZone())) {
-                                polularityMap.put(personSnapshot.getInstanceZone(), polularityMap.get(personSnapshot.getInstanceZone()) + 1);
-                            } else {
-                                polularityMap.put(personSnapshot.getInstanceZone(), 1);
-                            }
-                        }
-                );
+                personLocation.getSnapshots().stream()
+                        .limit(zonePersistentScanCount)
+                        .forEach(personSnapshot -> {
+                                    if (polularityMap.containsKey(personSnapshot.getInstanceZone())) {
+                                        polularityMap.put(personSnapshot.getInstanceZone(), polularityMap.get(personSnapshot.getInstanceZone()) + 1);
+                                    } else {
+                                        polularityMap.put(personSnapshot.getInstanceZone(), 1);
+                                    }
+                                }
+                        );
 
                 final int[] mostPopularCount = {-1};
                 final Zone[] mostPopularZone = {null};
@@ -117,7 +100,7 @@ public class ZoneMapper implements ConfigurationListener {
                     personLocation.getSnapshot().setPersistantZone(mostPopularZone[0]);
                     //Report transition
                 } else {
-                    if (mostPopularCount[0] > zonePersistantThreshold) {
+                    if (mostPopularCount[0] > zonePersistentThreshold) {
                         personLocation.getSnapshot().setPersistantZone(mostPopularZone[0]);
                     }
                 }
@@ -125,8 +108,23 @@ public class ZoneMapper implements ConfigurationListener {
         });
     }
 
-    @Override
-    public void configurationChanged(ConfigurationManager configurationManager) {
-        this.zonesList = configurationManager.getZones();
+    public int getZonePersistentScanCount() {
+        return zonePersistentScanCount;
+    }
+
+    public void setZonePersistentScanCount(int zonePersistentScanCount) {
+        this.zonePersistentScanCount = zonePersistentScanCount;
+    }
+
+    public int getZonePersistentThreshold() {
+        return zonePersistentThreshold;
+    }
+
+    public void setZonePersistentThreshold(int zonePersistentThreshold) {
+        this.zonePersistentThreshold = zonePersistentThreshold;
+    }
+
+    public List<Zone> getZones() {
+        return zones;
     }
 }

@@ -38,11 +38,11 @@ public class CameraConfigDAOImpl extends AbstractDAOImpl implements CameraConfig
 
     @Override
     public List<CameraGroup> cameraGroups() {
-        Session session = this.sessionFactory.openSession();
-        List<CameraGroup> cameraGroups = session.createQuery("from CameraGroup", CameraGroup.class)
-                .list();
-        session.close();
-        return cameraGroups;
+        Session session = this.sessionFactory.getCurrentSession();
+        if (!session.getTransaction().isActive()) {
+            session.beginTransaction();
+        }
+        return session.createQuery("from CameraGroup", CameraGroup.class).list();
     }
 
     @Override

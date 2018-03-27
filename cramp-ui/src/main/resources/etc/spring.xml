@@ -25,6 +25,7 @@
     </bean>
 
     <bean id="map-processor" class="org.eduze.fyp.core.MapProcessorImpl">
+        <property name="configurationManager" ref="configuration-manager"/>
         <property name="cameraCoordinator" ref="camera-coordinator"/>
         <property name="mapListeners">
             <set>
@@ -32,19 +33,8 @@
                 <ref bean="analytics-service"/>
             </set>
         </property>
-        <property name="zoneMapper" ref="zone-mapper"/>
-        <property name="photoMapper" ref="photo-mapper"/>
-        <property name="accuracyTester" ref="accuracy-tester"/>
-    </bean>
-
-    <bean id="zone-mapper" class="org.eduze.fyp.core.ZoneMapper">
-        <constructor-arg ref="configuration-manager"/>
-        <property name="zonePersistantScanCount" value="5"/>
-        <property name="zonePersistantThreshold" value="4"/>
-    </bean>
-
-    <bean id="photo-mapper" class="org.eduze.fyp.core.PhotoMapper">
-        <property name="photoSavePath" value="CRAMP_re_id/gallery"/>
+        <property name="zonePersistentScanCount" value="5"/>
+        <property name="zonePersistentThreshold" value="4"/>
     </bean>
 
     <bean id="camera-coordinator" class="org.eduze.fyp.core.CentralizedCameraCoordinator">
@@ -54,9 +44,6 @@
         <property name="mapProcessor" ref="map-processor"/>
     </bean>
 
-    <bean id="accuracy-tester" class="org.eduze.fyp.core.util.AccuracyTester">
-        <property name="testMapMergeAccuracy" value="false"/>
-    </bean>
     <!-- ============================================================================ -->
     <!--                    Database Related Configuration                            -->
     <!-- ============================================================================ -->
@@ -64,7 +51,6 @@
         <property name="personDAO" ref="personDAO"/>
         <property name="zoneDAO" ref="zoneDAO"/>
         <property name="captureStampDAO" ref="captureStampDAO"/>
-        <property name="photoMapper" ref="photo-mapper"/>
     </bean>
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
@@ -152,15 +138,14 @@
     <bean id="analytics-service" class="org.eduze.fyp.web.services.AnalyticsService">
         <property name="personDAO" ref="personDAO"/>
         <property name="zoneDAO" ref="zoneDAO"/>
+        <property name="cameraConfigDAO" ref="cameraConfigDAO"/>
         <property name="captureStampDAO" ref="captureStampDAO"/>
         <property name="configurationManager" ref="configuration-manager"/>
-        <property name="photoMapper" ref="photo-mapper"/>
     </bean>
 
     <bean id="reID-search-service" class="org.eduze.fyp.web.services.ReIDSearchService">
         <constructor-arg value="CRAMP_re_id"/>
         <property name="personDAO" ref="personDAO"/>
-        <property name="photoMapper" ref="photo-mapper"/>
     </bean>
 
 </beans>

@@ -46,7 +46,7 @@ public class ReIdentifier {
 
         List<GalleryComparisonResult> comparisonResults = new ArrayList<>();
         for (GalleryPerson person : gallery) {
-            if(!candidate_indices.contains(person.getId()))
+            if (!candidate_indices.contains(person.getId()))
                 continue;
 
             float confidence = getConfidence(matrix, person.getMatrixImage());
@@ -58,7 +58,7 @@ public class ReIdentifier {
                 .max(Comparator.comparingDouble(GalleryComparisonResult::getConfidence));
 
         if (possibleMatch.isPresent() && possibleMatch.get().getConfidence() > 0.9) {
-            logger.debug("Found match: {}", possibleMatch.get().getGalleryPerson().getId());
+            //            logger.debug("Found match: {}", possibleMatch.get().getGalleryPerson().getId());
             return possibleMatch.get().getGalleryPerson().getId();
         } else {
             this.id++;

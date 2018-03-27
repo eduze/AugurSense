@@ -20,13 +20,12 @@
 package org.eduze.fyp.core.db.dao;
 
 import org.eduze.fyp.api.model.Person;
+import org.eduze.fyp.api.model.Zone;
 
 import java.util.Date;
 import java.util.List;
 
-public interface PersonDAO {
-
-    void save(Person p);
+public interface PersonDAO extends AbstractDAO {
 
     List<Person> getPersonFromTrackingId(int id);
 
@@ -40,9 +39,11 @@ public interface PersonDAO {
 
     List<Person> list(Date from, Date to);
 
+    List<Person> listByInstantZone(List<Zone> zoneIds, Date from, Date to);
 
     List<Integer> personIDs(Date from, Date to);
-    List<Person> getRows(int id,Date from, Date to);
+
+    List<Person> getRows(int id, Date from, Date to);
 
     List<Object[]> getZoneCounts(Date from, Date to);
 
@@ -64,7 +65,9 @@ public interface PersonDAO {
     List<Object[]> getTotalPersonCountVariation(Date from, Date to, String additionalCondition);
 
     List<Person> getZoneSwitchPersons(int ids, int segmentId, boolean useSegment);
+
     Person getTrackEnd(int ids, int segmentId, boolean useSegment);
+
     Person getTrackStart(int ids, int segmentId, boolean useSegment);
 
     List<Object[]> getTrackPairs(Date from, Date to);

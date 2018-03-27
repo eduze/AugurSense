@@ -24,10 +24,9 @@ package org.eduze.fyp.core.db;
 import org.eduze.fyp.api.annotations.AutoStart;
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
 import org.eduze.fyp.api.model.CameraGroup;
-import org.eduze.fyp.api.model.CaptureStamp;
 import org.eduze.fyp.api.model.Person;
+import org.eduze.fyp.api.model.Zone;
 import org.eduze.fyp.api.resources.PersonSnapshot;
-import org.eduze.fyp.core.PhotoMapper;
 import org.eduze.fyp.core.db.dao.CaptureStampDAO;
 import org.eduze.fyp.core.db.dao.PersonDAO;
 import org.eduze.fyp.core.db.dao.ZoneDAO;
@@ -43,56 +42,29 @@ public class DBHandler implements ProcessedMapListener {
     private static final Logger logger = LoggerFactory.getLogger(DBHandler.class);
 
     private PersonDAO personDAO;
-
     private ZoneDAO zoneDAO;
-
-    private PhotoMapper photoMapper = null;
-
-    public PhotoMapper getPhotoMapper() {
-        return photoMapper;
-    }
-
-    public void setPhotoMapper(PhotoMapper photoMapper) {
-        this.photoMapper = photoMapper;
-    }
-
     private CaptureStampDAO captureStampDAO;
-
-    public CaptureStampDAO getCaptureStampDAO() {
-        return captureStampDAO;
-    }
-
-    public void setCaptureStampDAO(CaptureStampDAO captureStampDAO) {
-        this.captureStampDAO = captureStampDAO;
-    }
 
     @Override
     public void mapProcessed(CameraGroup cameraGroup, List<List<PersonSnapshot>> snapshots) {
-        // Nothing here
-    }
-
-    @Override
-    public void onFrame(List<List<PersonSnapshot>> snapshots, Date timestamp) {
-        captureStampDAO.save(new CaptureStamp(timestamp));
-
         snapshots.stream()
                 .filter(snapshotList -> snapshotList.size() > 0)
                 .filter(snapshotList -> !snapshotList.get(0).isStored())
                 .map(snapshotList -> {
                     PersonSnapshot snapshot = snapshotList.get(0);
 
-                    int instantZone = -1;
-                    int persistantZone = -1;
-                    int pastPersistantZone = -1;
+                    Zone instantZone = null;
+                    Zone persistentZone = null;
+                    Zone pastPersistentZone = null;
 
                     if (snapshot.getInstanceZone() != null)
-                        instantZone = snapshot.getInstanceZone().getId();
+                        instantZone = snapshot.getInstanceZone();
 
                     if (snapshot.getPersistantZone() != null)
-                        persistantZone = snapshot.getPersistantZone().getId();
+                        persistentZone = snapshot.getPersistantZone();
 
                     if (snapshot.getPastPersistantZone() != null)
-                        pastPersistantZone = snapshot.getPastPersistantZone().getId();
+                        pastPersistentZone = snapshot.getPastPersistantZone();
 
                     String previousUuid = "";
                     for (PersonSnapshot personSnapshot : snapshotList) {
@@ -101,10 +73,10 @@ public class DBHandler implements ProcessedMapListener {
                             break;
                         }
 
-                        if (persistantZone == pastPersistantZone) {
-                            if (personSnapshot.getPastPersistantZone() != null) {
-                                if (pastPersistantZone != personSnapshot.getPastPersistantZone().getId()) {
-                                    pastPersistantZone = personSnapshot.getPastPersistantZone().getId();
+                        if (persistentZone == pastPersistentZone) {
+                            if (pastPersistentZone != null) {
+                                if (pastPersistentZone.getId() != personSnapshot.getPastPersistantZone().getId()) {
+                                    pastPersistentZone = personSnapshot.getPastPersistantZone();
                                 }
                             }
                         }
@@ -112,13 +84,11 @@ public class DBHandler implements ProcessedMapListener {
 
                     snapshot.markStored();
 
-                    if (this.photoMapper != null)
-                        photoMapper.onDBStore(snapshot);
-
-                    return new Person(snapshot.getIds(), snapshot.getTimestamp(), snapshot.getX(), snapshot.getY(),
-                            snapshot.getSitProbability(), snapshot.getStandProbability(), snapshot.getHeadDirectionX(),
-                            snapshot.getHeadDirectionY(), instantZone, persistantZone, pastPersistantZone,
-                            snapshot.getUuid(), previousUuid, snapshot.getTrackSegmentIndex());
+                    return new Person(new Date(snapshot.getTimestamp()), snapshot.getIds(), snapshot.getTrackSegmentIndex(),
+                            snapshot.getUuid(), previousUuid, snapshot.getX(), snapshot.getY(),
+                            instantZone, persistentZone, pastPersistentZone,
+                            snapshot.getSitProbability(), snapshot.getStandProbability(),
+                            snapshot.getHeadDirectionX(), snapshot.getHeadDirectionY());
                 })
                 .forEach(person -> {
                     try {
@@ -127,6 +97,14 @@ public class DBHandler implements ProcessedMapListener {
                         logger.error("Error saving person", e);
                     }
                 });
+    }
+
+    public CaptureStampDAO getCaptureStampDAO() {
+        return captureStampDAO;
+    }
+
+    public void setCaptureStampDAO(CaptureStampDAO captureStampDAO) {
+        this.captureStampDAO = captureStampDAO;
     }
 
     public PersonDAO getPersonDAO() {

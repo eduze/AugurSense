@@ -24,8 +24,6 @@ import org.eduze.fyp.api.config.Startable;
 import org.eduze.fyp.api.listeners.ProcessedMapListener;
 import org.eduze.fyp.api.resources.LocalMap;
 
-import java.util.Date;
-
 public interface MapProcessor extends Startable {
 
     void addLocalMap(LocalMap map);
@@ -33,6 +31,4 @@ public interface MapProcessor extends Startable {
     void addProcessedMapListener(ProcessedMapListener listener);
 
     void removeProcessedMapListener(ProcessedMapListener listener);
-
-    void nextFrame(Date timestamp);
 }

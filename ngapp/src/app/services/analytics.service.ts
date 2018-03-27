@@ -32,7 +32,7 @@ import {PointDirections} from '../resources/point-directions';
 @Injectable()
 export class AnalyticsService {
 
-  private baseUrl: string = 'http://localhost:8000/api/v1/analytics/';
+  private baseUrl = 'http://localhost:8000/api/v1/analytics/';
 
   constructor(private http: HttpClient) {
   }
@@ -42,12 +42,12 @@ export class AnalyticsService {
       .toPromise()
       .then(response => {
 
-        let personImage = response;
+        const personImage = response;
 
-        let base64: string = 'data:image/JPEG;base64,' + personImage['image'];
+        const base64: string = 'data:image/JPEG;base64,' + personImage['image'];
 
-        let obj = personImage;
-        let img = new Image();
+        const obj = personImage;
+        const img = new Image();
         img.onload = function () {
           obj['height'] = img.height;
           obj['width'] = img.width;
@@ -94,16 +94,16 @@ export class AnalyticsService {
       .then(response => {
         console.log(response);
 
-        let status = response as ReIdStatus;
+        const status = response as ReIdStatus;
 
         if (status.completed) {
-          let results = status.results;
+          const results = status.results;
 
           results.forEach((personImage) => {
-            let base64: string = 'data:image/JPEG;base64,' + personImage['image'];
+            const base64: string = 'data:image/JPEG;base64,' + personImage['image'];
 
-            let obj = personImage;
-            let img = new Image();
+            const obj = personImage;
+            const img = new Image();
             img.onload = function () {
               obj['height'] = img.height;
               obj['width'] = img.width;
@@ -122,8 +122,9 @@ export class AnalyticsService {
 
   getTimeboundMap(from: number, to: number, useTrackSegments: boolean): Promise<PersonSnapshot[][]> {
     let url = this.baseUrl + 'timeBoundMap/' + from + '/' + to;
-    if (useTrackSegments)
+    if (useTrackSegments) {
       url += '/trackSegmented';
+    }
     return this.http.get(url)
       .toPromise()
       .then(response => {
@@ -145,14 +146,15 @@ export class AnalyticsService {
 
   private static getZoneColour(index: number): string {
     //return "rgb(" + Math.round(((index / 256 / 256) * 80) % 256).toString() + "," + Math.round(((index / 256) * 80) % 256).toString() + "," + Math.round((index * 80) % 256).toString() + ")";
-    let colours = ['#c0392b', '#f1c40f', '#16a085', '#2980b9', '#34495e', '#9b59b5', '#2cee91', '#171796', '#fec3fc', '#8e44ad'];
+    const colours = ['#c0392b', '#f1c40f', '#16a085', '#2980b9', '#34495e', '#9b59b5', '#2cee91', '#171796', '#fec3fc', '#8e44ad'];
     return colours[index % colours.length];
   }
 
   getTimelineFromTrack(trackId: number, segmentId: number, segmented: boolean): Promise<TimelineTrack> {
     let url = this.baseUrl + 'zoneTimeline/' + trackId;
-    if (segmented)
+    if (segmented) {
       url = url + '/segmented/' + segmentId;
+    }
 
     console.log(url);
 
@@ -160,8 +162,8 @@ export class AnalyticsService {
       .toPromise()
       .then(response => {
         console.debug(response);
-        let results = response as TimelineZone[];
-        let result: TimelineTrack = new TimelineTrack();
+        const results = response as TimelineZone[];
+        const result: TimelineTrack = new TimelineTrack();
         results.forEach((r) => {
           r.colour = AnalyticsService.getZoneColour(r.zone.id);
         });
@@ -180,8 +182,9 @@ export class AnalyticsService {
 
   getZonedTimeVelocityDistribution(from: number, to: number, zoneId: number, interval: number, segmented: boolean): Promise<{ [id: number]: number[]; }> {
     let url = this.baseUrl + 'zonedTimeVelocity/' + from + '/' + to + '/' + zoneId + '/' + interval;
-    if (segmented)
+    if (segmented) {
       url = url + '/segmented';
+    }
 
     console.log(url);
 
@@ -197,8 +200,9 @@ export class AnalyticsService {
 
   getZonedVelocityFrequencyDistribution(from: number, to: number, zoneId: number, interval: number, segmented: boolean): Promise<{ [id: number]: number; }> {
     let url = this.baseUrl + 'zonedVelocityFrequency/' + from + '/' + to + '/' + zoneId + '/' + interval;
-    if (segmented)
+    if (segmented) {
       url = url + '/segmented';
+    }
 
     console.log(url);
 
@@ -212,8 +216,8 @@ export class AnalyticsService {
       .catch(AnalyticsService.handleError);
   }
 
-  getHeatMap(from: number, to: number): Promise<number[][]> {
-    return this.http.get(this.baseUrl + 'heatMap/' + from + '/' + to)
+  getHeatMap(cameraGroupId: number, from: number, to: number): Promise<number[][]> {
+    return this.http.get(`${this.baseUrl}heatMap/${cameraGroupId}/${from}/${to}`)
       .toPromise()
       .then(response => {
         console.debug(response);
@@ -237,13 +241,13 @@ export class AnalyticsService {
     return this.http.get(this.baseUrl + 'realTimeMap/all')
       .toPromise()
       .then(response => {
-        let results = response as PersonImage[];
+        const results = response as PersonImage[];
 
         results.forEach((personImage) => {
-          let base64: string = 'data:image/JPEG;base64,' + personImage['image'];
+          const base64: string = 'data:image/JPEG;base64,' + personImage['image'];
 
-          let obj = personImage;
-          let img = new Image();
+          const obj = personImage;
+          const img = new Image();
           img.onload = function () {
             obj['height'] = img.height;
             obj['width'] = img.width;
@@ -267,13 +271,13 @@ export class AnalyticsService {
     return this.http.get(url)
       .toPromise()
       .then(response => {
-        let results = response as PersonImage[];
+        const results = response as PersonImage[];
 
         results.forEach((personImage) => {
-          let base64: string = 'data:image/JPEG;base64,' + personImage['image'];
+          const base64: string = 'data:image/JPEG;base64,' + personImage['image'];
 
-          let obj = personImage;
-          let img = new Image();
+          const obj = personImage;
+          const img = new Image();
           img.onload = function () {
             obj['height'] = img.height;
             obj['width'] = img.width;
@@ -297,13 +301,13 @@ export class AnalyticsService {
     return this.http.get(url)
       .toPromise()
       .then(response => {
-        let results = response as PersonImage[];
+        const results = response as PersonImage[];
 
         results.forEach((personImage) => {
-          let base64: string = 'data:image/JPEG;base64,' + personImage['image'];
+          const base64: string = 'data:image/JPEG;base64,' + personImage['image'];
 
-          let obj = personImage;
-          let img = new Image();
+          const obj = personImage;
+          const img = new Image();
           img.onload = function () {
             obj['height'] = img.height;
             obj['width'] = img.width;
@@ -323,13 +327,13 @@ export class AnalyticsService {
     return this.http.get(this.baseUrl + 'timeBoundMap/' + from + '/' + to + '/photos')
       .toPromise()
       .then(response => {
-        let results = response as PersonImage[];
+        const results = response as PersonImage[];
 
         results.forEach((personImage) => {
-          let base64: string = 'data:image/JPEG;base64,' + personImage['image'];
+          const base64: string = 'data:image/JPEG;base64,' + personImage['image'];
 
-          let obj = personImage;
-          let img = new Image();
+          const obj = personImage;
+          const img = new Image();
           img.onload = function () {
             obj['height'] = img.height;
             obj['width'] = img.width;
@@ -349,13 +353,13 @@ export class AnalyticsService {
     return this.http.get(this.baseUrl + 'realTimePhotos/' + trackingId)
       .toPromise()
       .then(response => {
-        let results = response as PersonImage[];
+        const results = response as PersonImage[];
 
         results.forEach((personImage) => {
-          let base64: string = 'data:image/JPEG;base64,' + personImage['image'];
+          const base64: string = 'data:image/JPEG;base64,' + personImage['image'];
 
-          let obj = personImage;
-          let img = new Image();
+          const obj = personImage;
+          const img = new Image();
           img.onload = function () {
             obj['height'] = img.height;
             obj['width'] = img.width;
@@ -416,13 +420,13 @@ export class AnalyticsService {
     return this.http.get(url)
       .toPromise()
       .then(response => {
-        let results = response as PersonImage[];
+        const results = response as PersonImage[];
 
         results.forEach((personImage) => {
-          let base64: string = 'data:image/JPEG;base64,' + personImage['image'];
+          const base64: string = 'data:image/JPEG;base64,' + personImage['image'];
 
-          let obj = personImage;
-          let img = new Image();
+          const obj = personImage;
+          const img = new Image();
           img.onload = function () {
             obj['height'] = img.height;
             obj['width'] = img.width;

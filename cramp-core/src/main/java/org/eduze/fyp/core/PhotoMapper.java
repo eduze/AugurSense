@@ -2,7 +2,6 @@ package org.eduze.fyp.core;
 
 import org.eduze.fyp.api.resources.PersonCoordinate;
 import org.eduze.fyp.api.resources.PersonSnapshot;
-import org.eduze.fyp.core.resources.GlobalMap;
 import org.eduze.fyp.api.util.ImageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +21,7 @@ public class PhotoMapper {
 
     public Map<Integer, List<PersonCoordinate>> unsavedPhotos = new ConcurrentHashMap<>(); //separate list kept in memory for storage purpose
 
-    private static final Logger logger = LoggerFactory.getLogger(GlobalMap.class);
+    private static final Logger logger = LoggerFactory.getLogger(PhotoMapper.class);
 
     private String photoSavePath = "";
 

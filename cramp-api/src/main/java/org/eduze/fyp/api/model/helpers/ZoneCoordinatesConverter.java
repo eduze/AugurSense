@@ -20,6 +20,7 @@
 package org.eduze.fyp.api.model.helpers;
 
 import javax.persistence.AttributeConverter;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,6 +29,8 @@ public class ZoneCoordinatesConverter implements AttributeConverter<List<Integer
 
     @Override
     public String convertToDatabaseColumn(List<Integer> ids) {
+        if (ids == null) return null;
+
         return ids.stream()
                 .map(String::valueOf)
                 .collect(Collectors.joining(","));
@@ -35,6 +38,8 @@ public class ZoneCoordinatesConverter implements AttributeConverter<List<Integer
 
     @Override
     public List<Integer> convertToEntityAttribute(String stringIds) {
+        if (stringIds == null || stringIds.isEmpty()) return Collections.emptyList();
+
         return Stream.of(stringIds.split(","))
                 .map(Integer::valueOf)
                 .collect(Collectors.toList());

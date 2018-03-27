@@ -37,9 +37,8 @@ import org.eduze.fyp.core.resources.GlobalMap;
 import org.eduze.fyp.core.util.AccuracyTester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -53,6 +52,13 @@ import java.util.concurrent.Executors;
 import static org.eduze.fyp.api.Constants.MAP_REFRESH_INTERVAL;
 import static org.eduze.fyp.api.Constants.MAP_REFRESH_THRESHOLD;
 
+/**
+ * Class responsible for processing local maps sent by multiple cameras and aggregating for global maps.
+ * TODO address configuration changes
+ *
+ * @author Imesha Sudasinha
+ * @author Madhawa Vidanapathirana
+ */
 @AutoStart(startOrder = 1)
 public class MapProcessorImpl implements MapProcessor {
 
@@ -65,12 +71,10 @@ public class MapProcessorImpl implements MapProcessor {
     private Set<ProcessedMapListener> mapListeners = new HashSet<>();
     private ExecutorService processor;
 
-    private AccuracyTester accuracyTester = null;
-    private ZoneMapper zoneMapper = null;
-    private PhotoMapper photoMapper = null;
-
-    @Autowired
     private ConfigurationManager configurationManager;
+
+    private int zonePersistentThreshold;
+    private int zonePersistentScanCount;
 
     @Override
     public void addLocalMap(LocalMap map) {
@@ -100,27 +104,18 @@ public class MapProcessorImpl implements MapProcessor {
     }
 
     @Override
-    public void nextFrame(Date timestamp) {
-        //TODO need to change
-        for (GlobalMap globalMap : globalMaps.values()) {
-            List<List<PersonSnapshot>> snapshots = globalMap.getSnapshot();
-            synchronized (this) {
-                mapListeners.forEach(listener -> listener.onFrame(snapshots, timestamp));
-            }
-        }
-    }
-
-    @Override
     public void start() {
         Args.notNull(cameraCoordinator, "cameraCoordinator");
 
-        configurationManager.getCameraGroups().keySet()
-                .forEach(id -> {
+        configurationManager.getCameraGroups()
+                .forEach((id, cameraGroup) -> {
                     GlobalMap globalMap = new GlobalMap();
 
+                    ZoneMapper zoneMapper = new ZoneMapper(new ArrayList<>(cameraGroup.getZones()),
+                            zonePersistentScanCount, zonePersistentThreshold);
                     globalMap.setZoneMapper(zoneMapper);
-                    globalMap.setPhotoMapper(photoMapper);
-                    globalMap.setAccuracyTester(accuracyTester);
+                    //                    globalMap.setPhotoMapper(photoMapper);
+                    //                    globalMap.setAccuracyTester(accuracyTester);
                     globalMaps.put(id, globalMap);
                 });
 
@@ -203,27 +198,11 @@ public class MapProcessorImpl implements MapProcessor {
         this.configurationManager = configurationManager;
     }
 
-    public AccuracyTester getAccuracyTester() {
-        return accuracyTester;
-    }
+    public void setZonePersistentThreshold(int zonePersistentThreshold) {this.zonePersistentThreshold = zonePersistentThreshold;}
 
-    public void setAccuracyTester(AccuracyTester accuracyTester) {
-        this.accuracyTester = accuracyTester;
-    }
+    public int getZonePersistentThreshold() { return zonePersistentThreshold; }
 
-    public ZoneMapper getZoneMapper() {
-        return zoneMapper;
-    }
+    public void setZonePersistentScanCount(int zonePersistentScanCount) {this.zonePersistentScanCount = zonePersistentScanCount;}
 
-    public PhotoMapper getPhotoMapper() {
-        return photoMapper;
-    }
-
-    public void setPhotoMapper(PhotoMapper photoMapper) {
-        this.photoMapper = photoMapper;
-    }
-
-    public void setZoneMapper(ZoneMapper zoneMapper) {
-        this.zoneMapper = zoneMapper;
-    }
+    public int getZonePersistentScanCount() { return zonePersistentScanCount; }
 }

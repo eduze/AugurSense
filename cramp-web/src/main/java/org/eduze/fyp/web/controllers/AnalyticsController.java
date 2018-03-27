@@ -479,14 +479,14 @@ public class AnalyticsController {
     }
 
     @GET
-    @Path("/heatMap/{from}/{to}")
-    public Response getHeatMap(@PathParam("from") long from, @PathParam("to") long to) {
+    @Path("/heatMap/{cameraGroupId}/{from}/{to}")
+    public Response getHeatMap(@PathParam("cameraGroupId") int cameraGroupId, @PathParam("from") long from,
+            @PathParam("to") long to) {
         try {
-
-            return Response.ok(analyticsService.getHeatMap(from, to)).build();
+            return Response.ok(analyticsService.getHeatMap(cameraGroupId, from, to)).build();
         } catch (Exception e) {
-            logger.error("Error occurred when obtaining heat map", e);
-            return Response.status(500).build();
+            logger.error("Error generating heatmap", e);
+            return Response.serverError().entity(e.getMessage()).build();
         }
     }
 
