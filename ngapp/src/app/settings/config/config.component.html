@@ -7,7 +7,7 @@
   </ul>
   <div class="tab-content">
     <div class="tab-pane active" id="tab_1">
-      <app-zones-config></app-zones-config>
+      <app-zones-config [cameraGroup]="group" *ngFor="let group of cameraGroups"></app-zones-config>
     </div>
     <div class="tab-pane" id="tab_2">
       <app-point-mapping></app-point-mapping>

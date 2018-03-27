@@ -13,13 +13,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import java.util.HashSet;
 import java.util.Set;
 
-@XmlRootElement
 @Entity
-@JsonIgnoreProperties("cameraConfigs")
+@JsonIgnoreProperties({"cameraConfigs", "zones"})
 public class CameraGroup {
 
     @Id
@@ -33,9 +31,11 @@ public class CameraGroup {
     @Column(columnDefinition = "LONGBLOB")
     private byte[] map;
 
-    @XmlTransient
     @OneToMany(mappedBy = "cameraGroup", cascade = {CascadeType.REMOVE})
     private Set<CameraConfig> cameraConfigs;
+
+    @OneToMany(mappedBy = "cameraGroup", cascade = {CascadeType.REMOVE})
+    private Set<Zone> zones = new HashSet<>();
 
     public int getId() {
         return id;
@@ -67,6 +67,14 @@ public class CameraGroup {
 
     public void setCameraConfigs(Set<CameraConfig> cameraConfigs) {
         this.cameraConfigs = cameraConfigs;
+    }
+
+    public Set<Zone> getZones() {
+        return zones;
+    }
+
+    public void setZones(Set<Zone> zones) {
+        this.zones = zones;
     }
 
     public String toString() {

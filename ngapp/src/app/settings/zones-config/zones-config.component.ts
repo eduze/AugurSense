@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
-import {ConfigService} from "../../services/config.service";
-import {Zone} from "../../resources/zone";
-import {GlobalMap} from "../../resources/global-map";
+import {Component, Input, OnInit} from '@angular/core';
+import {ConfigService} from '../../services/config.service';
+import {Zone} from '../../resources/zone';
+import {CameraGroup} from '../../resources/camera-group';
 
 @Component({
   selector: 'app-zones-config',
@@ -12,22 +12,19 @@ export class ZonesConfigComponent implements OnInit {
 
   private _zones: Zone[] = [];
   private _zone: Zone;
-  private _globalMap: GlobalMap;
-  modalId: string = "add-zone-modal";
+  @Input() cameraGroup: CameraGroup;
+  modalId;
 
   constructor(private configService: ConfigService) {
   }
 
   ngOnInit() {
-    this.configService.getMap()
-      .then(map => {
-        this._globalMap = map;
-      });
-
-    this.configService.getZones()
+    this.configService.getZonesOf(this.cameraGroup)
       .then(zones => {
         this._zones = zones;
       });
+
+    this.modalId = `modal-${this.cameraGroup.id}`;
   }
 
   public zoneClicked(zone: Zone): void {
@@ -44,9 +41,5 @@ export class ZonesConfigComponent implements OnInit {
 
   set zone(value: Zone) {
     this._zone = value;
-  }
-
-  get globalMap(): GlobalMap {
-    return this._globalMap;
   }
 }

@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
+import {ConfigService} from "../../services/config.service";
+import {CameraGroup} from "../../resources/camera-group";
 
 @Component({
   selector: 'app-config',
@@ -7,9 +9,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ConfigComponent implements OnInit {
 
-  constructor() { }
+  cameraGroups: CameraGroup[] = [];
+
+  constructor(private configService: ConfigService) {
+  }
 
   ngOnInit() {
+    this.configService.getCameraGroups().then(groups => {
+      this.cameraGroups = groups;
+    });
   }
 
 }

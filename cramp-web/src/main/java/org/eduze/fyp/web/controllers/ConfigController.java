@@ -60,58 +60,6 @@ public class ConfigController {
         }
     }
 
-    @POST
-    @Path("/zone")
-    public Response addZone(Zone zone) {
-        logger.debug("Adding zone {}", zone);
-        try {
-            return Response.status(200).entity(configService.addZone(zone)).build();
-        } catch (Exception e) {
-            logger.error("Error occurred when adding zone - {}", zone, e);
-            return Response.status(500).build();
-        }
-    }
-
-    @PUT
-    @Path("/zone")
-    public Response updateZone(Zone zone) {
-        logger.debug("Updating zone - {}", zone);
-        try {
-            configService.updateZone(zone);
-            return Response.status(200).build();
-        } catch (Exception e) {
-            logger.error("Error occurred when updating zone - {}", zone, e);
-            return Response.status(500).build();
-        }
-    }
-
-    @DELETE
-    @Path("/zone/{zoneId}")
-    public Response deleteZone(@PathParam("zoneId") int zoneId) {
-        logger.debug("Deleting zone {}", zoneId);
-        try {
-            configService.deleteZone(zoneId);
-            return Response.status(200).build();
-        } catch (Exception e) {
-            logger.error("Error occurred when updating zone - {}", zoneId, e);
-            return Response.status(500).build();
-        }
-
-    }
-
-    @GET
-    @Path("/zones")
-    public Response getZones() {
-        try {
-            List<Zone> zonesList = configService.getZones();
-            logger.info("{} zones", zonesList);
-            return Response.ok().entity(zonesList).build();
-        } catch (Exception e) {
-            logger.error("Error occurred when obtaining zones", e);
-            return Response.status(500).build();
-        }
-    }
-
     @GET
     @Path("/getMap")
     public Response getMap() {
@@ -161,6 +109,59 @@ public class ConfigController {
             return Response.ok().build();
         } catch (Exception e) {
             logger.error("Error occurred when obtaining camera configs", e);
+            return Response.status(500).build();
+        }
+    }
+
+    @GET
+    @Path("/cameraGroups/{cameraGroupId}/zones")
+    public Response getCameraGroupZones(@PathParam("cameraGroupId") int cameraGroupId) {
+        return Response.ok(configService.getCameraGroupZones(cameraGroupId)).build();
+    }
+
+    @POST
+    @Path("/cameraGroups/zones")
+    public Response addZone(Zone zone) {
+        logger.debug("Adding zone {}", zone);
+        try {
+            return Response.ok(configService.addZone(zone)).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when adding zone - {}", zone, e);
+            return Response.status(500).build();
+        }
+    }
+
+    @PUT
+    @Path("/cameraGroups/zones")
+    public Response updateZone(Zone zone) {
+        logger.debug("Updating zone - {}", zone);
+        configService.updateZone(zone);
+        return Response.ok().build();
+    }
+
+    @DELETE
+    @Path("/cameraGroups/zones/{zoneId}")
+    public Response deleteZone(@PathParam("zoneId") int zoneId) {
+        logger.debug("Deleting zone {}", zoneId);
+        try {
+            configService.deleteZone(zoneId);
+            return Response.status(200).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when updating zone - {}", zoneId, e);
+            return Response.status(500).build();
+        }
+
+    }
+
+    @GET
+    @Path("/zones")
+    public Response getZones() {
+        try {
+            List<Zone> zonesList = configService.getZones();
+            logger.info("{} zones", zonesList);
+            return Response.ok().entity(zonesList).build();
+        } catch (Exception e) {
+            logger.error("Error occurred when obtaining zones", e);
             return Response.status(500).build();
         }
     }

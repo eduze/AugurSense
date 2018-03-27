@@ -60,6 +60,15 @@ public class CameraConfigDAOImpl extends AbstractDAOImpl implements CameraConfig
     }
 
     @Override
+    public CameraGroup findCameraGroupById(int id) {
+        Session session = this.sessionFactory.getCurrentSession();
+        if (!session.getTransaction().isActive()) {
+            session.beginTransaction();
+        }
+        return session.get(CameraGroup.class, id);
+    }
+
+    @Override
     public CameraConfig findByCameraId(int cameraId) {
         Session session = this.sessionFactory.getCurrentSession();
         session.getTransaction();

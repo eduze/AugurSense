@@ -35,9 +35,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ConfigService {
 
@@ -166,6 +168,22 @@ public class ConfigService {
             logger.error("Unable to resize image for camera group: {}", cameraGroup, e);
         }
         cameraConfigDAO.addCameraGroup(cameraGroup);
+    }
+
+    /**
+     * get the zones of a particular camera group
+     *
+     * @param cameraGroupId camera group id
+     * @return zones of that camera group
+     */
+    public Set<Zone> getCameraGroupZones(int cameraGroupId) {
+        try {
+            CameraGroup cameraGroup = cameraConfigDAO.findCameraGroupById(cameraGroupId);
+            return cameraGroup.getZones();
+        } catch (Exception e) {
+            logger.error("Error", e);
+        }
+        return Collections.emptySet();
     }
 
     public Zone addZone(Zone zone) {

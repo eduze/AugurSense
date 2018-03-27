@@ -17,6 +17,8 @@
  * IN THE SOFTWARE.
  */
 
+import {CameraGroup} from './camera-group';
+
 export class Zone {
   private _id: number;
   private _zoneName: string;
@@ -26,24 +28,32 @@ export class Zone {
   private _midX: number;
   private _midY: number;
   private _zoneLimit: number;
+  private _cameraGroup: CameraGroup;
 
-  constructor(id: number, zoneName: string, xCoordinates: number[], yCoordinates: number[], zoneLimit: number) {
+  constructor(id: number, zoneName: string, xCoordinates: number[], yCoordinates: number[],
+              zoneLimit: number, cameraGroup: CameraGroup) {
     this._id = id;
     this._zoneName = zoneName;
     this._zoneLimit = zoneLimit;
     this._xCoordinates = xCoordinates;
     this._yCoordinates = yCoordinates;
+    this._cameraGroup = cameraGroup;
 
     this.updatePolygon();
+  }
+
+  public static fromJSON(obj: any): Zone {
+    return new Zone(obj.id, obj.zoneName, obj.xCoordinates, obj.yCoordinates, obj.zoneLimit,
+      CameraGroup.fromJSON(obj.cameraGroup));
   }
 
   private updatePolygon() {
     this._midX = 0;
     this._midY = 0;
 
-    this._polygon = "";
-    for (let i in this._xCoordinates) {
-      this._polygon += this._xCoordinates[i] + "," + this._yCoordinates[i] + " ";
+    this._polygon = '';
+    for (const i in this._xCoordinates) {
+      this._polygon += this._xCoordinates[i] + ',' + this._yCoordinates[i] + ' ';
       this._midX += this._xCoordinates[i];
       this._midY += this._yCoordinates[i];
     }
@@ -102,13 +112,22 @@ export class Zone {
     this._zoneLimit = value;
   }
 
+  get cameraGroup(): CameraGroup {
+    return this._cameraGroup;
+  }
+
+  set cameraGroup(value: CameraGroup) {
+    this._cameraGroup = value;
+  }
+
   public toJSON(key: string): Object {
     return {
       id: this.id,
       zoneName: this.zoneName,
       zoneLimit: this.zoneLimit,
       xCoordinates: this.xCoordinates,
-      yCoordinates: this.yCoordinates
-    }
+      yCoordinates: this.yCoordinates,
+      cameraGroup: this.cameraGroup.toJSON()
+    };
   }
 }

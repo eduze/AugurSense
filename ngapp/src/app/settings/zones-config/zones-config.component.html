@@ -1,32 +1,35 @@
 <div class="row container-fluid">
 
-  <div class="col-md-6 col-sm-9 col-xs-12" *ngIf="globalMap">
+  <div class="col-md-9 col-sm-9 col-xs-12">
     <div class="box box-solid box-primary">
+      <div class="box-header">
+        <h4 class="box-title">{{cameraGroup.name}}</h4>
+      </div>
       <div class="box-body">
-        <svg x="0" y="0" [attr.width]="globalMap.width" [attr.height]="globalMap.height" class="center-block">
+        <svg x="0" y="0" [attr.width]="cameraGroup.map.width" [attr.height]="cameraGroup.map.height"
+             class="center-block">
           <g height="100%" width="100%">
-            <image [attr.xlink:href]="globalMap.image" x="0" y="0" (click)="zoneClicked(null)"></image>
+            <image [attr.xlink:href]="cameraGroup.map.image" x="0" y="0" (click)="zoneClicked(null)"></image>
             <g *ngFor="let z of zones; let i = index">
               <polygon class="zone" [attr.points]="z.polygon" (click)="zoneClicked(z)"
                        [class.zone-selected]="z==zone"></polygon>
 
-              <text [attr.x]="z.midX" [attr.y]="z.midY-30" fill="yellow" font-size="15" text-anchor="middle">
+              <text [attr.x]="z.midX" [attr.y]="z.midY-30" fill="black" font-size="15" text-anchor="middle">
                 {{ z.zoneName }}
               </text>
             </g>
           </g>
         </svg>
       </div>
-    </div>
-    <div class="box-footer">
-      <button class="btn btn-primary" data-toggle="modal" [attr.data-target]="'#'+modalId">Add Zone</button>
+      <div class="box-footer">
+        <button class="btn btn-primary" data-toggle="modal" [attr.data-target]="'#'+modalId">Add Zone</button>
+      </div>
     </div>
   </div>
 
-  <div class="col-md-6 col-sm-3 col-xs-12">
+  <div class="col-md-3 col-sm-3 col-xs-12">
     <app-zones-config-info [zone]="zone" *ngIf="zone" [zones]="zones"></app-zones-config-info>
   </div>
 
-  <app-zone-ui [zones]="zones" [globalMap]="globalMap" [modalId]="modalId"></app-zone-ui>
-
+  <app-zone-ui [zones]="zones" [cameraGroup]="cameraGroup" [modalId]="modalId"></app-zone-ui>
 </div>

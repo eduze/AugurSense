@@ -7,16 +7,16 @@
         <h4 class="modal-title">Add Zone</h4>
       </div>
       <div class="modal-body">
-        <div class="col-md-12" *ngIf="globalMap">
+        <div class="col-md-12" *ngIf="cameraGroup.map">
           <div class="box box-solid box-primary">
             <div class="box-body">
 
               <helper-message [message]="message"></helper-message>
 
               <div class="form-group">
-                <svg x="0" y="0" [attr.width]="globalMap.width" [attr.height]="globalMap.height" class="center-block">
+                <svg x="0" y="0" [attr.width]="cameraGroup.map.width" [attr.height]="cameraGroup.map.height" class="center-block">
                   <g height="100%" width="100%">
-                    <image [attr.xlink:href]="globalMap.image" x="0" y="0" (click)="clicked($event)"></image>
+                    <image [attr.xlink:href]="cameraGroup.map.image" x="0" y="0" (click)="clicked($event)"></image>
                     <g *ngFor="let z of zones; let i = index">
                       <polygon class="zone" [attr.points]="z.polygon"></polygon>
 

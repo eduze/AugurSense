@@ -23,7 +23,7 @@ import 'rxjs/add/operator/toPromise';
 import {Zone} from '../resources/zone';
 import {GlobalMap} from '../resources/global-map';
 import {CameraConfig} from '../resources/camera-config';
-import {CameraGroup} from "../resources/camera-group";
+import {CameraGroup} from '../resources/camera-group';
 
 @Injectable()
 export class ConfigService {
@@ -31,14 +31,6 @@ export class ConfigService {
   private baseUrl = 'http://localhost:8000/api/v1/config/';
 
   constructor(private http: HttpClient) {
-  }
-
-  private static stringToNumberArray(str: string): number[] {
-    const arr: number[] = [];
-    for (const s of str.split(',')) {
-      arr.push(parseInt(s));
-    }
-    return arr;
   }
 
   private static handleError(error: any): Promise<any> {
@@ -74,9 +66,8 @@ export class ConfigService {
       .toPromise()
       .then(response => {
         const groups = response as CameraGroup[];
-        console.log(groups);
         const cameraGroups = [];
-        for (let g of groups) {
+        for (const g of groups) {
           cameraGroups.push(CameraGroup.fromJSON(g));
         }
         return cameraGroups;
@@ -88,7 +79,6 @@ export class ConfigService {
     return this.http.post(this.baseUrl + 'cameraGroups', cameraGroup)
       .toPromise()
       .then(response => {
-        console.log(response);
         return true;
       })
       .catch(ConfigService.handleError);
@@ -98,7 +88,6 @@ export class ConfigService {
     return this.http.get(this.baseUrl + 'getMap')
       .toPromise()
       .then(response => {
-        console.log(response);
         const views: Map<string, string> = response as Map<string, string>;
         return GlobalMap.fromJSON(views['mapImage']);
       })
@@ -106,16 +95,16 @@ export class ConfigService {
   }
 
   addZone(zone: Zone): Promise<Zone> {
-    return this.http.post(this.baseUrl + 'zone', zone)
+    return this.http.post(`${this.baseUrl}cameraGroups/zones`, zone)
       .toPromise()
       .then(response => {
         const z = response as Zone;
-        return new Zone(z.id, z.zoneName, z.xCoordinates, z.yCoordinates, z.zoneLimit);
+        return Zone.fromJSON(z);
       }).catch(ConfigService.handleError);
   }
 
   updateZone(zone: Zone): Promise<boolean> {
-    return this.http.put(this.baseUrl + 'zone', zone)
+    return this.http.put(`${this.baseUrl}cameraGroups/zones`, zone)
       .toPromise()
       .then(response => {
         return true;
@@ -123,7 +112,7 @@ export class ConfigService {
   }
 
   deleteZone(zoneId: number): Promise<boolean> {
-    return this.http.delete(this.baseUrl + 'zone/' + zoneId)
+    return this.http.delete(`${this.baseUrl}cameraGroups/zones/${zoneId}`)
       .toPromise()
       .then(response => {
         return true;
@@ -137,7 +126,22 @@ export class ConfigService {
         const arr = response as Zone[];
         const zones: Zone[] = [];
         for (const z of arr) {
-          zones.push(new Zone(z.id, z.zoneName, z.xCoordinates, z.yCoordinates, z.zoneLimit));
+          zones.push(Zone.fromJSON(z));
+        }
+
+        return zones;
+      })
+      .catch(ConfigService.handleError);
+  }
+
+  getZonesOf(cameraGroup: CameraGroup): Promise<Zone[]> {
+    return this.http.get<Zone[]>(`${this.baseUrl}cameraGroups/${cameraGroup.id}/zones`)
+      .toPromise()
+      .then(response => {
+        const arr = response as Zone[];
+        const zones: Zone[] = [];
+        for (const z of arr) {
+          zones.push(Zone.fromJSON(z));
         }
 
         return zones;

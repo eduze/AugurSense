@@ -27,6 +27,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -49,6 +50,9 @@ public class Zone {
 
     @Convert(converter = ZoneCoordinatesConverter.class)
     private List<Integer> yCoordinates;
+
+    @ManyToOne(optional = false)
+    private CameraGroup cameraGroup;
 
     public int getId() {
         return id;
@@ -86,6 +90,14 @@ public class Zone {
 
     public void setZoneLimit(int zoneLimit) {
         this.zoneLimit = zoneLimit;
+    }
+
+    public CameraGroup getCameraGroup() {
+        return cameraGroup;
+    }
+
+    public void setCameraGroup(CameraGroup cameraGroup) {
+        this.cameraGroup = cameraGroup;
     }
 
     @Override

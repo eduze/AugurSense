@@ -32,6 +32,8 @@ public interface CameraConfigDAO extends AbstractDAO {
 
     CameraConfig findById(int id);
 
+    CameraGroup findCameraGroupById(int id);
+
     CameraConfig findByCameraId(int cameraId);
 
     CameraConfig findByCameraIpAndPort(String ipAndPort);
