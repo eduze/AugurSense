@@ -119,21 +119,6 @@ export class ConfigService {
       }).catch(ConfigService.handleError);
   }
 
-  getZones(): Promise<Zone[]> {
-    return this.http.get<Zone[]>(this.baseUrl + 'zones')
-      .toPromise()
-      .then(response => {
-        const arr = response as Zone[];
-        const zones: Zone[] = [];
-        for (const z of arr) {
-          zones.push(Zone.fromJSON(z));
-        }
-
-        return zones;
-      })
-      .catch(ConfigService.handleError);
-  }
-
   getZonesOf(cameraGroup: CameraGroup): Promise<Zone[]> {
     return this.http.get<Zone[]>(`${this.baseUrl}cameraGroups/${cameraGroup.id}/zones`)
       .toPromise()

@@ -17,9 +17,9 @@
  * IN THE SOFTWARE.
  */
 
-import {Component} from '@angular/core'
-
-import {AnalyticsService} from "../services/analytics.service";
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {CameraGroup} from '../resources/camera-group';
+import {ConfigService} from '../services/config.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -27,8 +27,20 @@ import {AnalyticsService} from "../services/analytics.service";
   styles: ['canvas { border: 1px solid #000; }']
 })
 
-export class DashboardComponent {
+export class DashboardComponent implements OnInit, OnDestroy {
 
-  constructor(private analyticsService: AnalyticsService) {
+  cameraGroups: CameraGroup[];
+
+  constructor(private configService: ConfigService) {
+  }
+
+  ngOnInit(): void {
+    this.configService.getCameraGroups()
+      .then(groups => {
+        this.cameraGroups = groups;
+      });
+  }
+
+  ngOnDestroy(): void {
   }
 }

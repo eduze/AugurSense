@@ -8,7 +8,7 @@ import {CalendarModule, ChartModule, CheckboxModule, RadioButton, SliderModule} 
 import {AppComponent} from "./app.component";
 import {AppRoutingModule} from "./app-routing.module";
 import {DashboardComponent} from "./dashboard/dashboard.component";
-import {HeatmapComponent} from "./heatmap/heatmap.component";
+import {HeatmapsComponent} from "./heatmaps/heatmaps.component";
 import {PeopleCountComponent} from './people-count/people-count.component';
 import {PointMappingComponent} from './settings/point-mapping/point-mapping.component';
 import {ZonesComponent} from './zones/zones.component';
@@ -26,24 +26,40 @@ import {AnalyticsService} from "./services/analytics.service";
 import {ConfigService} from "./services/config.service";
 
 import {
-  MatButtonModule, MatCardModule, MatCheckboxModule, MatChipsModule, MatFormFieldModule, MatIconModule,
-  MatInputModule, MatListModule, MatMenuModule, MatSidenavModule, MatSliderModule, MatToolbarModule
+  MatButtonModule,
+  MatCardModule,
+  MatCheckboxModule,
+  MatChipsModule,
+  MatFormFieldModule,
+  MatIconModule,
+  MatInputModule,
+  MatListModule,
+  MatMenuModule,
+  MatSidenavModule,
+  MatSliderModule,
+  MatToolbarModule
 } from '@angular/material';
 import {ZonesConfigComponent} from './settings/zones-config/zones-config.component';
 import {ConfigComponent} from './settings/config/config.component';
 import {ZonesConfigInfoComponent} from './settings/zones-config/zones-config-info/zones-config-info.component';
 import {SuccessMessageComponent} from './helpers/success-message/success-message.component';
-import { ZoneUiComponent } from './settings/zones-config/zone-ui/zone-ui.component';
+import {ZoneUiComponent} from './settings/zones-config/zone-ui/zone-ui.component';
+import {ZoneComponent} from "./zones/zone/zone.component";
+import {HeatmapComponent} from "./heatmaps/heatmap/heatmap.component";
 
 
 @NgModule({
   declarations: [
     AppComponent,
     DashboardComponent,
+    /* Heat Map */
+    HeatmapsComponent,
     HeatmapComponent,
     PeopleCountComponent,
     PointMappingComponent,
+    /* Zones */
     ZonesComponent,
+    ZoneComponent,
     ZoneInfoComponent,
     RealtimeMapComponent,
     RealtimeInfoComponent,

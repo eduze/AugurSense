@@ -16,3 +16,29 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
+
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {ConfigService} from "../services/config.service";
+import {CameraGroup} from "../resources/camera-group";
+
+@Component({
+  selector: 'app-heatmaps',
+  templateUrl: './heatmaps.component.html'
+})
+
+export class HeatmapsComponent implements OnInit, OnDestroy {
+
+  cameraGroups: CameraGroup[] = [];
+
+  constructor(private configService: ConfigService) {
+  }
+
+  ngOnInit(): void {
+    this.configService.getCameraGroups().then(groups => {
+      this.cameraGroups = groups;
+    })
+  }
+
+  ngOnDestroy(): void {
+  }
+}

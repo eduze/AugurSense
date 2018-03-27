@@ -29,24 +29,19 @@ export class AppComponent {
 
   options: any = [
     {
-      route: "/dashboard",
-      name: "Dashboard",
-      icon: "tachometer"
+      route: '/dashboard',
+      name: 'Dashboard',
+      icon: 'tachometer'
     },
     {
-      route: "/time-bound-map",
-      name: "Timeline",
-      icon: "hourglass-o"
+      route: '/zones',
+      name: 'Zones',
+      icon: 'terminal'
     },
     {
-      route: "/zones",
-      name: "Zones",
-      icon: "terminal"
-    },
-    {
-      route: "/movement-direction",
-      name: "Movement Directions",
-      icon: "compass"
+      route: '/heat-map',
+      name: 'Heat Maps',
+      icon: 'terminal'
     }
   ];
 
@@ -55,7 +50,7 @@ export class AppComponent {
   constructor(private router: Router) {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-        for (let option of this.options) {
+        for (const option of this.options) {
           console.log(this.router.url);
           if (event.url.endsWith(option.route)) {
             this.current = option;

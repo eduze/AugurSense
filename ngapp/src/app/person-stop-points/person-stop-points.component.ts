@@ -99,39 +99,8 @@ export class PersonStopPointsComponent implements OnInit, AfterViewInit {
       console.log(this.globalMap);
     });
   }
-
-  // generateHeatMap(): void {
-  //   const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
-  //   const rectWidth = 5;
-  //
-  //   this.analyticsService.getHeatMap(this.from.getTime(), this.to.getTime())
-  //     .then(data => {
-  //       // set the width and height
-  //       canvasEl.width = data[0].length;
-  //       canvasEl.height = data.length;
-  //       this.cx.strokeRect(0, 0, canvasEl.width, canvasEl.height);
-  //
-  //       this.cx.strokeStyle = '#ff0000';
-  //       for (let x = 0; x < data.length; x++) {
-  //         for (let y = 0; y < data[x].length; y++) {
-  //           this.cx.globalAlpha = data[x][y] / 100;
-  //           this.cx.fillRect(x * rectWidth, y * rectWidth, rectWidth, rectWidth);
-  //         }
-  //       }
-  //     })
-  //     .catch(reason => console.log(reason));
-  // }
 }
 
-// import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core'
-// import {AnalyticsService} from "../services/analytics.service";
-//
-// @Component({
-//   selector: 'heatmap',
-//   templateUrl: './heatmap.component.html'
-// })
-
-// export class HeatmapComponent implements AfterViewInit {
 
 
 

@@ -1,20 +1,20 @@
-<div class="box box-primary" *ngFor="let d of data">
+<div class="box box-primary">
   <div class="box-header with-border">
-    <h3 class="box-title">Real-time Map - {{d.cameraGroup.name}}</h3>
+    <h3 class="box-title">{{cameraGroup.name}}</h3>
     <div class="box-tools pull-right">
-      <span class="badge">{{d.personSnapshots.length}}</span> people
+      <span class="badge">{{personSnapshots.length}}</span> people
     </div>
   </div>
   <div class="box-body">
     <div class="row">
       <div class="col-md-12">
-        <svg x="0" y="0" [attr.width]="d.cameraGroup.map.width" [attr.height]="d.cameraGroup.map.height"
+        <svg x="0" y="0" [attr.width]="cameraGroup.map.width" [attr.height]="cameraGroup.map.height"
              class="center-block">
-          <g height="100%" width="100%">
-            <image [attr.xlink:href]="d.cameraGroup.map.image" x="0" y="0" (click)="backgroundClicked();"></image>
+          <g>
+            <image [attr.xlink:href]="cameraGroup.map.image" x="0" y="0" (click)="backgroundClicked();"></image>
           </g>
 
-          <g *ngFor="let personTrack of d.personSnapshots" (click)="trackClicked(personTrack);">
+          <g *ngFor="let personTrack of personSnapshots" (click)="trackClicked(personTrack);">
             <g *ngIf="personTrack[0] != null">
               <g *ngIf="personTrack[0].ids.length == 0 || personTrack[0].ids[0] != selectedTrackIndex">
                 <circle [attr.fill]="personTrack[0].colour" r="5" [attr.cx]="personTrack[0].x"
