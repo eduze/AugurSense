@@ -13,7 +13,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.OneToMany;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -35,7 +36,7 @@ public class CameraGroup {
     private Set<CameraConfig> cameraConfigs;
 
     @OneToMany(mappedBy = "cameraGroup", cascade = {CascadeType.REMOVE})
-    private Set<Zone> zones = new HashSet<>();
+    private List<Zone> zones = new ArrayList<>();
 
     public int getId() {
         return id;
@@ -69,11 +70,11 @@ public class CameraGroup {
         this.cameraConfigs = cameraConfigs;
     }
 
-    public Set<Zone> getZones() {
+    public List<Zone> getZones() {
         return zones;
     }
 
-    public void setZones(Set<Zone> zones) {
+    public void setZones(List<Zone> zones) {
         this.zones = zones;
     }
 

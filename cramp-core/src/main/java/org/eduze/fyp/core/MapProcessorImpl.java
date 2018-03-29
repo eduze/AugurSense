@@ -34,11 +34,9 @@ import org.eduze.fyp.api.resources.LocalMap;
 import org.eduze.fyp.api.resources.PersonSnapshot;
 import org.eduze.fyp.api.util.Args;
 import org.eduze.fyp.core.resources.GlobalMap;
-import org.eduze.fyp.core.util.AccuracyTester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -111,7 +109,7 @@ public class MapProcessorImpl implements MapProcessor {
                 .forEach((id, cameraGroup) -> {
                     GlobalMap globalMap = new GlobalMap();
 
-                    ZoneMapper zoneMapper = new ZoneMapper(new ArrayList<>(cameraGroup.getZones()),
+                    ZoneMapper zoneMapper = new ZoneMapper(cameraGroup.getZones(),
                             zonePersistentScanCount, zonePersistentThreshold);
                     globalMap.setZoneMapper(zoneMapper);
                     //                    globalMap.setPhotoMapper(photoMapper);

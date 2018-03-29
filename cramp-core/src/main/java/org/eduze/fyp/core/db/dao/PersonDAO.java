@@ -41,20 +41,15 @@ public interface PersonDAO extends AbstractDAO {
 
     List<Person> listByInstantZone(List<Zone> zoneIds, Date from, Date to);
 
-    List<Integer> personIDs(Date from, Date to);
+    long peopleCountByZone(Zone zone, Date from, Date to);
 
-    List<Person> getRows(int id, Date from, Date to);
+    long getStandCountsByZone(Zone zone, Date from, Date to, double thresh);
 
-    List<Object[]> getZoneCounts(Date from, Date to);
+    long getSitCountsByZone(Zone zone, Date from, Date to, double thresh);
 
-    List<Object[]> getZoneStandCounts(Date from, Date to, double thresh);
-
-    List<Object[]> getZoneSitCounts(Date from, Date to, double thresh);
-
-    List<Object[]> getZoneUnclassifiedCounts(Date from, Date to, double threshSit, double threshStand);
+    long getUnclassifiedCountsByZone(Zone zone, Date from, Date to, double threshSit, double threshStand);
 
     List<Object[]> getCrossCounts(Date from, Date to);
-
 
     List<Person[]> getZoneInflow(Date from, Date to, int zoneId, boolean useSegments);
 

@@ -184,12 +184,13 @@ public class AnalyticsController {
 
 
     @GET
-    @Path("/zoneStatistics/{from}/{to}")
-    public Response getZoneStatistics(@PathParam("from") long from, @PathParam("to") long to) {
+    @Path("/zoneStatistics/{cameraGroupId}/{from}/{to}")
+    public Response getZoneStatistics(@PathParam("cameraGroupId") int cameraGroupId,
+            @PathParam("from") long from, @PathParam("to") long to) {
         try {
-            return Response.ok(analyticsService.getZoneStatistics(from, to)).build();
+            return Response.ok(analyticsService.getZoneStatistics(cameraGroupId, from, to)).build();
         } catch (Exception e) {
-            logger.error("Error occurred when obtaining map. {}", e);
+            logger.error("Error occurred when obtaining zone statistics:", e);
             return Response.status(500).build();
         }
 

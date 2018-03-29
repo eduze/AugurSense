@@ -17,42 +17,46 @@
  * IN THE SOFTWARE.
  */
 
-import {AfterViewInit, Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {AnalyticsService} from '../../services/analytics.service';
 import {SimpleHeatMap} from '../../lib/simple-heat-map';
 import {CanvasUtils} from '../../lib/utils/canvas-utils';
 import {CameraGroup} from '../../resources/camera-group';
+import {Constants} from "../../constants";
 
 @Component({
   selector: 'app-heatmap',
   templateUrl: './heatmap.component.html'
 })
 
-export class HeatmapComponent implements AfterViewInit {
+export class HeatmapComponent implements OnInit, OnDestroy {
 
   @Input() cameraGroup: CameraGroup;
   canvasConfigured = false;
 
   private _startTime: Date;
   private _endTime: Date;
-  private _offset = 0;
-  private _secondRange: number[] = [0, 60];
+  private _secondRange: number[];
   @ViewChild('canvas') private canvas: ElementRef;
   private cx: CanvasRenderingContext2D;
 
   constructor(private analyticsService: AnalyticsService) {
-    this.endTime = new Date();
-    this.startTime = new Date();
-    this.startTime.setDate(this.startTime.getDate() - 7);
+    this._endTime = new Date();
+    this._startTime = new Date(this.endTime.getTime() - 7 * Constants.DAY);
+    this._secondRange = [this.startTime.getTime(), this.endTime.getTime()];
   }
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
     const canvasEl: HTMLCanvasElement = this.canvas.nativeElement;
     this.cx = canvasEl.getContext('2d');
 
     CanvasUtils.setBackgroundImage(this.canvas.nativeElement, this.cameraGroup.map.image, this.configureCanvas, this);
 
-    this.generateHeatMap();
+    if (this.canvasConfigured) {
+      this.generateHeatMap();
+    } else {
+      setTimeout(() => this.generateHeatMap(), Constants.SECOND * 5);
+    }
   }
 
   /**
@@ -103,15 +107,6 @@ export class HeatmapComponent implements AfterViewInit {
     this.canvasConfigured = true;
   }
 
-  get offset(): number {
-    return this._offset;
-  }
-
-  set offset(value: number) {
-    this._offset = value;
-    this.generateHeatMap();
-  }
-
   get secondRange(): number[] {
     return this._secondRange;
   }
@@ -140,17 +135,14 @@ export class HeatmapComponent implements AfterViewInit {
   }
 
   private get from(): number {
-    if (this.startTime == null || this.secondRange[0] == null) {
-      return null;
-    }
-    return this.startTime.getTime() + this.secondRange[0] * 1000 + this.offset * 1000;
+    return this.secondRange[0];
   }
 
-
   private get to(): number {
-    if (this.endTime == null || this.secondRange[1] == null) {
-      return null;
-    }
-    return this.endTime.getTime() + this.secondRange[1] * 1000 + this.offset * 1000;
+    return this.secondRange[1];
+  }
+
+  ngOnDestroy(): void {
+
   }
 }

@@ -41,7 +41,7 @@ export class AppComponent {
     {
       route: '/heat-map',
       name: 'Heat Maps',
-      icon: 'terminal'
+      icon: 'fire'
     }
   ];
 

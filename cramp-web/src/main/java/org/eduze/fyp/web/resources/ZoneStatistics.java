@@ -19,10 +19,6 @@
 
 package org.eduze.fyp.web.resources;
 
-import jdk.nashorn.internal.runtime.regexp.joni.constants.StringType;
-
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 public class ZoneStatistics {
@@ -31,24 +27,29 @@ public class ZoneStatistics {
     private double averageStandingCount;
     private double averageUnclassifiedPoseCount;
 
-    private Map<Long,Double> totalCountVariation;
-
-    private Map<Long,Double> totalStandingCountVariation;
-
-    private Map<Long,Double> totalSittingCountVariation;
-
+    private Map<Long, Double> totalCountVariation;
+    private Map<Long, Double> totalStandingCountVariation;
+    private Map<Long, Double> totalSittingCountVariation;
 
     private long fromTimestamp;
     private long toTimestamp;
 
-    private Map<Integer,Long> outgoingMap = null;
-    private Map<Integer,Long> incomingMap = null;
+    private Map<Integer, Long> outgoingMap = null;
+    private Map<Integer, Long> incomingMap = null;
 
     private int zoneId;
     private String zoneName;
 
     private long totalOutgoing = 0;
     private long totalIncoming = 0;
+
+    public ZoneStatistics(int zoneId, String zoneName, long fromTimestamp, long toTimestamp) {
+        this.fromTimestamp = fromTimestamp;
+        this.toTimestamp = toTimestamp;
+        this.averagePersonCount = 0;
+        this.zoneId = zoneId;
+        this.zoneName = zoneName;
+    }
 
     public Map<Long, Double> getTotalCountVariation() {
         return totalCountVariation;
@@ -168,13 +169,5 @@ public class ZoneStatistics {
 
     public void setToTimestamp(long toTimestamp) {
         this.toTimestamp = toTimestamp;
-    }
-
-    public ZoneStatistics(int zoneId, String zoneName, long fromTimestamp, long toTimestamp){
-        this.fromTimestamp = fromTimestamp;
-        this.toTimestamp = toTimestamp;
-        this.averagePersonCount = 0;
-        this.zoneId = zoneId;
-        this.zoneName = zoneName;
     }
 }

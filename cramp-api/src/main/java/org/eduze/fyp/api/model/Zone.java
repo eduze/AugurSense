@@ -19,6 +19,7 @@
 
 package org.eduze.fyp.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.eduze.fyp.api.model.helpers.ZoneCoordinatesConverter;
 
 import javax.persistence.Column;
@@ -37,6 +38,7 @@ import java.util.List;
 @Entity
 @Table(name = "zones")
 @XmlRootElement
+@JsonIgnoreProperties("people")
 public class Zone {
 
     @Id

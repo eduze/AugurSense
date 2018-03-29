@@ -27,7 +27,6 @@ import org.eduze.fyp.api.model.CameraGroup;
 import org.eduze.fyp.api.model.Person;
 import org.eduze.fyp.api.model.Zone;
 import org.eduze.fyp.api.resources.PersonSnapshot;
-import org.eduze.fyp.core.db.dao.CaptureStampDAO;
 import org.eduze.fyp.core.db.dao.PersonDAO;
 import org.eduze.fyp.core.db.dao.ZoneDAO;
 import org.slf4j.Logger;
@@ -43,7 +42,6 @@ public class DBHandler implements ProcessedMapListener {
 
     private PersonDAO personDAO;
     private ZoneDAO zoneDAO;
-    private CaptureStampDAO captureStampDAO;
 
     @Override
     public void mapProcessed(CameraGroup cameraGroup, List<List<PersonSnapshot>> snapshots) {
@@ -97,14 +95,6 @@ public class DBHandler implements ProcessedMapListener {
                         logger.error("Error saving person", e);
                     }
                 });
-    }
-
-    public CaptureStampDAO getCaptureStampDAO() {
-        return captureStampDAO;
-    }
-
-    public void setCaptureStampDAO(CaptureStampDAO captureStampDAO) {
-        this.captureStampDAO = captureStampDAO;
     }
 
     public PersonDAO getPersonDAO() {

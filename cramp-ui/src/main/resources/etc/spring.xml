@@ -50,7 +50,6 @@
     <bean id="db-handler" class="org.eduze.fyp.core.db.DBHandler">
         <property name="personDAO" ref="personDAO"/>
         <property name="zoneDAO" ref="zoneDAO"/>
-        <property name="captureStampDAO" ref="captureStampDAO"/>
     </bean>
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">

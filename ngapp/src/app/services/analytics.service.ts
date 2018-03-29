@@ -133,8 +133,8 @@ export class AnalyticsService {
       .catch(AnalyticsService.handleError);
   }
 
-  getZoneStatistics(from: number, to: number): Promise<ZoneStatistic[]> {
-    return this.http.get(this.baseUrl + 'zoneStatistics/' + from + '/' + to)
+  getZoneStatistics(cameraGroupId: number, from: number, to: number): Promise<ZoneStatistic[]> {
+    return this.http.get(`${this.baseUrl}zoneStatistics/${cameraGroupId}/${from}/${to}`)
       .toPromise()
       .then(response => {
         console.debug(response);

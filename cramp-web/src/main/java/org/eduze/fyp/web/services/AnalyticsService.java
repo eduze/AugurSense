@@ -700,14 +700,13 @@ public class AnalyticsService implements ProcessedMapListener {
         long divisionLength = (toTimestamp - fromTimestamp) / divisionCount;
 
         totalCountVariation.forEach((v) -> {
-
             Date timestamp = (Date) v[0];
-            int zoneIndex = (int) v[1];
+            Zone zone = (Zone) v[1];
             long p_count = (long) v[2];
             long t_count = (long) v[3];
 
-            HashMap<Long, Long> zonePeople = totalPeople.getOrDefault(zoneIndex, new LinkedHashMap<>());
-            HashMap<Long, Long> zoneTime = totalTime.getOrDefault(zoneIndex, new LinkedHashMap<>());
+            HashMap<Long, Long> zonePeople = totalPeople.getOrDefault(zone, new LinkedHashMap<>());
+            HashMap<Long, Long> zoneTime = totalTime.getOrDefault(zone, new LinkedHashMap<>());
 
             long t_offset = timestamp.getTime() % divisionLength;
             long divisionStart = timestamp.getTime() - t_offset;
@@ -716,8 +715,8 @@ public class AnalyticsService implements ProcessedMapListener {
             zonePeople.put(divisionMid, zonePeople.getOrDefault(divisionMid, 0L) + p_count);
             zoneTime.put(divisionMid, zoneTime.getOrDefault(divisionMid, 0L) + t_count);
 
-            totalPeople.put(zoneIndex, zonePeople);
-            totalTime.put(zoneIndex, zoneTime);
+            totalPeople.put(zone.getId(), zonePeople);
+            totalTime.put(zone.getId(), zoneTime);
         });
 
         final HashMap<Integer, HashMap<Long, Double>> result = new LinkedHashMap<>();
@@ -734,67 +733,59 @@ public class AnalyticsService implements ProcessedMapListener {
 
     }
 
-    public List<ZoneStatistics> getZoneStatistics(long fromTimestamp, long toTimestamp) {
+    public List<ZoneStatistics> getZoneStatistics(int cameraGroupId, long fromTimestamp, long toTimestamp) {
         Date from = new Date(fromTimestamp);
         Date to = new Date(toTimestamp);
 
+        CameraGroup cameraGroup = cameraConfigDAO.findCameraGroupById(cameraGroupId);
+        List<Zone> zones = cameraGroup.getZones();
         long timeStampCount = captureStampDAO.getCaptureStampCount(from, to);
 
-        List<Zone> zones = configurationManager.getZones();
+        Map<Integer, Long> zonePeopleCountMap = new HashMap<>();
+        Map<Integer, Long> zoneStandCountMap = new HashMap<>();
+        Map<Integer, Long> zoneSitCountMap = new HashMap<>();
+        Map<Integer, Long> zoneUnclassifiedCountMap = new HashMap<>();
 
-        List<Object[]> zoneCounts = personDAO.getZoneCounts(from, to);
-
-        List<Object[]> zoneStandCounts = personDAO.getZoneStandCounts(from, to, 1);
-        List<Object[]> zoneSitCounts = personDAO.getZoneSitCounts(from, to, 1);
-
-        List<Object[]> zoneUnclassifiedPoseCounts = personDAO.getZoneUnclassifiedCounts(from, to, 1, 1);
-
-        final long[] totalPeopleCount = {0};
-        final long[] totalStandingCount = {0};
-        final long[] totalSittingCount = {0};
-        final long[] totalUnclassifiedCount = {0};
-
-        Map<Integer, Long> zoneCountMap = new LinkedHashMap<>();
-        zoneCounts.forEach(items -> {
-            zoneCountMap.put((Integer) items[0], (Long) items[1]);
-            totalPeopleCount[0] += (Long) items[1];
+        zones.forEach(zone -> {
+            zonePeopleCountMap.put(zone.getId(), personDAO.peopleCountByZone(zone, from, to));
+            zoneSitCountMap.put(zone.getId(), personDAO.getSitCountsByZone(zone, from, to, 1));
+            zoneStandCountMap.put(zone.getId(), personDAO.getStandCountsByZone(zone, from, to, 1));
+            zoneUnclassifiedCountMap.put(zone.getId(), personDAO.getUnclassifiedCountsByZone(zone, from, to, 1, 1));
         });
 
-        Map<Integer, Long> zoneStandCountMap = new LinkedHashMap<>();
-        zoneStandCounts.forEach(items -> {
-            zoneStandCountMap.put((Integer) items[0], (Long) items[1]);
-            totalStandingCount[0] += (Long) items[1];
-        });
+        long totalPeopleCount = zonePeopleCountMap.values().stream().mapToLong(value -> value).sum();
+        long totalStandingCount = zoneStandCountMap.values().stream().mapToLong(value -> value).sum();
+        long totalSittingCount = zoneSitCountMap.values().stream().mapToLong(value -> value).sum();
+        long totalUnclassifiedCount = zoneUnclassifiedCountMap.values().stream().mapToLong(value -> value).sum();
 
-        Map<Integer, Long> zoneSitCountMap = new LinkedHashMap<>();
-        zoneSitCounts.forEach(items -> {
-            zoneSitCountMap.put((Integer) items[0], (Long) items[1]);
-            totalSittingCount[0] += (Long) items[1];
-        });
+        logger.debug("People: {}", zonePeopleCountMap);
+        logger.debug("Stand: {}", zoneStandCountMap);
+        logger.debug("Sit: {}", zoneSitCountMap);
+        logger.debug("Unclassified: {}", zoneUnclassifiedCountMap);
 
-        Map<Integer, Long> zoneUnclassifiedCountMap = new LinkedHashMap<>();
-        zoneUnclassifiedPoseCounts.forEach(items -> {
-            zoneUnclassifiedCountMap.put((Integer) items[0], (Long) items[1]);
-            totalUnclassifiedCount[0] += (Long) items[1];
-        });
+        logger.debug("Counts: {} {} {} {}", totalPeopleCount, totalStandingCount, totalSittingCount, totalUnclassifiedCount);
 
         List<Object[]> crossCounts = personDAO.getCrossCounts(from, to);
+        logger.debug("Cross: {}", crossCounts);
 
         //Total count variation
-        HashMap<Integer, HashMap<Long, Double>> totalCountVariation = getTotalZoneCountVariation(fromTimestamp, toTimestamp, 20, "");
+        HashMap<Integer, HashMap<Long, Double>> totalCountVariation =
+                getTotalZoneCountVariation(fromTimestamp, toTimestamp, 20, "");
 
         //Total sitting count variation
-        HashMap<Integer, HashMap<Long, Double>> totalSittingCountVariation = getTotalZoneCountVariation(fromTimestamp, toTimestamp, 20, "and P.sitProbability >= 1 ");
+        HashMap<Integer, HashMap<Long, Double>> totalSittingCountVariation =
+                getTotalZoneCountVariation(fromTimestamp, toTimestamp, 20, "and P.sitProbability >= 1 ");
 
-        HashMap<Integer, HashMap<Long, Double>> totalStandingCountVariation = getTotalZoneCountVariation(fromTimestamp, toTimestamp, 20, "and P.standProbability >= 1 ");
+        HashMap<Integer, HashMap<Long, Double>> totalStandingCountVariation =
+                getTotalZoneCountVariation(fromTimestamp, toTimestamp, 20, "and P.standProbability >= 1 ");
 
         List<ZoneStatistics> results = new ArrayList<>();
         for (Zone zone : zones) {
             ZoneStatistics statistic = new ZoneStatistics(zone.getId(), zone.getZoneName(), fromTimestamp, toTimestamp);
 
             if (zone.getId() != 0) {
-                if (zoneCountMap.containsKey(zone.getId()))
-                    statistic.setAveragePersonCount((double) zoneCountMap.get(zone.getId()) / (double) timeStampCount);
+                if (zonePeopleCountMap.containsKey(zone.getId()))
+                    statistic.setAveragePersonCount((double) zonePeopleCountMap.get(zone.getId()) / (double) timeStampCount);
 
                 if (zoneSitCountMap.containsKey(zone.getId()))
                     statistic.setAverageSittingCount((double) zoneSitCountMap.get(zone.getId()) / (double) timeStampCount);
@@ -815,16 +806,15 @@ public class AnalyticsService implements ProcessedMapListener {
                     statistic.setTotalSittingCountVariation(totalSittingCountVariation.get(zone.getId()));
             } else {
                 //For the world, statistics need to be separately calculated
-                statistic.setAveragePersonCount((double) totalPeopleCount[0] / (double) timeStampCount);
-                statistic.setAverageStandingCount((double) totalStandingCount[0] / (double) timeStampCount);
-                statistic.setAverageSittingCount((double) totalSittingCount[0] / (double) timeStampCount);
-                statistic.setAverageUnclassifiedPoseCount((double) totalUnclassifiedCount[0] / (double) timeStampCount);
+                statistic.setAveragePersonCount((double) totalPeopleCount / (double) timeStampCount);
+                statistic.setAverageStandingCount((double) totalStandingCount / (double) timeStampCount);
+                statistic.setAverageSittingCount((double) totalSittingCount / (double) timeStampCount);
+                statistic.setAverageUnclassifiedPoseCount((double) totalUnclassifiedCount / (double) timeStampCount);
 
                 statistic.setTotalCountVariation(getTotalCountVariation(fromTimestamp, toTimestamp, 20, ""));
                 statistic.setTotalSittingCountVariation(getTotalCountVariation(fromTimestamp, toTimestamp, 20, "and P.sitProbability >= 1 "));
                 statistic.setTotalStandingCountVariation(getTotalCountVariation(fromTimestamp, toTimestamp, 20, "and P.standProbability >= 1 "));
             }
-
 
             final long[] totalOutgoing = {0};
             Map<Integer, Long> outgoingCounts = new HashMap<>();

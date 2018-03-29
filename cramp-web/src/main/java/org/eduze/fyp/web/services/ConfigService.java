@@ -39,7 +39,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class ConfigService {
 
@@ -176,14 +175,14 @@ public class ConfigService {
      * @param cameraGroupId camera group id
      * @return zones of that camera group
      */
-    public Set<Zone> getCameraGroupZones(int cameraGroupId) {
+    public List<Zone> getCameraGroupZones(int cameraGroupId) {
         try {
             CameraGroup cameraGroup = cameraConfigDAO.findCameraGroupById(cameraGroupId);
             return cameraGroup.getZones();
         } catch (Exception e) {
-            logger.error("Error", e);
+            logger.error("Error when getting zones for camera group - {} : {}", cameraGroupId, e.getMessage());
         }
-        return Collections.emptySet();
+        return Collections.emptyList();
     }
 
     public Zone addZone(Zone zone) {
@@ -194,6 +193,7 @@ public class ConfigService {
         Zone zone = zoneDAO.findById(updatedZone.getId());
 
         if (zone == null) {
+            logger.warn("No zone found for updating: {}", updatedZone);
             throw new IllegalArgumentException("No zone found for Id - " + updatedZone.getId());
         }
 
@@ -201,7 +201,11 @@ public class ConfigService {
         zone.setZoneLimit(updatedZone.getZoneLimit());
         zone.setXCoordinates(updatedZone.getXCoordinates());
         zone.setYCoordinates(updatedZone.getYCoordinates());
-        zoneDAO.update(zone);
+        try {
+            zoneDAO.update(zone);
+        } catch (Exception e) {
+            logger.error("Error when updating zone: {} -> {}", zone, e.getMessage());
+        }
     }
 
     public void deleteZone(int zoneId) {

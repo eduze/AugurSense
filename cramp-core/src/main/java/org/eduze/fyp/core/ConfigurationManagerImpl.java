@@ -116,7 +116,7 @@ public class ConfigurationManagerImpl implements ConfigurationManager {
 
     private void setup() {
         cameraConfigDAO.cameraGroups().forEach(cameraGroup -> {
-            Set<Zone> zones = cameraGroup.getZones();
+            List<Zone> zones = cameraGroup.getZones();
             if (zones.stream().noneMatch(zone -> ZONE_NAME_WORLD.equals(zone.getZoneName()))) {
                 Zone world = new Zone(ZONE_NAME_WORLD, Integer.MAX_VALUE, null, null, cameraGroup);
                 logger.debug("Adding zone: [{}] to camera group: [{}]", world, cameraGroup);
