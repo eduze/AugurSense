@@ -19,11 +19,10 @@
 
 package org.eduze.fyp.core.resources;
 
-import org.eduze.fyp.api.resources.Coordinate;
 import org.eduze.fyp.api.resources.LocalMap;
+import org.eduze.fyp.api.resources.PersonCoordinate;
 import org.eduze.fyp.api.resources.PersonSnapshot;
 import org.eduze.fyp.api.util.ImageUtils;
-import org.eduze.fyp.core.PhotoMapper;
 import org.eduze.fyp.core.ZoneMapper;
 import org.eduze.fyp.core.reid.ReIdentifier;
 import org.eduze.fyp.core.util.AccuracyTester;
@@ -51,7 +50,6 @@ public class GlobalMap {
     private static final Logger logger = LoggerFactory.getLogger(GlobalMap.class);
 
     private Map<Integer, PersonLocation> personLocations = new HashMap<>();
-    private PhotoMapper photoMapper;
     private ZoneMapper zoneMapper;
     private AccuracyTester accuracyTester;
     private ReIdentifier reIdentifier;
@@ -87,12 +85,12 @@ public class GlobalMap {
                 } else {
                     if (personLocations.containsKey(id)) {
                         logger.debug("Found another point for person - {}", id);
-                        personLocations.get(id).addPoint(localMap.getCameraId(), personCoordinate.toCoordinate());
+                        personLocations.get(id).addPoint(localMap.getCameraId(), personCoordinate);
                     } else {
                         logger.debug("Identified new person - {}", id);
                         newIds.add(id);
                         PersonLocation newPL = new PersonLocation(id);
-                        newPL.addPoint(localMap.getCameraId(), personCoordinate.toCoordinate());
+                        newPL.addPoint(localMap.getCameraId(), personCoordinate);
                         personLocations.put(id, newPL);
                     }
                 }
@@ -112,7 +110,7 @@ public class GlobalMap {
         Iterator<Map.Entry<Integer, PersonLocation>> iterator = personLocations.entrySet().iterator();
         while (iterator.hasNext()) {
             PersonLocation personLocation = iterator.next().getValue();
-            Map<Integer, Coordinate> coordinates = personLocation.getContributingCoordinates();
+            Map<Integer, PersonCoordinate> coordinates = personLocation.getContributingCoordinates();
             List<Integer> toRemove = coordinates.keySet().stream()
                     .filter(id -> coordinates.get(id).getTimestamp() < minTimestamp)
                     .collect(Collectors.toList());
@@ -121,9 +119,6 @@ public class GlobalMap {
 
             if (personLocation.getContributingCoordinates().size() == 0) {
                 logger.debug("Removing outdated person location {}", personLocation);
-                if (photoMapper != null) {
-                    photoMapper.removeSnapshots(personLocation.getIds());
-                }
                 iterator.remove();
             }
         }
@@ -132,14 +127,6 @@ public class GlobalMap {
     @Override
     public void finalize() {
         reIdentifier.close();
-    }
-
-    public PhotoMapper getPhotoMapper() {
-        return photoMapper;
-    }
-
-    public void setPhotoMapper(PhotoMapper photoMapper) {
-        this.photoMapper = photoMapper;
     }
 
     public AccuracyTester getAccuracyTester() {

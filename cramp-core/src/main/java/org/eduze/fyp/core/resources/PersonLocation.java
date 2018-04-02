@@ -20,16 +20,15 @@
 package org.eduze.fyp.core.resources;
 
 import org.eduze.fyp.api.resources.Coordinate;
+import org.eduze.fyp.api.resources.PersonCoordinate;
 import org.eduze.fyp.api.resources.PersonSnapshot;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class PersonLocation {
@@ -37,19 +36,18 @@ public class PersonLocation {
     private static final int HISTORY_SIZE = 20;
 
     private int currentTrackSegmentIndex = 0;
-
-    private final Set<Integer> ids = new HashSet<>();
-    private Map<Integer, Coordinate> contributingCoordinates = new HashMap<>();
+    private int id;
+    private Map<Integer, PersonCoordinate> contributingCoordinates = new HashMap<>();
     private LinkedList<PersonSnapshot> snapshots = new LinkedList<>();
 
     public PersonLocation() {
     }
 
     public PersonLocation(int id) {
-        ids.add(id);
+        this.id = id;
     }
 
-    public PersonSnapshot addPoint(int cameraId, Coordinate coordinate) {
+    public PersonSnapshot addPoint(int cameraId, PersonCoordinate coordinate) {
         Coordinate p = contributingCoordinates.get(cameraId);
         if (p == null) {
             contributingCoordinates.put(cameraId, coordinate);
@@ -66,19 +64,21 @@ public class PersonLocation {
         // Only problem is when a camera responds after the time interval for asking the next frame
         contributingCoordinates.entrySet().removeIf(next -> next.getValue().getTimestamp() < timestamp);
 
-        List<Coordinate> coordinates = contributingCoordinates.values()
+        List<PersonCoordinate> coordinates = contributingCoordinates.values()
                 .stream()
                 .filter(c -> c.getTimestamp() == timestamp)
                 .collect(Collectors.toList());
 
         double x = 0, y = 0, sitProbability = 0, standProbability = 0, headDirectionX = 0, headDirectionY = 0;
-        for (Coordinate c : coordinates) {
+        byte[] image = null;
+        for (PersonCoordinate c : coordinates) {
             x += c.getX();
             y += c.getY();
             sitProbability += c.getSitProbability();
             standProbability += c.getStandProbability();
             headDirectionX = c.getHeadDirectionX();
             headDirectionY = c.getHeadDirectionY();
+            image = c.getImage();
         }
         x = x / coordinates.size();
         y = y / coordinates.size();
@@ -87,7 +87,7 @@ public class PersonLocation {
         headDirectionX = headDirectionX / coordinates.size();
         headDirectionY = headDirectionY / coordinates.size();
 
-        Coordinate coordinate = new Coordinate(x, y, timestamp, sitProbability, standProbability, headDirectionX, headDirectionY);
+        PersonCoordinate coordinate = new PersonCoordinate(x, y, timestamp, sitProbability, standProbability, headDirectionY, headDirectionX, image);
 
         double headDirectionRadius = Math.sqrt(Math.pow(coordinate.getHeadDirectionX(), 2) + Math.pow(coordinate.getHeadDirectionY(), 2));
         if (headDirectionRadius > 0) {
@@ -95,17 +95,15 @@ public class PersonLocation {
             coordinate.setHeadDirectionY(coordinate.getHeadDirectionY() / headDirectionRadius);
         }
 
-        // TODO: 9/21/17 All have the same reference to IDs
         PersonSnapshot result = null;
         if (snapshots.size() > 0) {
-            result = new PersonSnapshot(ids, coordinate, null, snapshots.get(0).getPersistantZone(),
-                    snapshots.get(0).getPersistantZone(), currentTrackSegmentIndex);
+            result = new PersonSnapshot(coordinate, id, null, snapshots.get(0).getPersistantZone(), snapshots.get(0).getPersistantZone());
         } else {
-            result = new PersonSnapshot(ids, coordinate, null, null, null, currentTrackSegmentIndex);
+            result = new PersonSnapshot(coordinate, id, null, null, null);
         }
 
         // Another camera may have sent a person location earlier, which should now be replaced
-        if (snapshots.size()>0 && snapshots.getFirst().getTimestamp() == timestamp) {
+        if (snapshots.size() > 0 && snapshots.getFirst().getTimestamp() == timestamp) {
             snapshots.removeFirst();
         }
         snapshots.addFirst(result);
@@ -113,17 +111,6 @@ public class PersonLocation {
         // Finally sort by timestamp in the decreasing order
         snapshots.sort(Comparator.comparingLong(PersonSnapshot::getTimestamp).reversed());
         return result;
-    }
-
-    public void incrementTrackSegmentIndex() {
-        this.currentTrackSegmentIndex++;
-        if (this.snapshots.size() > 0) {
-            snapshots.get(0).setTrackSegmentIndex(this.currentTrackSegmentIndex);
-        }
-    }
-
-    public void addId(int id) {
-        ids.add(id);
     }
 
     public int getCurrentTrackSegmentIndex() {
@@ -134,11 +121,11 @@ public class PersonLocation {
         this.currentTrackSegmentIndex = currentTrackSegmentIndex;
     }
 
-    public Set<Integer> getIds() {
-        return ids;
+    public int getId() {
+        return id;
     }
 
-    public Map<Integer, Coordinate> getContributingCoordinates() {
+    public Map<Integer, PersonCoordinate> getContributingCoordinates() {
         return contributingCoordinates;
     }
 

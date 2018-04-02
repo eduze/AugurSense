@@ -64,10 +64,8 @@ public class DBHandler implements ProcessedMapListener {
                     if (snapshot.getPastPersistantZone() != null)
                         pastPersistentZone = snapshot.getPastPersistantZone();
 
-                    String previousUuid = "";
                     for (PersonSnapshot personSnapshot : snapshotList) {
                         if (personSnapshot.isStored()) {
-                            previousUuid = personSnapshot.getUuid();
                             break;
                         }
 
@@ -82,10 +80,9 @@ public class DBHandler implements ProcessedMapListener {
 
                     snapshot.markStored();
 
-                    return new Person(new Date(snapshot.getTimestamp()), snapshot.getIds(), snapshot.getTrackSegmentIndex(),
-                            snapshot.getUuid(), previousUuid, snapshot.getX(), snapshot.getY(),
-                            instantZone, persistentZone, pastPersistentZone,
-                            snapshot.getSitProbability(), snapshot.getStandProbability(),
+                    return new Person(new Date(snapshot.getTimestamp()), snapshot.getX(), snapshot.getY(),
+                            instantZone, persistentZone, pastPersistentZone, snapshot.getImage(),
+                            snapshot.getPersonId(), snapshot.getSitProbability(), snapshot.getStandProbability(),
                             snapshot.getHeadDirectionX(), snapshot.getHeadDirectionY());
                 })
                 .forEach(person -> {

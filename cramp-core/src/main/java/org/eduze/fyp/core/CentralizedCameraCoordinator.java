@@ -151,7 +151,6 @@ public class CentralizedCameraCoordinator implements CameraCoordinator, Configur
         logger.warn("Stopping camera coordination");
     }
 
-
     private synchronized void clearNotifiers() {
         cameraNotifiers.values().forEach(CameraNotifier::stop);
         cameraNotifiers.clear();

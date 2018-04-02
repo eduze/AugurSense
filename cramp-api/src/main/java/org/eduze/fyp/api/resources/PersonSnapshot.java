@@ -21,42 +21,30 @@ package org.eduze.fyp.api.resources;
 
 import org.eduze.fyp.api.model.Zone;
 
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+public class PersonSnapshot extends PersonCoordinate {
 
-public class PersonSnapshot extends Coordinate {
-
-    private int trackSegmentIndex;
-    private Set<Integer> ids = new HashSet<>();
+    private int personId;
     private Zone instanceZone;
-    private static int generatedStaticId = 0;
     private Zone persistantZone;
     private Zone pastPersistantZone;
-    private static Random idGenerator = new Random();
-    private String uuid;
     private boolean stored = false;
 
     public PersonSnapshot() { }
 
-    public PersonSnapshot(Set<Integer> ids, Coordinate coordinate, Zone instantZone, Zone persistantZone,
-            Zone prevPersistantZone, int trackSegmentIndex) {
+    public PersonSnapshot(PersonCoordinate coordinate, int personId, Zone instanceZone, Zone persistantZone, Zone pastPersistantZone) {
         this(coordinate.getX(), coordinate.getY(), coordinate.getTimestamp(), coordinate.getSitProbability(),
                 coordinate.getStandProbability(), coordinate.getHeadDirectionX(), coordinate.getHeadDirectionY(),
-                ids, instantZone, persistantZone, prevPersistantZone, trackSegmentIndex);
+                coordinate.getImage(), personId, instanceZone, persistantZone, pastPersistantZone);
     }
 
-    public PersonSnapshot(double x, double y, long timestamp, double sitProbaility, double standProbability,
-            double headDirectionX, double headDirectionY, Set<Integer> ids, Zone instanceZone, Zone persistantZone,
-            Zone pastPersistantZone, int trackSegmentIndex) {
-        super(x, y, timestamp, sitProbaility, standProbability, headDirectionX, headDirectionY);
-        this.ids = ids;
+    public PersonSnapshot(double x, double y, long timestamp, double standProbability, double sitProbability,
+            double headDirectionY, double headDirectionX, byte[] image, int personId, Zone instanceZone,
+            Zone persistantZone, Zone pastPersistantZone) {
+        super(x, y, timestamp, standProbability, sitProbability, headDirectionY, headDirectionX, image);
         this.instanceZone = instanceZone;
         this.persistantZone = persistantZone;
         this.pastPersistantZone = pastPersistantZone;
-        this.uuid = String.valueOf(System.currentTimeMillis() % (1000000)) + "_" + String.valueOf(generatedStaticId++);
-        //(Math.abs(idGenerator.nextInt())%100000000);
-        this.trackSegmentIndex = trackSegmentIndex;
+        this.personId = personId;
     }
 
     public boolean isStored() {
@@ -65,10 +53,6 @@ public class PersonSnapshot extends Coordinate {
 
     public void setPastPersistantZone(Zone pastPersistantZone) {
         this.pastPersistantZone = pastPersistantZone;
-    }
-
-    public String getUuid() {
-        return uuid;
     }
 
     public Zone getPastPersistantZone() {
@@ -91,23 +75,15 @@ public class PersonSnapshot extends Coordinate {
         this.instanceZone = instanceZone;
     }
 
-    public Set<Integer> getIds() {
-        return ids;
-    }
-
-    public void setIds(Set<Integer> ids) {
-        this.ids = ids;
-    }
-
     public void markStored() {
         this.stored = true;
     }
 
-    public int getTrackSegmentIndex() {
-        return trackSegmentIndex;
+    public int getPersonId() {
+        return personId;
     }
 
-    public void setTrackSegmentIndex(int trackSegmentIndex) {
-        this.trackSegmentIndex = trackSegmentIndex;
+    public void setPersonId(int personId) {
+        this.personId = personId;
     }
 }

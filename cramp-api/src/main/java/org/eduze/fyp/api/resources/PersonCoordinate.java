@@ -22,66 +22,31 @@ package org.eduze.fyp.api.resources;
 import org.eduze.fyp.api.model.Person;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Set;
 
 @XmlRootElement
 public class PersonCoordinate extends Coordinate {
 
+    private double standProbability = 0;
+    private double sitProbability = 0;
+    private double headDirectionY = 0;
+    private double headDirectionX = 0;
     private byte[] image;
-    private String uuid;
-    private Set<Integer> ids;
-    private int trackSegmentIndex;
-
-    public int getTrackSegmentIndex() {
-        return trackSegmentIndex;
-    }
-
-    public void setTrackSegmentIndex(int trackSegmentIndex) {
-        this.trackSegmentIndex = trackSegmentIndex;
-    }
 
     public PersonCoordinate() { }
 
-    public PersonCoordinate(Person p, byte[] image) {
-        super(p.getX(), p.getY(), p.getTimestamp().getTime(), p.getStandProbability(), p.getSitProbability(),
-                p.getHeadDirectionX(), p.getHeadDirectionY());
+    public PersonCoordinate(Person p) {
+        this(p.getX(), p.getY(), p.getTimestamp().getTime(), p.getStandProbability(), p.getSitProbability(),
+                p.getHeadDirectionX(), p.getHeadDirectionY(), p.getImage());
+    }
+
+    public PersonCoordinate(double x, double y, long timestamp, double standProbability, double sitProbability,
+            double headDirectionY, double headDirectionX, byte[] image) {
+        super(x, y, timestamp);
+        this.standProbability = standProbability;
+        this.sitProbability = sitProbability;
+        this.headDirectionY = headDirectionY;
+        this.headDirectionX = headDirectionX;
         this.image = image;
-        this.uuid = p.getUuid();
-        this.ids = p.getIds();
-        this.trackSegmentIndex = p.getTrackSegmentIndex();
-    }
-
-    public PersonCoordinate(double x, double y, long timestamp, double sitProbability, double standProbability,
-            double headDirectionX, double headDirectionY, byte[] image) {
-        super(x, y, timestamp, standProbability, sitProbability, headDirectionX, headDirectionY);
-        this.image = image;
-    }
-
-    public boolean isSnapshotSaved() {
-        return snapshotSaved;
-    }
-
-    public void markSnapshotSaved() {
-        this.snapshotSaved = true;
-    }
-
-    private boolean snapshotSaved = false;
-
-
-    public void setIds(Set<Integer> ids) {
-        this.ids = ids;
-    }
-
-    public Set<Integer> getIds() {
-        return ids;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
     }
 
     public byte[] getImage() {
@@ -92,7 +57,39 @@ public class PersonCoordinate extends Coordinate {
         this.image = image;
     }
 
+    public double getStandProbability() {
+        return standProbability;
+    }
+
+    public void setStandProbability(double standProbability) {
+        this.standProbability = standProbability;
+    }
+
+    public double getSitProbability() {
+        return sitProbability;
+    }
+
+    public void setSitProbability(double sitProbability) {
+        this.sitProbability = sitProbability;
+    }
+
+    public double getHeadDirectionY() {
+        return headDirectionY;
+    }
+
+    public void setHeadDirectionY(double headDirectionY) {
+        this.headDirectionY = headDirectionY;
+    }
+
+    public double getHeadDirectionX() {
+        return headDirectionX;
+    }
+
+    public void setHeadDirectionX(double headDirectionX) {
+        this.headDirectionX = headDirectionX;
+    }
+
     public Coordinate toCoordinate() {
-        return new Coordinate(getX(), getY(), getTimestamp(), getSitProbability(), getStandProbability(), getHeadDirectionX(), getHeadDirectionY());
+        return new Coordinate(getX(), getY(), getTimestamp());
     }
 }

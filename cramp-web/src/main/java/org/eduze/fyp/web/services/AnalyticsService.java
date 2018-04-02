@@ -28,20 +28,15 @@ import org.eduze.fyp.api.model.Zone;
 import org.eduze.fyp.api.resources.PersonCoordinate;
 import org.eduze.fyp.api.resources.PersonSnapshot;
 import org.eduze.fyp.api.util.ImageUtils;
-import org.eduze.fyp.core.PhotoMapper;
 import org.eduze.fyp.core.db.dao.CameraConfigDAO;
 import org.eduze.fyp.core.db.dao.CaptureStampDAO;
 import org.eduze.fyp.core.db.dao.PersonDAO;
 import org.eduze.fyp.core.db.dao.ZoneDAO;
-import org.eduze.fyp.web.resources.TimelineZone;
 import org.eduze.fyp.web.resources.ZoneStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.*;
 
@@ -63,31 +58,7 @@ public class AnalyticsService implements ProcessedMapListener {
     private int mapWidth = Constants.MAP_IMAGE_WIDTH;
     private int mapHeight = Constants.MAP_IMAGE_HEIGHT;
 
-    private PhotoMapper photoMapper = null;
-
     public AnalyticsService() { }
-
-    public List<Person> getTrackingRouteFromUUID(Date start, Date end, String uuid, boolean segmented) {
-        Person target = personDAO.getPerson(uuid);
-        List<Person> candidates = personDAO.list(start, end);
-        final ArrayList<Person> result = new ArrayList<>();
-
-        for (int trackId : target.getIds()) {
-            if (!segmented) {
-                candidates.stream()
-                        .filter((person -> person.getIds().contains(trackId)))
-                        .forEach(result::add);
-            } else {
-                candidates.stream()
-                        .filter((person -> person.getIds().contains(trackId) && person.getTrackSegmentIndex() == target.getTrackSegmentIndex()))
-                        .forEach(result::add);
-            }
-
-        }
-        return result;
-
-    }
-
 
     public List<List<Person>> getTimeBoundMovements(Date start, Date end, boolean useSegmentIndex) {
         List<Person> candidates = personDAO.list(start, end);
@@ -104,184 +75,19 @@ public class AnalyticsService implements ProcessedMapListener {
             //            target.add(p);
             //
             //            trackedCandidates.put(p.getUuid(),target);
-            for (int _id : p.getIds()) {
-                String id = String.valueOf(_id);
-                if (useSegmentIndex)
-                    id += "_" + p.getTrackSegmentIndex();
-                if (!trackedCandidates.containsKey(id)) {
-                    trackedCandidates.put(id, new ArrayList<>());
-                }
-                trackedCandidates.get(id).add(p);
+            int _id = p.getId();
+            String id = String.valueOf(_id);
+            //            if (useSegmentIndex)
+            //                id += "_" + p.getTrackSegmentIndex();
+            if (!trackedCandidates.containsKey(id)) {
+                trackedCandidates.put(id, new ArrayList<>());
             }
+            trackedCandidates.get(id).add(p);
         }
         return new ArrayList<List<Person>>(trackedCandidates.values());
     }
 
-    public PersonCoordinate getProfile(String uuid) throws IOException {
-        Person p = personDAO.getPerson(uuid);
-        File f = new File(photoMapper.getPhotoSavePath() + "/" + uuid + ".jpg");
-        byte[] bytes = null;
-        if (f.exists()) {
-            bytes = ImageUtils.bufferedImageToByteArray(ImageIO.read(f));
-        }
-
-        PersonCoordinate result = new PersonCoordinate(p, bytes);
-        return result;
-    }
-
-    public List<PersonCoordinate> getPastPhotos(int trackingId, int segmentIndex) {
-        File dir = new File(photoMapper.getPhotoSavePath());
-        dir.mkdirs();
-
-        Map<String, File> fileMap = new HashMap<>();
-
-        File[] snaps = dir.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".jpg");
-            }
-        });
-
-        for (File snap : snaps) {
-            fileMap.put(snap.getName().replaceFirst("[.][^.]+$", ""), snap);
-        }
-
-        List<PersonCoordinate> results = new LinkedList<>();
-
-        List<Person> candidates = personDAO.getPersonFromTrackingId(trackingId);
-        for (Person p : candidates) {
-            if (segmentIndex >= 0 && p.getTrackSegmentIndex() != segmentIndex)
-                continue;
-            if (fileMap.containsKey(p.getUuid())) {
-                try {
-                    byte[] bytes = ImageUtils.bufferedImageToByteArray(ImageIO.read(fileMap.get(p.getUuid())));
-                    PersonCoordinate result = new PersonCoordinate(p, bytes);
-                    results.add(result);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }
-
-        return results;
-
-    }
-
-    public List<PersonCoordinate> getAllPastPhotosOfZoneFlow(Date start, Date end, int zoneId, boolean isInflow, boolean isOutflow, boolean useSegments) {
-        File dir = new File(photoMapper.getPhotoSavePath());
-        dir.mkdirs();
-
-        List<Zone> availableZones = zoneDAO.list();
-        List<Object> availableZoneIds = new ArrayList<>();
-        Collections.addAll(availableZoneIds, availableZones.stream().map(Zone::getId).toArray());
-
-        Map<String, File> fileMap = new HashMap<>();
-
-        File[] snaps = dir.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".jpg");
-            }
-        });
-
-        for (File snap : snaps) {
-            fileMap.put(snap.getName().replaceFirst("[.][^.]+$", ""), snap);
-        }
-
-        HashMap<String, Person> resultContentMap = new HashMap<>();
-        HashMap<Integer, Person> resultImageMap = new HashMap<>();
-        List<Person[]> candidates = new ArrayList<>();
-        if (isInflow)
-            candidates.addAll(personDAO.getZoneInflow(start, end, zoneId, useSegments));
-        if (isOutflow)
-            candidates.addAll(personDAO.getZoneOutflow(start, end, zoneId, useSegments));
-        for (Object[] ps : candidates) {
-            Person p2 = (Person) ps[1];
-            if (!availableZoneIds.contains(p2.getPastPersistentZone().getId()))
-                continue;
-            if (!availableZoneIds.contains(p2.getPersistentZone().getId()))
-                continue;
-            Person p = (Person) ps[0];
-            p.getIds().forEach((id) -> {
-                if (fileMap.containsKey(p.getUuid())) {
-                    resultImageMap.put(id, p);
-                    resultContentMap.put(p.getUuid(), p2);
-                }
-            });
-        }
-
-        final List<PersonCoordinate> results = new LinkedList<>();
-
-        resultImageMap.values().forEach((p) -> {
-            if (fileMap.containsKey(p.getUuid())) {
-                try {
-                    byte[] bytes = ImageUtils.bufferedImageToByteArray(ImageIO.read(fileMap.get(p.getUuid())));
-                    Person content = resultContentMap.get(p.getUuid());
-                    content.setUuid(p.getUuid()); //This is a hack undertaken to make re-id link work
-                    PersonCoordinate result = new PersonCoordinate(content, bytes);
-                    results.add(result);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });
-
-        return results;
-
-    }
-
-    public List<PersonCoordinate> getAllPastPhotos(Date start, Date end) {
-        File dir = new File(photoMapper.getPhotoSavePath());
-        dir.mkdirs();
-
-        Map<String, File> fileMap = new HashMap<>();
-
-        File[] snaps = dir.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".jpg");
-            }
-        });
-
-        for (File snap : snaps) {
-            fileMap.put(snap.getName().replaceFirst("[.][^.]+$", ""), snap);
-        }
-
-
-        HashMap<Integer, Person> resultMap = new HashMap<>();
-        List<Person> candidates = personDAO.list(start, end);
-        for (Person p : candidates) {
-            p.getIds().forEach((id) -> {
-                if (fileMap.containsKey(p.getUuid())) {
-                    resultMap.put(id, p);
-                }
-            });
-        }
-
-        final List<PersonCoordinate> results = new LinkedList<>();
-
-        resultMap.values().forEach((p) -> {
-            if (fileMap.containsKey(p.getUuid())) {
-                try {
-                    byte[] bytes = ImageUtils.bufferedImageToByteArray(ImageIO.read(fileMap.get(p.getUuid())));
-                    PersonCoordinate result = new PersonCoordinate(p, bytes);
-                    results.add(result);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });
-
-        return results;
-
-    }
-
-
     public List<PersonCoordinate> getRealtimePhotosAll() {
-
         //TODO: Need to identify dead trackers here
 
         //        final ArrayList<PersonCoordinate> results = new ArrayList<>();
@@ -290,13 +96,8 @@ public class AnalyticsService implements ProcessedMapListener {
         //                hay.get(0).getIds().stream().findFirst().equals(pin.getIds().stream().findFirst())
         //            ).count()>0
         //        ).forEach(results::add);
-        return photoMapper.getLatestSnapshots();
+        return Collections.emptyList();
     }
-
-    public List<PersonCoordinate> getRealtimePhotos(int trackingId) {
-        return photoMapper.getSnapshots(trackingId);
-    }
-
 
     public Map<String, byte[]> getMap() throws IOException {
         BufferedImage map = configurationManager.getMap();
@@ -352,48 +153,6 @@ public class AnalyticsService implements ProcessedMapListener {
     public int getCount(long fromTimestamp, long toTimestamp) {
         List<Integer> ids = getPeopleIds(fromTimestamp, toTimestamp);
         return ids.size();
-    }
-
-    public List<TimelineZone> getTimelineZonesFromTrackId(int trackId, int segmentId, boolean useSegment) {
-        List<Person> persons = personDAO.getZoneSwitchPersons(trackId, segmentId, useSegment);
-
-        Person lastPerson = personDAO.getTrackEnd(trackId, segmentId, useSegment);
-        persons.add(lastPerson);
-
-        Person firstPerson = personDAO.getTrackStart(trackId, segmentId, useSegment);
-
-        //System.out.println("First" + firstPerson.getUuid());
-        if (persons.stream().filter((t) -> Objects.equals(t.getUuid(), firstPerson.getUuid())).count() == 0) {
-            persons.add(0, firstPerson);
-        }
-
-        List<Zone> zones = zoneDAO.list();
-
-        final HashMap<Integer, Zone> zoneMap = new LinkedHashMap<>();
-        zones.forEach((v) -> zoneMap.put(v.getId(), v));
-
-        final List<TimelineZone> results = new ArrayList<>();
-
-        if (persons.size() > 1) {
-            for (int i = 0; i < persons.size() - 1; i++) {
-                Person prev = persons.get(i);
-                Person next = persons.get(i + 1);
-
-                TimelineZone timelineZone = new TimelineZone(next, zoneMap.get(prev.getPersistentZone().getId()),
-                        prev.getTimestamp().getTime(), next.getTimestamp().getTime());
-                results.add(timelineZone);
-            }
-        } else {
-            Person prev = persons.get(0);
-            Person next = persons.get(0);
-
-            TimelineZone timelineZone = new TimelineZone(next, zoneMap.get(prev.getPersistentZone().getId()),
-                    prev.getTimestamp().getTime() - 500, next.getTimestamp().getTime() + 500);
-            results.add(timelineZone);
-        }
-
-        return results;
-
     }
 
     public HashMap<Double, Integer> getOverallVelocityFrequency(Date startDate, Date endDate, long timeInterval, boolean segmented, int basketCount) {
@@ -470,19 +229,18 @@ public class AnalyticsService implements ProcessedMapListener {
         while (i < stopIndex) {
             //find the bounds for time interval in each person
             int i_p = i;
-            int personId = persons.get(i_p).getIds().iterator().next();
-            int segmentId = persons.get(i_p).getTrackSegmentIndex();
-            while ((i_p < stopIndex) && (persons.get(i_p).getIds().iterator().next() == personId) && (!segmented || persons.get(i_p).getTrackSegmentIndex() == segmentId)) {
+            int personId = persons.get(i_p).getId();
+            while ((i_p < stopIndex) && (persons.get(i_p).getId() == personId) && (!segmented)) {
                 long personStartTime = persons.get(i_p).getTimestamp().getTime();
 
                 int i_t_start = i_p;
                 //now identify the time intervals
-                while ((i_t_start < stopIndex) && (persons.get(i_t_start).getIds().iterator().next() == personId) && (!segmented || persons.get(i_t_start).getTrackSegmentIndex() == segmentId)) {
+                while (i_t_start < stopIndex && persons.get(i_t_start).getId() == personId) {
                     long frameStartTime = persons.get(i_t_start).getTimestamp().getTime();
 
                     // identify time intervals bounds
                     int i_t = i_t_start;
-                    while ((i_t < stopIndex) && (persons.get(i_t).getIds().iterator().next() == personId && (!segmented || persons.get(i_t).getTrackSegmentIndex() == segmentId))) {
+                    while ((i_t < stopIndex) && (persons.get(i_t).getId() == personId)) {
                         if (persons.get(i_t).getTimestamp().getTime() - frameStartTime < timeInterval) {
                             i_t++;
                         } else {
@@ -567,7 +325,7 @@ public class AnalyticsService implements ProcessedMapListener {
             Iterator<Person> iter = idSet.iterator();
             while (iter.hasNext()) {                                      // Go through all the rows
                 Person person = iter.next();
-                if (person.getIds().iterator().next() == id) {            // Select relevant rows to relevant ids
+                if (person.getId() == id) {            // Select relevant rows to relevant ids
                     temp.add(person);                                     // Add rows to relevant id to temp array
                 }
             }
@@ -634,8 +392,8 @@ public class AnalyticsService implements ProcessedMapListener {
     /**
      * Provides unique ids of people in the given time period
      *
-     * @param fromTimestamp
-     * @param toTimestamp
+     * @param fromTimestamp from
+     * @param toTimestamp   to
      * @return Unique ids of persons
      */
     private ArrayList<Integer> getPeopleIds(long fromTimestamp, long toTimestamp) {
@@ -643,14 +401,10 @@ public class AnalyticsService implements ProcessedMapListener {
         Date to = new Date(toTimestamp);
         Set<Integer> idSet = new HashSet<>();
         List<Person> people = personDAO.list(from, to);
-        for (Person person : people) {
-            Set<Integer> set = person.getIds();
-            Iterator itr = set.iterator();
-            while (itr.hasNext()) {
-                idSet.add((Integer) itr.next());
-            }
-        }
-        return new ArrayList<Integer>(idSet);
+        people.forEach(person -> {
+            idSet.add(person.getId());
+        });
+        return new ArrayList<>(idSet);
     }
 
     public void setPersonDAO(PersonDAO personDAO) {
@@ -739,7 +493,6 @@ public class AnalyticsService implements ProcessedMapListener {
 
         CameraGroup cameraGroup = cameraConfigDAO.findCameraGroupById(cameraGroupId);
         List<Zone> zones = cameraGroup.getZones();
-        long timeStampCount = captureStampDAO.getCaptureStampCount(from, to);
 
         Map<Integer, Long> zonePeopleCountMap = new HashMap<>();
         Map<Integer, Long> zoneStandCountMap = new HashMap<>();
@@ -785,16 +538,16 @@ public class AnalyticsService implements ProcessedMapListener {
 
             if (zone.getId() != 0) {
                 if (zonePeopleCountMap.containsKey(zone.getId()))
-                    statistic.setAveragePersonCount((double) zonePeopleCountMap.get(zone.getId()) / (double) timeStampCount);
+                    statistic.setAveragePersonCount((double) zonePeopleCountMap.get(zone.getId()) / (double) totalPeopleCount);
 
                 if (zoneSitCountMap.containsKey(zone.getId()))
-                    statistic.setAverageSittingCount((double) zoneSitCountMap.get(zone.getId()) / (double) timeStampCount);
+                    statistic.setAverageSittingCount((double) zoneSitCountMap.get(zone.getId()) / (double) totalPeopleCount);
 
                 if (zoneStandCountMap.containsKey(zone.getId()))
-                    statistic.setAverageStandingCount((double) zoneStandCountMap.get(zone.getId()) / (double) timeStampCount);
+                    statistic.setAverageStandingCount((double) zoneStandCountMap.get(zone.getId()) / (double) totalPeopleCount);
 
                 if (zoneUnclassifiedCountMap.containsKey(zone.getId()))
-                    statistic.setAverageUnclassifiedPoseCount((double) zoneUnclassifiedCountMap.get(zone.getId()) / (double) timeStampCount);
+                    statistic.setAverageUnclassifiedPoseCount((double) zoneUnclassifiedCountMap.get(zone.getId()) / (double) totalPeopleCount);
 
                 if (totalCountVariation.containsKey(zone.getId()))
                     statistic.setTotalCountVariation(totalCountVariation.get(zone.getId()));
@@ -806,10 +559,10 @@ public class AnalyticsService implements ProcessedMapListener {
                     statistic.setTotalSittingCountVariation(totalSittingCountVariation.get(zone.getId()));
             } else {
                 //For the world, statistics need to be separately calculated
-                statistic.setAveragePersonCount((double) totalPeopleCount / (double) timeStampCount);
-                statistic.setAverageStandingCount((double) totalStandingCount / (double) timeStampCount);
-                statistic.setAverageSittingCount((double) totalSittingCount / (double) timeStampCount);
-                statistic.setAverageUnclassifiedPoseCount((double) totalUnclassifiedCount / (double) timeStampCount);
+                statistic.setAveragePersonCount((double) totalPeopleCount / (double) totalPeopleCount);
+                statistic.setAverageStandingCount((double) totalStandingCount / (double) totalPeopleCount);
+                statistic.setAverageSittingCount((double) totalSittingCount / (double) totalPeopleCount);
+                statistic.setAverageUnclassifiedPoseCount((double) totalUnclassifiedCount / (double) totalPeopleCount);
 
                 statistic.setTotalCountVariation(getTotalCountVariation(fromTimestamp, toTimestamp, 20, ""));
                 statistic.setTotalSittingCountVariation(getTotalCountVariation(fromTimestamp, toTimestamp, 20, "and P.sitProbability >= 1 "));
@@ -830,13 +583,14 @@ public class AnalyticsService implements ProcessedMapListener {
 
             final long[] totalIncomming = {0};
             Map<Integer, Long> incommingCounts = new HashMap<>();
-            crossCounts.stream().filter(crossing -> crossing[1] != null && (int) crossing[1] == zone.getId() && crossing[0] != crossing[1]).forEach(crossing -> {
-                totalIncomming[0] += (long) crossing[2];
-                if (crossing[0] != null)
-                    incommingCounts.put((int) crossing[0], (long) crossing[2]);
-                else
-                    incommingCounts.put(-1, (long) crossing[2]);
-            });
+            crossCounts.stream().filter(crossing -> crossing[1] != null && (int) crossing[1] == zone.getId() && crossing[0] != crossing[1])
+                    .forEach(crossing -> {
+                        totalIncomming[0] += (long) crossing[2];
+                        if (crossing[0] != null)
+                            incommingCounts.put((int) crossing[0], (long) crossing[2]);
+                        else
+                            incommingCounts.put(-1, (long) crossing[2]);
+                    });
 
             statistic.setIncomingMap(incommingCounts);
 
@@ -846,14 +600,6 @@ public class AnalyticsService implements ProcessedMapListener {
             results.add(statistic);
         }
         return results;
-    }
-
-    public PhotoMapper getPhotoMapper() {
-        return photoMapper;
-    }
-
-    public void setPhotoMapper(PhotoMapper photoMapper) {
-        this.photoMapper = photoMapper;
     }
 
     public void setCaptureStampDAO(CaptureStampDAO captureStampDAO) {

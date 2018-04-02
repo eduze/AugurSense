@@ -19,12 +19,8 @@
 
 package org.eduze.fyp.api.model;
 
-import org.eduze.fyp.api.model.helpers.PersonIdConverter;
-
 import javax.persistence.*;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "persons")
@@ -39,14 +35,6 @@ public class Person {
     @Column(name = "time_stamp")
     private Date timestamp;
 
-    @Convert(converter = PersonIdConverter.class)
-    private Set<Integer> ids;
-
-    private int trackSegmentIndex;
-
-    private String uuid;
-    private String previousUuid;
-
     private double x;
     private double y;
 
@@ -57,6 +45,13 @@ public class Person {
     @ManyToOne
     private Zone pastPersistentZone;
 
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] image;
+
+    @Column(nullable = false)
+    private int personId;
+
     private double sitProbability;
     private double standProbability;
 
@@ -65,19 +60,16 @@ public class Person {
 
     protected Person() { }
 
-    public Person(Date timestamp, Set<Integer> ids, int trackSegmentIndex, String uuid, String previousUuid,
-            double x, double y, Zone instantZone, Zone persistentZone, Zone pastPersistentZone, double sitProbability,
-            double standProbability, double headDirectionX, double headDirectionY) {
+    public Person(Date timestamp, double x, double y, Zone instantZone, Zone persistentZone, Zone pastPersistentZone,
+            byte[] image, int personId, double sitProbability, double standProbability, double headDirectionX, double headDirectionY) {
         this.timestamp = timestamp;
-        this.ids = ids;
-        this.trackSegmentIndex = trackSegmentIndex;
-        this.uuid = uuid;
-        this.previousUuid = previousUuid;
         this.x = x;
         this.y = y;
         this.instantZone = instantZone;
         this.persistentZone = persistentZone;
         this.pastPersistentZone = pastPersistentZone;
+        this.image = image;
+        this.personId = personId;
         this.sitProbability = sitProbability;
         this.standProbability = standProbability;
         this.headDirectionX = headDirectionX;
@@ -116,34 +108,6 @@ public class Person {
         this.y = y;
     }
 
-    public Set<Integer> getIds() {
-        return ids;
-    }
-
-    public void setIds(Set<Integer> ids) {
-        this.ids = new HashSet<>(ids);
-    }
-
-    public int getTrackSegmentIndex() {
-        return trackSegmentIndex;
-    }
-
-    public void setTrackSegmentIndex(int trackSegmentIndex) {
-        this.trackSegmentIndex = trackSegmentIndex;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
-
-    public String getPreviousUuid() {
-        return previousUuid;
-    }
-
-    public void setPreviousUuid(String previousUuid) {
-        this.previousUuid = previousUuid;
-    }
-
     public void setHeadDirectionY(double headDirectionY) {
         this.headDirectionY = headDirectionY;
     }
@@ -176,10 +140,6 @@ public class Person {
         return headDirectionX;
     }
 
-    public String getUuid() {
-        return uuid;
-    }
-
     public Zone getInstantZone() {
         return instantZone;
     }
@@ -202,6 +162,22 @@ public class Person {
 
     public void setPastPersistentZone(Zone pastPersistentZone) {
         this.pastPersistentZone = pastPersistentZone;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
+    }
+
+    public int getPersonId() {
+        return personId;
+    }
+
+    public void setPersonId(int personId) {
+        this.personId = personId;
     }
 }
 

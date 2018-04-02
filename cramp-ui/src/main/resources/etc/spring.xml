@@ -120,7 +120,6 @@
     <!-- Analytics Controller -->
     <bean id="analytics-controller" class="org.eduze.fyp.web.controllers.AnalyticsController">
         <constructor-arg ref="analytics-service"/>
-        <property name="reIDSearchService" ref="reID-search-service"/>
         <property name="directionAnalyticsService" ref="direction-analytics-service"/>
     </bean>
 
@@ -141,10 +140,4 @@
         <property name="captureStampDAO" ref="captureStampDAO"/>
         <property name="configurationManager" ref="configuration-manager"/>
     </bean>
-
-    <bean id="reID-search-service" class="org.eduze.fyp.web.services.ReIDSearchService">
-        <constructor-arg value="CRAMP_re_id"/>
-        <property name="personDAO" ref="personDAO"/>
-    </bean>
-
 </beans>

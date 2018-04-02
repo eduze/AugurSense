@@ -24,12 +24,6 @@ package org.eduze.fyp.api.resources;
 public class Coordinate extends Point {
 
     private long timestamp;
-    private double standProbability = 0;
-
-    private double sitProbability = 0;
-
-    private double headDirectionY = 0;
-    private double headDirectionX = 0;
 
     public Coordinate() {
         super(0, 0);
@@ -40,53 +34,11 @@ public class Coordinate extends Point {
         this.timestamp = timestamp;
     }
 
-    public Coordinate(double x, double y, long timestamp, double sitProbability, double standProbability, double headDirectionX, double headDirectionY) {
-        super(x, y);
-        this.timestamp = timestamp;
-        this.headDirectionX = headDirectionX;
-        this.headDirectionY = headDirectionY;
-        this.sitProbability = sitProbability;
-        this.standProbability = standProbability;
-    }
-
     public long getTimestamp() {
         return timestamp;
     }
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public double getHeadDirectionX() {
-        return headDirectionX;
-    }
-
-    public double getHeadDirectionY() {
-        return headDirectionY;
-    }
-
-
-    public double getSitProbability() {
-        return sitProbability;
-    }
-
-    public double getStandProbability() {
-        return standProbability;
-    }
-
-    public void setHeadDirectionX(double headDirectionX) {
-        this.headDirectionX = headDirectionX;
-    }
-
-    public void setHeadDirectionY(double headDirectionY) {
-        this.headDirectionY = headDirectionY;
-    }
-
-    public void setSitProbability(double sitProbability) {
-        this.sitProbability = sitProbability;
-    }
-
-    public void setStandProbability(double standProbability) {
-        this.standProbability = standProbability;
     }
 }

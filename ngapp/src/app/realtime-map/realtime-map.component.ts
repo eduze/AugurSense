@@ -5,7 +5,7 @@ import {PersonSnapshot} from '../resources/person-snapshot';
 import {Observable} from 'rxjs/Rx';
 import {PersonImage} from '../resources/person-image';
 import {CameraGroup} from '../resources/camera-group';
-import {Subscription} from "rxjs/Subscription";
+import {Subscription} from 'rxjs/Subscription';
 
 @Component({
   selector: 'app-realtime-map',
@@ -43,11 +43,9 @@ export class RealtimeMapComponent implements OnInit, OnDestroy {
   }
 
   personClicked(person: PersonImage): void {
-    if (person.ids.length > 0) {
-      this.selectedTrackIndex = person.ids[0];
-      this.showAllInInfo = false;
-    }
-    console.log('Person clicked' + person.ids[0].toString());
+    this.selectedTrackIndex = person.id;
+    this.showAllInInfo = false;
+    console.log('Person clicked' + person.id.toString());
   }
 
   private backgroundClicked(): void {
@@ -56,11 +54,9 @@ export class RealtimeMapComponent implements OnInit, OnDestroy {
   }
 
   private trackClicked(track: PersonSnapshot[]): void {
-    if (track[0].ids.length > 0) {
-      this.selectedTrackIndex = track[0].ids[0];
-      this.showAllInInfo = false;
-    }
-    console.log('Track clicked' + track[0].ids[0].toString());
+    this.selectedTrackIndex = track[0].id;
+    this.showAllInInfo = false;
+    console.log('Track clicked' + track[0].id.toString());
     console.log(track);
   }
 
@@ -70,7 +66,8 @@ export class RealtimeMapComponent implements OnInit, OnDestroy {
     this.analyticsService.getRealTimeMap(this.cameraGroup.id)
       .then(ps => {
         ps.forEach((item) => {
-          item[0]['colour'] = RealtimeMapComponent.getColour(item[0].ids[0]);
+          console.log(item);
+          item[0]['colour'] = RealtimeMapComponent.getColour(item[0].id);
           item[0]['standSitColour'] = RealtimeMapComponent.getStandSitColour(item[0]);
         });
 

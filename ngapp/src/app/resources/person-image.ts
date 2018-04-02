@@ -8,7 +8,7 @@ export class PersonImage {
   headDirectionY: number;
   image: string;
   uuid: string;
-  ids: number[];
+  id: number;
   trackSegmentIndex: number;
   height: number;
   width: number;

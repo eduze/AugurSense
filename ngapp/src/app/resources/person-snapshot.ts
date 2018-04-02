@@ -18,7 +18,7 @@
  */
 
 export class PersonSnapshot {
-  ids: number[];
+  id: number;
   timestamp: number;
   x: number;
   y: number;
@@ -29,12 +29,8 @@ export class PersonSnapshot {
   sitProbability: number;
   headDirectionX: number;
   headDirectionY: number;
-  uuid: string;
-  previousUuid: string;
-  trackSegmentIndex: number;
   colour: string;
   standSitColour: string;
-
 }
 
 

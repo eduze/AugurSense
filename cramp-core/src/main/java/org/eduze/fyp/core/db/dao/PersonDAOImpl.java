@@ -82,9 +82,9 @@ public class PersonDAOImpl extends AbstractDAOImpl implements PersonDAO {
         Session session = this.sessionFactory.openSession();
         Query q = null;
         if (segmented) {
-            q = session.createQuery("from Person P WHERE P.timestamp between :startTime and :endTime and persistantZoneId = :zoneId order by P.ids, P.trackSegmentIndex, P.id asc");
+            q = session.createQuery("from Person P WHERE P.timestamp between :startTime and :endTime and persistantZoneId = :zoneId order by P.id, P.trackSegmentIndex asc");
         } else {
-            q = q = session.createQuery("from Person P WHERE P.timestamp between :startTime and :endTime and persistantZoneId = :zoneId order by P.ids, P.id asc");
+            q = q = session.createQuery("from Person P WHERE P.timestamp between :startTime and :endTime and persistantZoneId = :zoneId order by P.id asc");
         }
         q.setParameter("startTime", from, TemporalType.TIMESTAMP).setParameter("endTime", to, TemporalType.TIMESTAMP)
                 .setParameter("zoneId", zoneId, IntegerType.INSTANCE);
@@ -257,7 +257,7 @@ public class PersonDAOImpl extends AbstractDAOImpl implements PersonDAO {
     @Override
     public List<Object[]> getZonePersonCountVariation(Date from, Date to, String additionalVariation) {
         Session session = this.sessionFactory.openSession();
-        Query query = session.createQuery("select P.timestamp, P.instantZone, count(P.uuid) as p_count," +
+        Query query = session.createQuery("select P.timestamp, P.instantZone, count(P.id) as p_count," +
                 " (select count(T.timestamp) from CaptureStamp T where T.timestamp = P.timestamp) as t_count from " +
                 "Person P where P.timestamp between :startTime and :endTime " + additionalVariation + " group by P.instantZone, P.timestamp")
                 .setParameter("startTime", from, TemporalType.TIMESTAMP)
