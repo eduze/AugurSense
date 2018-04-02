@@ -1,182 +1,24 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {PersonSnapshot} from '../resources/person-snapshot';
-import {GlobalMap} from '../resources/global-map';
-import {AnalyticsService} from '../services/analytics.service';
+import {Component, OnInit} from '@angular/core';
 import {ConfigService} from '../services/config.service';
-import {PersonImage} from '../resources/person-image';
+import {CameraGroup} from "../resources/camera-group";
 
 @Component({
   selector: 'app-time-bound-map',
-  templateUrl: './time-bound-map.component.html',
-  styleUrls: ['./time-bound-map.component.css']
+  templateUrl: './time-bound-map.component.html'
 })
 export class TimeBoundMapComponent implements OnInit {
 
-  private _startTime: Date;
-  private _endTime: Date;
+  cameraGroups: CameraGroup[];
+  active: CameraGroup;
 
-  private _secondRange: number[] = [0, 60];
-  private personSnapshots: PersonSnapshot[][] = [[]];
-  globalMap: GlobalMap;
-
-  private _selectedTrackIndex = -1;
-  private _selectedSegmentIndex = -1;
-
-  constructor(private analyticsService: AnalyticsService, private configService: ConfigService) {
-    this.endTime = new Date();
-    this.startTime = new Date();
-    this.startTime.setDate(this.startTime.getDate() - 7);
-  }
-
-  get selectedSegmentIndex(): number {
-    return this._selectedSegmentIndex;
-  }
-
-  set selectedSegmentIndex(value: number) {
-    this._selectedSegmentIndex = value;
-  }
-
-  get useTrackSegments(): boolean {
-    return this._useTrackSegments;
-  }
-
-  set useTrackSegments(value: boolean) {
-    this._useTrackSegments = value;
-    this.refresh();
-  }
-
-  get selectedTrackIndex(): number {
-    return this._selectedTrackIndex;
-  }
-
-
-  private _useTrackSegments = false;
-
-
-  set selectedTrackIndex(value: number) {
-    this._selectedTrackIndex = value;
-  }
-
-  get secondRange(): number[] {
-    return this._secondRange;
-  }
-
-  set secondRange(value: number[]) {
-    this._secondRange = value;
-    this.refresh();
-  }
-
-  get startTime(): Date {
-    return this._startTime;
-  }
-
-  @Input()
-  set startTime(value: Date) {
-    this._startTime = value;
-    this.refresh();
-  }
-
-  get endTime(): Date {
-    return this._endTime;
-  }
-
-  @Input()
-  set endTime(value: Date) {
-    this._endTime = value;
-    this.refresh();
-  }
-
-  private getColour(index: number): string {
-    return 'rgb(' + Math.round(((index / 256 / 256) * 40) % 256).toString() + ',' + Math.round(((index / 256) * 40) % 256).toString()
-      + ',' + Math.round((index * 40) % 256).toString() + ')';
-  }
-
-  private getStandSitColour(person: PersonSnapshot): string {
-    const standCol = Math.round(person.standProbability * 255);
-    const sitCol = Math.round(person.sitProbability * 255);
-
-    return 'rgb(' + standCol.toString() + ', ' + sitCol.toString() + ',255 )';
-  }
-
-  private get from(): number {
-    if (this.startTime == null || this.secondRange[0] == null) {
-      return null;
-    }
-    return this.startTime.getTime() + this.secondRange[0] * 1000;
-  }
-
-  private get to(): number {
-    if (this.endTime == null || this.secondRange[1] == null) {
-      return null;
-    }
-    return this.endTime.getTime() + this.secondRange[1] * 1000;
-  }
-
-  private backgroundClicked(): void {
-    this.selectedTrackIndex = -1;
-  }
-
-  private isSelected(p: PersonSnapshot): boolean {
-    if (p.ids.length === 0) {
-      return false;
-    }
-
-    if (!this.useTrackSegments) {
-      return p.ids[0] === this.selectedTrackIndex;
-    } else {
-      return p.ids[0] === this.selectedTrackIndex && p.trackSegmentIndex == this.selectedSegmentIndex;
-    }
-  }
-
-  private trackClicked(track: PersonSnapshot[]): void {
-    if (track[0].ids.length > 0) {
-      this.selectedTrackIndex = track[0].ids[0];
-      this.selectedSegmentIndex = track[0].trackSegmentIndex;
-    }
-    console.log('Track clicked' + track[0].ids[0].toString());
-    console.log(track);
-  }
-
-  private refresh(): void {
-
-    if (this.startTime == null) {
-      return;
-    }
-
-    if (this.endTime == null) {
-      return;
-    }
-
-    this.analyticsService.getTimeboundMap(this.from, this.to, this.useTrackSegments)
-      .then(ps => {
-        this.personSnapshots = ps;
-        ps.forEach((item) => {
-          item.reverse();
-          item[0]['colour'] = this.getColour(item[0].ids[0]);
-          item[0]['standSitColour'] = this.getStandSitColour(item[0]);
-        });
-        // console.log(this.personSnapshots);
-        // this.drawOnCanvas(personSnapshots);
-      })
-      .catch(reason => console.log(reason));
-
-  }
-
-  personClicked(person: PersonImage): void {
-    if (person.ids.length > 0) {
-      this.selectedTrackIndex = person.ids[0];
-      this.selectedSegmentIndex = person.trackSegmentIndex;
-      console.log('Track Segment Index: ' + person.trackSegmentIndex);
-    }
-    console.log('Person clicked' + person.ids[0].toString());
+  constructor(private configService: ConfigService) {
   }
 
   ngOnInit() {
-    this.configService.getMap().then((globalMap) => {
-      this.globalMap = globalMap;
-      console.log(this.globalMap);
-    });
-    this.refresh();
+    this.configService.getCameraGroups()
+      .then(groups => {
+        this.cameraGroups = groups;
+        this.active = groups[0];
+      });
   }
-
 }

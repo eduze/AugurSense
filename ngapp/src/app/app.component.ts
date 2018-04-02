@@ -34,6 +34,11 @@ export class AppComponent {
       icon: 'tachometer'
     },
     {
+      route: '/time-line',
+      name: 'Time Line',
+      icon: 'tachometer'
+    },
+    {
       route: '/zones',
       name: 'Zones',
       icon: 'terminal'

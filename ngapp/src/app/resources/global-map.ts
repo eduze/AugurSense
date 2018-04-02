@@ -34,8 +34,8 @@ export class GlobalMap {
     img.src = image;
   }
 
-  public static fromJSON(image: string) {
-    return new GlobalMap('data:image/png;base64,' + image);
+  public static fromJSON(image: string, type: string = 'png') {
+    return new GlobalMap(`data:image/${type};base64,${image}`);
   }
 
   public toJSON() {

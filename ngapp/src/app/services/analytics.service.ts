@@ -111,24 +111,28 @@ export class AnalyticsService {
             };
             img.src = base64;
             obj['image'] = base64;
-
           });
-
         }
         return status;
       })
       .catch(AnalyticsService.handleError);
   }
 
-  getTimeboundMap(from: number, to: number, useTrackSegments: boolean): Promise<PersonSnapshot[][]> {
-    let url = this.baseUrl + 'timeBoundMap/' + from + '/' + to;
-    if (useTrackSegments) {
-      url += '/trackSegmented';
-    }
+  getTimeboundMap(cameraGroupId: number, from: number, to: number): Promise<PersonSnapshot[][]> {
+    const url = `${this.baseUrl}timeBoundMap/${cameraGroupId}/${from}/${to}`;
     return this.http.get(url)
       .toPromise()
       .then(response => {
-        return response as PersonSnapshot[][];
+        const people = response as PersonSnapshot[][];
+        const results: PersonSnapshot[][] = [];
+        for (const person of people) {
+          const snaps = [];
+          for (const snap of person) {
+            snaps.push(PersonSnapshot.fromJSON(snap));
+          }
+          results.push(snaps);
+        }
+        return results;
       })
       .catch(AnalyticsService.handleError);
   }
@@ -137,7 +141,7 @@ export class AnalyticsService {
     return this.http.get(`${this.baseUrl}zoneStatistics/${cameraGroupId}/${from}/${to}`)
       .toPromise()
       .then(response => {
-        console.debug(response);
+        console.log(response);
         return response as ZoneStatistic[];
       })
       .catch(AnalyticsService.handleError);
@@ -145,7 +149,7 @@ export class AnalyticsService {
 
 
   private static getZoneColour(index: number): string {
-    //return "rgb(" + Math.round(((index / 256 / 256) * 80) % 256).toString() + "," + Math.round(((index / 256) * 80) % 256).toString() + "," + Math.round((index * 80) % 256).toString() + ")";
+    // return "rgb(" + Math.round(((index / 256 / 256) * 80) % 256).toString() + "," + Math.round(((index / 256) * 80) % 256).toString() + "," + Math.round((index * 80) % 256).toString() + ")";
     const colours = ['#c0392b', '#f1c40f', '#16a085', '#2980b9', '#34495e', '#9b59b5', '#2cee91', '#171796', '#fec3fc', '#8e44ad'];
     return colours[index % colours.length];
   }
@@ -170,7 +174,7 @@ export class AnalyticsService {
         result.timelineZones = results;
         if (results.length > 0) {
           result.person = results[0].person;
-          result.label = results[0].person.ids[0].toString();
+          result.label = results[0].person.id.toString();
         }
 
 

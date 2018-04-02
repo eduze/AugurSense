@@ -43,6 +43,10 @@ export class Zone {
   }
 
   public static fromJSON(obj: any): Zone {
+    if (!obj) {
+      return null;
+    }
+
     return new Zone(obj.id, obj.zoneName, obj.xCoordinates, obj.yCoordinates, obj.zoneLimit,
       CameraGroup.fromJSON(obj.cameraGroup));
   }

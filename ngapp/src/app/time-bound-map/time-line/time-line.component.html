@@ -1,0 +1,93 @@
+<div class="box box-default">
+  <div class="box-header with-border">
+    <h3 class="box-title">
+      {{cameraGroup.name}}
+    </h3>
+    <div class="box-tools pull-right">
+      <span class="badge">{{personSnapshots.length}}</span> people
+    </div>
+  </div>
+  <div class="box-body">
+    <div class="form-horizontal container-fluid">
+      <div class="form-group">
+        <label class="col-md-1 col-sm-3 col-xs-12">From</label>
+        <p-calendar [(ngModel)]="startTime" [showTime]="true" class="col-md-11 col-sm-9 col-xs-12"></p-calendar>
+      </div>
+      <div class="form-group">
+        <label class="col-md-1 col-sm-3 col-xs-12">To</label>
+        <p-calendar [(ngModel)]="endTime" [showTime]="true" class="col-md-11 col-sm-9 xol-xs-12"></p-calendar>
+      </div>
+      <div class="form-group">
+        <p-checkbox [(ngModel)]="useTrackSegments" binary="true" value="UseTrackSegments"
+                    label="Use Track Segments"
+                    class="col-md-offset-1 col-sm-offset-3 col-md-11 col-sm-9"></p-checkbox>
+      </div>
+    </div>
+
+    <div class="row container-fluid">
+      <p-slider [(ngModel)]="secondRange" [range]="true" [min]="0" [max]="300" [step]="1"></p-slider>
+      <p>From {{ from | date:'medium' }} to {{ to | date:'medium' }}</p>
+    </div>
+
+    <div class="row" *ngIf="cameraGroup">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <svg x="0" y="0" [attr.width]="cameraGroup.map.width" [attr.height]="cameraGroup.map.height"
+             class="center-block">
+
+          <image [attr.xlink:href]="cameraGroup.map.image" x="0" y="0" (click)="backgroundClicked();"></image>
+
+          <g *ngFor="let personTrack of personSnapshots" (click)="trackClicked(personTrack);">
+            <g *ngIf="personTrack[0] != null">
+              <g *ngIf="!isSelected(personTrack[0])">
+                <circle [attr.fill]="personTrack[0].colour" r="5" [attr.cx]="personTrack[0].x"
+                        [attr.cy]="personTrack[0].y"></circle>
+              </g>
+              <g *ngIf="isSelected(personTrack[0])">
+                <circle fill="gold" r="5" [attr.cx]="personTrack[0].x" [attr.cy]="personTrack[0].y"></circle>
+              </g>
+
+              <g *ngIf="!isSelected(personTrack[0])">
+                <line [attr.stroke]="personTrack[0].colour" stroke-width="2"
+                      *ngFor="let person of personTrack | slice : 1; let i = index" [attr.x1]="personTrack[i].x"
+                      [attr.y1]="personTrack[i].y" [attr.x2]="personTrack[i+1].x"
+                      [attr.y2]="personTrack[i+1].y"></line>
+              </g>
+              <g *ngIf="isSelected(personTrack[0])">
+                <line stroke="gold" stroke-width="2" *ngFor="let person of personTrack | slice : 1; let i = index"
+                      [attr.x1]="personTrack[i].x" [attr.y1]="personTrack[i].y" [attr.x2]="personTrack[i+1].x"
+                      [attr.y2]="personTrack[i+1].y"></line>
+              </g>
+
+              <line [attr.x1]="personTrack[0].x" [attr.y1]="personTrack[0].y"
+                    [attr.x2]="personTrack[0].x + personTrack[0].headDirectionX * 10"
+                    [attr.y2]="personTrack[0].y + personTrack[0].headDirectionY * 10"
+                    [attr.stroke]="personTrack[0].standSitColour" stroke-width="2"
+                    *ngIf="personTrack[0]['headDirectionX'] != null && personTrack[0]['headDirectionY'] != null"></line>
+
+            </g>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-md-12 col-sm-12" *ngIf="selectedTrack">
+  <div class="col-md-1" *ngFor="let snap of selectedTrack">
+    <div class="row">
+      <img [src]="snap.image.image" class="img-responsive center-block">
+    </div>
+    <div class="row">
+      <p>{{snap.timestamp|date:'medium'}}</p>
+    </div>
+  </div>
+  <!--<mat-card>-->
+  <!--<mat-card-title>Track Details</mat-card-title>-->
+  <!--<mat-card-content>-->
+  <!--<app-realtime-info [useRealtimeEndpoint]="false" [showAll]="selectedTrackIndex==-1" [id]="selectedTrackIndex"-->
+  <!--[reIDOnClick]="selectedTrackIndex!=-1" [from]="from" [to]="to"-->
+  <!--[useTrackSegment]="useTrackSegments" [segmentIndex]="selectedSegmentIndex"-->
+  <!--(personClicked)="personClicked($event)"></app-realtime-info>-->
+  <!--</mat-card-content>-->
+  <!--</mat-card>-->
+</div>

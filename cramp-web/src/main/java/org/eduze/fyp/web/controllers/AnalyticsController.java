@@ -190,13 +190,15 @@ public class AnalyticsController {
     }
 
     @GET
-    @Path("/timeBoundMap/{from}/{to}")
-    public Response getTimeboundMap(@PathParam("from") long from, @PathParam("to") long to) {
+    @Path("/timeBoundMap/{cameraGroupId}/{from}/{to}")
+    public Response getTimeBoundMap(@PathParam("cameraGroupId") int cameraGroupId,
+            @PathParam("from") long from,
+            @PathParam("to") long to) {
         try {
             Date fromD = new Date(from);
             Date toD = new Date(to);
 
-            return Response.ok(analyticsService.getTimeBoundMovements(fromD, toD, false)).build();
+            return Response.ok(analyticsService.getTimeBoundMovements(cameraGroupId, fromD, toD, false)).build();
         } catch (Exception e) {
             logger.error("Error occurred when obtaining real time map. {}", e);
             return Response.status(500).build();
@@ -204,13 +206,14 @@ public class AnalyticsController {
     }
 
     @GET
-    @Path("/timeBoundMap/{from}/{to}/trackSegmented")
-    public Response getTimeboundMapWithSegments(@PathParam("from") long from, @PathParam("to") long to) {
+    @Path("/timeBoundMap/{cameraGroupId}/{from}/{to}/trackSegmented")
+    public Response getTimeBoundMapWithSegments(@PathParam("cameraGroupId") int cameraGroupId,
+            @PathParam("from") long from,
+            @PathParam("to") long to) {
         try {
             Date fromD = new Date(from);
             Date toD = new Date(to);
-
-            return Response.ok(analyticsService.getTimeBoundMovements(fromD, toD, true)).build();
+            return Response.ok(analyticsService.getTimeBoundMovements(cameraGroupId, fromD, toD, true)).build();
         } catch (Exception e) {
             logger.error("Error occurred when obtaining real time map. {}", e);
             return Response.status(500).build();

@@ -46,6 +46,7 @@ import {SuccessMessageComponent} from './helpers/success-message/success-message
 import {ZoneUiComponent} from './settings/zones-config/zone-ui/zone-ui.component';
 import {ZoneComponent} from "./zones/zone/zone.component";
 import {HeatmapComponent} from "./heatmaps/heatmap/heatmap.component";
+import {TimeLineComponent} from "./time-bound-map/time-line/time-line.component";
 
 
 @NgModule({
@@ -61,10 +62,12 @@ import {HeatmapComponent} from "./heatmaps/heatmap/heatmap.component";
     ZonesComponent,
     ZoneComponent,
     ZoneInfoComponent,
+    /* Timelines */
     RealtimeMapComponent,
     RealtimeInfoComponent,
-    PersonStopPointsComponent,
     TimeBoundMapComponent,
+    TimeLineComponent,
+    PersonStopPointsComponent,
     ReIdComponent,
     TimelineComponent,
     TimeVelocityDistributionComponent,

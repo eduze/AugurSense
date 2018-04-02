@@ -60,31 +60,20 @@ public class AnalyticsService implements ProcessedMapListener {
 
     public AnalyticsService() { }
 
-    public List<List<Person>> getTimeBoundMovements(Date start, Date end, boolean useSegmentIndex) {
-        List<Person> candidates = personDAO.list(start, end);
+    public List<List<Person>> getTimeBoundMovements(int cameraGroupId, Date start, Date end, boolean useSegmentIndex) {
+        CameraGroup cameraGroup = cameraConfigDAO.findCameraGroupById(cameraGroupId);
+        List<Zone> zones = cameraGroup.getZones();
+        List<Person> people = personDAO.listByInstantZone(zones, start, end);
+
         Map<String, List<Person>> trackedCandidates = new HashMap<>();
 
-        for (Person p : candidates) {
-            //            List<Person> target = null;
-            //            if(!trackedCandidates.containsKey(p.getPreviousUuid())){
-            //                target = new ArrayList<>();
-            //            }
-            //            else{
-            //                target = trackedCandidates.remove(p.getPreviousUuid());
-            //            }
-            //            target.add(p);
-            //
-            //            trackedCandidates.put(p.getUuid(),target);
-            int _id = p.getId();
-            String id = String.valueOf(_id);
-            //            if (useSegmentIndex)
-            //                id += "_" + p.getTrackSegmentIndex();
-            if (!trackedCandidates.containsKey(id)) {
-                trackedCandidates.put(id, new ArrayList<>());
-            }
-            trackedCandidates.get(id).add(p);
-        }
-        return new ArrayList<List<Person>>(trackedCandidates.values());
+        people.forEach(person -> {
+            String id = String.valueOf(person.getPersonId());
+            List<Person> tracks = trackedCandidates.computeIfAbsent(id, key -> new ArrayList<>());
+            tracks.add(person);
+        });
+
+        return new ArrayList<>(trackedCandidates.values());
     }
 
     public List<PersonCoordinate> getRealtimePhotosAll() {

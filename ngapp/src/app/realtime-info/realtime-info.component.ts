@@ -1,7 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {PersonImage} from '../resources/person-image';
 import {AnalyticsService} from '../services/analytics.service';
-import {ConfigService} from '../services/config.service';
 
 @Component({
   selector: 'app-realtime-info',
@@ -25,12 +24,10 @@ export class RealtimeInfoComponent implements OnInit {
   @Input()
   reIDOnClick = false;
 
-
   @Output()
   personClicked: EventEmitter<PersonImage> = new EventEmitter<PersonImage>();
 
-
-  constructor(private analyticsService: AnalyticsService, private configService: ConfigService) {
+  constructor(private analyticsService: AnalyticsService) {
   }
 
   ngOnInit() {

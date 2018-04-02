@@ -17,20 +17,47 @@
  * IN THE SOFTWARE.
  */
 
+import {Zone} from "./zone";
+import {GlobalMap} from "./global-map";
+
 export class PersonSnapshot {
   id: number;
   timestamp: number;
   x: number;
   y: number;
-  instanceZone: number;
-  persistantZone: number;
-  pastPersistantZone: number;
+  instanceZone: Zone;
+  persistantZone: Zone;
+  pastPersistantZone: Zone;
   standProbability: number;
   sitProbability: number;
   headDirectionX: number;
   headDirectionY: number;
   colour: string;
   standSitColour: string;
+  image: GlobalMap;
+
+  constructor(id: number, timestamp: number, x: number, y: number, instanceZone: Zone, persistantZone: Zone,
+              pastPersistantZone: Zone, standProbability: number, sitProbability: number, headDirectionX: number,
+              headDirectionY: number, image: GlobalMap) {
+    this.id = id;
+    this.timestamp = timestamp;
+    this.x = x;
+    this.y = y;
+    this.instanceZone = instanceZone;
+    this.persistantZone = persistantZone;
+    this.pastPersistantZone = pastPersistantZone;
+    this.standProbability = standProbability;
+    this.sitProbability = sitProbability;
+    this.headDirectionX = headDirectionX;
+    this.headDirectionY = headDirectionY;
+    this.image = image;
+  }
+
+  public static fromJSON(obj: any): PersonSnapshot {
+    return new PersonSnapshot(obj.id, obj.timestamp, obj.x, obj.y, Zone.fromJSON(obj.instanceZone),
+      Zone.fromJSON(obj.persistantZone), Zone.fromJSON(obj.pastPersistantZone), obj.standProbability, obj.sitProbability,
+      obj.headDirectionX, obj.headDirectionY, GlobalMap.fromJSON(obj.image, "jpg"));
+  }
 }
 
 
