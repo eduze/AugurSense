@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title text-center>
+      <img src="assets/imgs/augur.png" width="30px"/>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-card>
+    <ion-item>
+      <h1>{{notification.title}}</h1>
+      <p>{{notification.timestamp.getTime() | timeAgo}}</p>
+    </ion-item>
+
+    <ion-card-content>
+      {{notification.message}}
+    </ion-card-content>
+  </ion-card>
+</ion-content>

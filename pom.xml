@@ -183,6 +183,14 @@
                 <artifactId>libtensorflow_jni_gpu</artifactId>
                 <version>1.5.0</version>
             </dependency>
+
+            <!-- https://mvnrepository.com/artifact/com.google.firebase/firebase-admin -->
+            <dependency>
+                <groupId>com.google.firebase</groupId>
+                <artifactId>firebase-admin</artifactId>
+                <version>5.9.0</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

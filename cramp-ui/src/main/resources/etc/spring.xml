@@ -31,6 +31,7 @@
             <set>
                 <ref bean="db-handler"/>
                 <ref bean="analytics-service"/>
+                <ref bean="notification-processor"/>
             </set>
         </property>
         <property name="zonePersistentScanCount" value="5"/>
@@ -42,6 +43,14 @@
         <property name="useClock" value="false"/>
         <property name="intervalMs" value="1000"/>
         <property name="mapProcessor" ref="map-processor"/>
+    </bean>
+
+    <bean id="notification-processor" class="org.eduze.fyp.core.NotificationProcessor">
+        <property name="conditions">
+            <list>
+                <bean class="org.eduze.fyp.core.conditions.ZoneLimitCondition"/>
+            </list>
+        </property>
     </bean>
 
     <!-- ============================================================================ -->

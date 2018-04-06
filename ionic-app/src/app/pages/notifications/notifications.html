@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-navbar color="primary">
+    <ion-title text-center>
+      <img src="assets/imgs/augur.png" width="30px"/>
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-grid>
+    <ion-row>
+      <ion-col col-12 col-md-10 offset-md-1>
+        <ion-card *ngFor="let notification of notifications | async | reverse">
+
+          <ion-item>
+            <h1 (click)="viewNotification(notification)">{{notification.title}}</h1>
+            <p (click)="viewNotification(notification)">
+              {{ notification.timestamp.getTime() | timeAgo:currentTime}}
+            </p>
+
+            <button (click)="removeNotification(notification)" clear ion-button large icon-only item-end>
+              <ion-icon name="checkmark" item-end></ion-icon>
+            </button>
+          </ion-item>
+
+          <ion-card-content>
+            <p (click)="viewNotification(notification)">
+              {{notification.message}}
+            </p>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

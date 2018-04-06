@@ -110,6 +110,12 @@
         <!--<artifactId>libtensorflow_jni_gpu</artifactId>-->
         <!--</dependency>-->
 
+        <!-- Firebase -->
+        <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

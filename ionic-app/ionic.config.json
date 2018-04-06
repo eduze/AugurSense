@@ -1,0 +1,8 @@
+{
+  "name": "cramp-face",
+  "app_id": "",
+  "type": "ionic-angular",
+  "integrations": {
+    "cordova": {}
+  }
+}
