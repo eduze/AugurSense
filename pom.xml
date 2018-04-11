@@ -6,31 +6,20 @@
 
     <groupId>org.eduze.fyp</groupId>
     <artifactId>cramp</artifactId>
+    <name>Augur Sense</name>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
 
     <modules>
-        <module>cramp-web</module>
-        <module>cramp-core</module>
-        <module>cramp-ui</module>
-        <module>cramp-api</module>
+        <module>core</module>
+        <module>dist</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.eduze.fyp</groupId>
-                <artifactId>cramp-api</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eduze.fyp</groupId>
-                <artifactId>cramp-core</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eduze.fyp</groupId>
-                <artifactId>cramp-web</artifactId>
+                <artifactId>core</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
 
@@ -160,13 +149,6 @@
                 <version>${mysql.connector.version}</version>
             </dependency>
 
-            <!-- https://mvnrepository.com/artifact/org.hibernate.javax.persistence/hibernate-jpa-2.1-api -->
-            <dependency>
-                <groupId>org.hibernate.javax.persistence</groupId>
-                <artifactId>hibernate-jpa-2.1-api</artifactId>
-                <version>${hibernate.jpa.version}</version>
-            </dependency>
-
             <!-- TensorFlow -->
             <dependency>
                 <groupId>org.tensorflow</groupId>
@@ -184,7 +166,7 @@
                 <version>1.5.0</version>
             </dependency>
 
-            <!-- https://mvnrepository.com/artifact/com.google.firebase/firebase-admin -->
+            <!-- Firebase Admin -->
             <dependency>
                 <groupId>com.google.firebase</groupId>
                 <artifactId>firebase-admin</artifactId>
