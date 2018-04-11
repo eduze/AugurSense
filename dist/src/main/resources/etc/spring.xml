@@ -12,19 +12,19 @@
 
     <context:annotation-config/>
 
-    <bean id="analytics-engine" class="org.eduze.fyp.core.AnalyticsEngineImpl">
+    <bean id="analytics-engine" class="org.augur.sense.core.AnalyticsEngineImpl">
         <property name="configurationManager" ref="configuration-manager"/>
         <property name="mapProcessor" ref="map-processor"/>
         <property name="cameraCoordinator" ref="camera-coordinator"/>
     </bean>
 
-    <bean id="configuration-manager" class="org.eduze.fyp.core.ConfigurationManagerImpl">
+    <bean id="configuration-manager" class="org.augur.sense.core.ConfigurationManagerImpl">
         <property name="propertiesFile" value="etc/analytics.properties"/>
         <property name="zoneDAO" ref="zoneDAO"/>
         <property name="cameraConfigDAO" ref="cameraConfigDAO"/>
     </bean>
 
-    <bean id="map-processor" class="org.eduze.fyp.core.MapProcessorImpl">
+    <bean id="map-processor" class="org.augur.sense.core.MapProcessorImpl">
         <property name="configurationManager" ref="configuration-manager"/>
         <property name="cameraCoordinator" ref="camera-coordinator"/>
         <property name="mapListeners">
@@ -38,17 +38,17 @@
         <property name="zonePersistentThreshold" value="4"/>
     </bean>
 
-    <bean id="camera-coordinator" class="org.eduze.fyp.core.CentralizedCameraCoordinator">
+    <bean id="camera-coordinator" class="org.augur.sense.core.CentralizedCameraCoordinator">
         <constructor-arg ref="configuration-manager"/>
         <property name="useClock" value="false"/>
         <property name="intervalMs" value="1000"/>
         <property name="mapProcessor" ref="map-processor"/>
     </bean>
 
-    <bean id="notification-processor" class="org.eduze.fyp.core.NotificationProcessor">
+    <bean id="notification-processor" class="org.augur.sense.core.NotificationProcessor">
         <property name="conditions">
             <list>
-                <bean class="org.eduze.fyp.core.conditions.ZoneLimitCondition"/>
+                <bean class="org.augur.sense.core.conditions.ZoneLimitCondition"/>
             </list>
         </property>
     </bean>
@@ -56,7 +56,7 @@
     <!-- ============================================================================ -->
     <!--                    Database Related Configuration                            -->
     <!-- ============================================================================ -->
-    <bean id="db-handler" class="org.eduze.fyp.core.db.DBHandler">
+    <bean id="db-handler" class="org.augur.sense.core.db.DBHandler">
         <property name="personDAO" ref="personDAO"/>
         <property name="zoneDAO" ref="zoneDAO"/>
     </bean>
@@ -74,12 +74,12 @@
         <property name="dataSource" ref="dataSource"/>
         <property name="annotatedClasses">
             <list>
-                <value>org.eduze.fyp.api.model.Person</value>
-                <value>org.eduze.fyp.api.model.Zone</value>
-                <value>org.eduze.fyp.api.model.CaptureStamp</value>
-                <value>org.eduze.fyp.api.model.PointMapping</value>
-                <value>org.eduze.fyp.api.model.CameraConfig</value>
-                <value>org.eduze.fyp.api.model.CameraGroup</value>
+                <value>org.augur.sense.api.model.Person</value>
+                <value>org.augur.sense.api.model.Zone</value>
+                <value>org.augur.sense.api.model.CaptureStamp</value>
+                <value>org.augur.sense.api.model.PointMapping</value>
+                <value>org.augur.sense.api.model.CameraConfig</value>
+                <value>org.augur.sense.api.model.CameraGroup</value>
             </list>
         </property>
         <property name="hibernateProperties">
@@ -92,26 +92,26 @@
         </property>
     </bean>
 
-    <bean id="personDAO" class="org.eduze.fyp.core.db.dao.PersonDAOImpl">
+    <bean id="personDAO" class="org.augur.sense.core.db.dao.PersonDAOImpl">
         <property name="sessionFactory" ref="hibernateAnnotatedSessionFactory"/>
     </bean>
 
-    <bean id="captureStampDAO" class="org.eduze.fyp.core.db.dao.CaptureStampDAOImpl">
+    <bean id="captureStampDAO" class="org.augur.sense.core.db.dao.CaptureStampDAOImpl">
         <property name="sessionFactory" ref="hibernateAnnotatedSessionFactory"/>
     </bean>
 
-    <bean id="zoneDAO" class="org.eduze.fyp.core.db.dao.ZoneDAOImpl">
+    <bean id="zoneDAO" class="org.augur.sense.core.db.dao.ZoneDAOImpl">
         <property name="sessionFactory" ref="hibernateAnnotatedSessionFactory"/>
     </bean>
 
-    <bean id="cameraConfigDAO" class="org.eduze.fyp.core.db.dao.CameraConfigDAOImpl">
+    <bean id="cameraConfigDAO" class="org.augur.sense.core.db.dao.CameraConfigDAOImpl">
         <property name="sessionFactory" ref="hibernateAnnotatedSessionFactory"/>
     </bean>
 
     <!-- ============================================================================ -->
     <!--                    REST Server related configuration                         -->
     <!-- ============================================================================ -->
-    <bean id="rest-server" class="org.eduze.fyp.web.RestServer">
+    <bean id="rest-server" class="org.augur.sense.web.RestServer">
         <constructor-arg value="false"/>
         <property name="controllers">
             <set>
@@ -122,27 +122,27 @@
     </bean>
 
     <!-- Config Controller -->
-    <bean id="config-controller" class="org.eduze.fyp.web.controllers.ConfigController">
+    <bean id="config-controller" class="org.augur.sense.web.controllers.ConfigController">
         <property name="configService" ref="configService"/>
     </bean>
 
     <!-- Analytics Controller -->
-    <bean id="analytics-controller" class="org.eduze.fyp.web.controllers.AnalyticsController">
+    <bean id="analytics-controller" class="org.augur.sense.web.controllers.AnalyticsController">
         <constructor-arg ref="analytics-service"/>
         <property name="directionAnalyticsService" ref="direction-analytics-service"/>
     </bean>
 
-    <bean id="configService" class="org.eduze.fyp.web.services.ConfigService">
+    <bean id="configService" class="org.augur.sense.web.services.ConfigService">
         <property name="zoneDAO" ref="zoneDAO"/>
         <property name="cameraConfigDAO" ref="cameraConfigDAO"/>
     </bean>
 
-    <bean id="direction-analytics-service" class="org.eduze.fyp.web.services.DirectionAnalyticsService">
+    <bean id="direction-analytics-service" class="org.augur.sense.web.services.DirectionAnalyticsService">
         <constructor-arg ref="personDAO"/>
         <constructor-arg ref="captureStampDAO"/>
     </bean>
 
-    <bean id="analytics-service" class="org.eduze.fyp.web.services.AnalyticsService">
+    <bean id="analytics-service" class="org.augur.sense.web.services.AnalyticsService">
         <property name="personDAO" ref="personDAO"/>
         <property name="zoneDAO" ref="zoneDAO"/>
         <property name="cameraConfigDAO" ref="cameraConfigDAO"/>

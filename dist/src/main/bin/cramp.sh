@@ -33,8 +33,8 @@ $JAVA_HOME/bin/java \
         	-Ddb.user=${DB_USER} \
         	-Ddb.password=${DB_PASSWORD} \
         	-Ddb.jdbc.url=${DB_URL} \
-        	-Dorg.eduze.fyp.mode=${CRAMP_MODE} \
-        	org.eduze.fyp.ui.CHASS "$@"
+        	-Dorg.augur.sense.mode=${CRAMP_MODE} \
+        	org.augur.sense.ui.CHASS "$@"
 
 echo "FINISHED"
 sleep 1
