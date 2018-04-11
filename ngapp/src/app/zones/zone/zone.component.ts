@@ -60,11 +60,11 @@ export class ZoneComponent implements OnInit, OnDestroy {
     });
   }
 
-  private zoneClicked(index: number): void {
+  zoneClicked(index: number): void {
     this.selectedZoneIndex = index;
   }
 
-  private backgroundClicked() {
+  backgroundClicked() {
     this.selectedZoneIndex = -1;
     console.log('Unselected');
 

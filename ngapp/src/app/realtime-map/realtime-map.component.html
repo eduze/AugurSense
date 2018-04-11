@@ -55,9 +55,12 @@
 
   <mat-card-content>
     <div class="container-fluid">
-      <app-realtime-info [useRealtimeEndpoint]="true" [showAll]="showAllInInfo" [reIDOnClick]="!showAllInInfo"
-                         [refreshToggle]="updateToggle" [id]="selectedTrackIndex"
-                         (personClicked)="personClicked($event)"></app-realtime-info>
+      <app-realtime-info [useRealtimeEndpoint]="true"
+                         [showAll]="showAllInInfo"
+                         [reIDOnClick]="!showAllInInfo"
+                         [id]="selectedTrackIndex"
+                         (personClicked)="personClicked($event)">
+      </app-realtime-info>
     </div>
   </mat-card-content>
 </mat-card>

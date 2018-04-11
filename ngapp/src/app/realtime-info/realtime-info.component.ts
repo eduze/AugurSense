@@ -17,7 +17,7 @@ export class RealtimeInfoComponent implements OnInit {
   @Input()
   private useRealtimeEndpoint = true;
 
-  private personImages: PersonImage[] = null;
+  private _personImages: PersonImage[] = null;
   private _from = 0;
   private _to = 0;
 
@@ -89,7 +89,7 @@ export class RealtimeInfoComponent implements OnInit {
 
   @Input() set showAll(value: boolean) {
     this._showAll = value;
-    this.personImages = null;
+    this._personImages = null;
     this.refresh();
   }
 
@@ -104,7 +104,7 @@ export class RealtimeInfoComponent implements OnInit {
   @Input() set id(value: number) {
     this._id = value;
     console.log('id' + value.toString());
-    this.personImages = null;
+    this._personImages = null;
     this.refresh();
   }
 
@@ -114,7 +114,7 @@ export class RealtimeInfoComponent implements OnInit {
     if (this.useRealtimeEndpoint) {
       if (!this.showAll) {
         if (this.id < 0) {
-          this.personImages = null;
+          this._personImages = null;
           return;
         } else {
           this.analyticsService.getRealtimeInfo(this.id).then((pi) => {
@@ -122,7 +122,7 @@ export class RealtimeInfoComponent implements OnInit {
               return;
             }
 
-            this.personImages = pi;
+            this._personImages = pi;
             console.log(pi);
           });
         }
@@ -133,7 +133,7 @@ export class RealtimeInfoComponent implements OnInit {
             return;
           }
 
-          this.personImages = pi;
+          this._personImages = pi;
           console.log(pi);
         });
       }
@@ -141,7 +141,7 @@ export class RealtimeInfoComponent implements OnInit {
     } else {
       if (!this.showAll) {
         if (this.id < 0) {
-          this.personImages = null;
+          this._personImages = null;
           console.log('cleared');
           return;
         } else {
@@ -150,7 +150,7 @@ export class RealtimeInfoComponent implements OnInit {
               return;
             }
             console.log('fetched ' + this.id);
-            this.personImages = pi;
+            this._personImages = pi;
             console.log(pi);
           });
         }
@@ -161,18 +161,22 @@ export class RealtimeInfoComponent implements OnInit {
             return;
           }
 
-          this.personImages = pi;
+          this._personImages = pi;
           console.log(pi);
         });
       }
-
-
     }
-
-
   }
 
   getDateString(timestamp: number) {
     return new Date(timestamp).toLocaleString();
+  }
+
+  get personImages(): PersonImage[] {
+    return this._personImages;
+  }
+
+  set personImages(value: PersonImage[]) {
+    this._personImages = value;
   }
 }

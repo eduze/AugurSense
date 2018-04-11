@@ -13,7 +13,7 @@ export class TimeLineComponent implements OnInit {
   private _startTime: Date;
   private _endTime: Date;
   private _secondRange: number[] = [0, 60];
-  private personSnapshots: PersonSnapshot[][] = [];
+  private _personSnapshots: PersonSnapshot[][] = [];
 
   private _cameraGroup: CameraGroup;
   private _selectedTrackIndex = -1;
@@ -76,14 +76,14 @@ export class TimeLineComponent implements OnInit {
     return 'rgb(' + standCol.toString() + ', ' + sitCol.toString() + ',255 )';
   }
 
-  private get from(): number {
+  get from(): number {
     if (this.startTime == null || this.secondRange[0] == null) {
       return null;
     }
     return this.startTime.getTime() + this.secondRange[0] * 1000;
   }
 
-  private get to(): number {
+  get to(): number {
     if (this.endTime == null || this.secondRange[1] == null) {
       return null;
     }
@@ -117,7 +117,7 @@ export class TimeLineComponent implements OnInit {
 
     this.analyticsService.getTimeboundMap(this.cameraGroup.id, this.from, this.to)
       .then(ps => {
-        this.personSnapshots = ps;
+        this._personSnapshots = ps;
         console.log('Snaps', ps[0]);
         ps.forEach((item) => {
           item.reverse();
@@ -145,5 +145,13 @@ export class TimeLineComponent implements OnInit {
   set cameraGroup(value: CameraGroup) {
     this._cameraGroup = value;
     this.refresh();
+  }
+
+  get personSnapshots(): PersonSnapshot[][] {
+    return this._personSnapshots;
+  }
+
+  set personSnapshots(value: PersonSnapshot[][]) {
+    this._personSnapshots = value;
   }
 }

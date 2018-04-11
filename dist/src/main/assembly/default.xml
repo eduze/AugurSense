@@ -37,5 +37,19 @@
             </includes>
             <fileMode>755</fileMode>
         </fileSet>
+        <fileSet>
+            <directory>.</directory>
+            <outputDirectory>logs</outputDirectory>
+            <excludes>
+                <exclude>*/**</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>.</directory>
+            <outputDirectory>run</outputDirectory>
+            <excludes>
+                <exclude>*/**</exclude>
+            </excludes>
+        </fileSet>
     </fileSets>
 </assembly>

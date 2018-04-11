@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+		<File name="File" fileName="logs/cramp.log">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %C{1} - %msg%n"/>
+        </File>
+	</Appenders>
+    <Loggers>
+        <Logger name="org.eclipse.jetty" level="ERROR">
+            <AppenderRef ref="File"/>
+        </Logger>
+        <Logger name="org.hibernate" level="INFO">
+            <AppenderRef ref="File"/>
+        </Logger>
+        <Root level="DEBUG">
+            <AppenderRef ref="File"/>
+        </Root>
+    </Loggers>
+</Configuration>

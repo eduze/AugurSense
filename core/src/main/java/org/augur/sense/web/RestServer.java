@@ -28,9 +28,6 @@ import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.PathResource;
-import org.augur.sense.api.annotations.AutoStart;
-import org.augur.sense.api.annotations.Mode;
-import org.augur.sense.api.config.Startable;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.slf4j.Logger;
@@ -38,6 +35,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
@@ -98,16 +96,18 @@ public class RestServer implements Startable {
         ServletHolder servlet = new ServletHolder(servletContainer);
         context.addServlet(servlet, CONTEXT_PATH);
 
-//        DefaultServlet defaultServlet = new DefaultServlet();
-//        ServletHolder servletHolder = new ServletHolder("default", defaultServlet);
-//        URL path = this.getClass().getClassLoader().getResource("ng");
-//        try {
-//            servletHolder.setInitParameter("resourceBase", path.toURI().toASCIIString());
-//        } catch (URISyntaxException e) {
-//            logger.error("Error occurred", e);
-//        }
-//        servletHolder.setInitParameter("dirAllowed", "true");
-//        context.addServlet(servletHolder, "/");
+        /* Adding NG App to a default servlet */
+        DefaultServlet defaultServlet = new DefaultServlet();
+        ServletHolder servletHolder = new ServletHolder("default", defaultServlet);
+        servletHolder.setInitParameter("dirAllowed", "true");
+        URL path = this.getClass().getClassLoader().getResource("ng");
+        try {
+            servletHolder.setInitParameter("resourceBase", path.toURI().toASCIIString());
+            context.addServlet(servletHolder, "/");
+        } catch (Exception e) {
+            logger.error("Error occurred when starting web server", e);
+            //            throw new IllegalStateException("Unable to start web server", e);
+        }
 
         jettyServer.setHandler(context);
         logger.debug("Starting REST server");

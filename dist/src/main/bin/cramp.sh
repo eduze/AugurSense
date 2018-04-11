@@ -26,16 +26,45 @@ done
 
 LIB_DEPS="${CRAMP_HOME}/etc/log4j2.xml:${LIB_DEPS}"
 
-echo "Starting Accumulator ..."
+case "$1" in
+  start)
+        echo "Starting CRAMP ..."
 
-$JAVA_HOME/bin/java \
-        	-cp ${LIB_DEPS} \
-        	-Ddb.user=${DB_USER} \
-        	-Ddb.password=${DB_PASSWORD} \
-        	-Ddb.jdbc.url=${DB_URL} \
-        	-Dorg.augur.sense.mode=${CRAMP_MODE} \
-        	org.augur.sense.ui.CHASS "$@"
+        $JAVA_HOME/bin/java \
+                    -cp ${LIB_DEPS} \
+                    -Ddb.user=${DB_USER} \
+                    -Ddb.password=${DB_PASSWORD} \
+                    -Ddb.jdbc.url=${DB_URL} \
+                    -Dorg.augur.sense.mode=${CRAMP_MODE} \
+                    -Dlog4j.configurationFile=${CRAMP_HOME}/etc/log4j2.xml \
+                    org.augur.sense.ui.CHASS "$@" &
 
-echo "FINISHED"
+        echo $! > ${CRAMP_HOME}/run/cramp.pid
+        echo "STARTED"
+        sleep 2
+        ;;
+  stop)
+        echo -n "Shutting down CRAMP"
+        kill `cat ${CRAMP_HOME}/run/cramp.pid`
+        rm -f ${CRAMP_HOME}/run/cramp.pid
+        echo "OK"
+        ;;
+  restart)
+        $0 stop
+        $0 start
+        ;;
+  status)
+        if [ -e ${CRAMP_HOME}/run/cramp.pid ] ; then
+           pid=`cat ${CRAMP_HOME}/run/cramp.pid`
+           echo "CRAMP is running with pid: $pid"
+        else
+           echo "CRAMP is not running"
+        fi
+        ;;
+  *)
+        echo "Usage: $0 {start|stop|restart|status}"
+        exit 1
+esac
+
 sleep 1
 exit 0

@@ -134,11 +134,11 @@ export class HeatmapComponent implements OnInit, OnDestroy {
     this.generateHeatMap();
   }
 
-  private get from(): number {
+  get from(): number {
     return this.secondRange[0];
   }
 
-  private get to(): number {
+  get to(): number {
     return this.secondRange[1];
   }
 

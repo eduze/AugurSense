@@ -48,7 +48,7 @@ export class RealtimeMapComponent implements OnInit, OnDestroy {
     console.log('Person clicked' + person.id.toString());
   }
 
-  private backgroundClicked(): void {
+  backgroundClicked(): void {
     this.selectedTrackIndex = -1;
     this.showAllInInfo = true;
   }
