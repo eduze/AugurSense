@@ -49,7 +49,26 @@ point mapping configuration. You can configure the mapping as shown below.
 
 ![Point Mapping Configuration](point_mapping.png)
 
+### Examples
+
+#### Real-time Processing
+Python client processing two CCTV videos (of Bandaranayake International Airport, Sri Lanka)
+in parallel. All the detected people are mapped to the ground map and tracked. We
+are capable of tracing across cameras as well.
+
+![Real-time Processing](real-time_processing.png)
+
+### Viewing Tracked Person Timelines
+
+Under *Time Line* tab, the paths followed by each individual is shown. You
+can click on each path to see pictures of the person corresponding to the 
+selected path.
+
+(Note: this example timeline looks confusing because of the crowded test videos used)
+![Time Line](timeline.png)
+
 ## Contributors
+
 * Madhawa Vidanapathirana - madhawa.13@cse.mrt.ac.lk
 * Imesha Sudasingha - imesha.13@cse.mrt.ac.lk
 * Pasindu Kanchana - pasindukanchana.13@cse.mrt.ac.lk 

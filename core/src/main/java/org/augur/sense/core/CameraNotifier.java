@@ -107,13 +107,14 @@ public class CameraNotifier implements FutureCallback<HttpResponse> {
 
     @Override
     public void completed(HttpResponse httpResponse) {
+        String entity = null;
         try {
-            String entity = HttpUtils.readEntity(httpResponse.getEntity());
+            entity = HttpUtils.readEntity(httpResponse.getEntity());
             LocalMap receivedMap = HttpUtils.mapEntity(entity, LocalMap.class);
             cameraCoordinator.addLocalMap(receivedMap);
             setState(State.IDLE);
         } catch (IOException e) {
-            logger.error("Error occurred when reading entity", e);
+            logger.error("Error occurred when reading entity: {}", entity, e);
             setState(State.IDLE);
         }
     }
