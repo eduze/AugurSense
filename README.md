@@ -58,7 +58,7 @@ are capable of tracing across cameras as well.
 
 ![Real-time Processing](real-time_processing.png)
 
-### Viewing Tracked Person Timelines
+#### Viewing Tracked Person Timelines
 
 Under *Time Line* tab, the paths followed by each individual is shown. You
 can click on each path to see pictures of the person corresponding to the 
