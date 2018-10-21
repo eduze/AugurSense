@@ -153,17 +153,17 @@
             <dependency>
                 <groupId>org.tensorflow</groupId>
                 <artifactId>libtensorflow</artifactId>
-                <version>1.5.0</version>
+                <version>${tensorflow.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.tensorflow</groupId>
                 <artifactId>libtensorflow_jni</artifactId>
-                <version>1.5.0</version>
+                <version>${tensorflow.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.tensorflow</groupId>
                 <artifactId>libtensorflow_jni_gpu</artifactId>
-                <version>1.5.0</version>
+                <version>${tensorflow.version}</version>
             </dependency>
 
             <!-- Firebase Admin -->
@@ -194,6 +194,7 @@
         <apache.commons.math3.version>3.6.1</apache.commons.math3.version>
         <hibernate.version>5.2.10.Final</hibernate.version>
         <hibernate.jpa.version>1.0.0.Final</hibernate.jpa.version>
+        <tensorflow.version>1.11.0</tensorflow.version>
     </properties>
 
 </project>

@@ -32,7 +32,7 @@ import {CameraGroup} from '../../resources/camera-group';
 })
 export class PointMappingComponent implements OnInit {
 
-  cameraConfigs: CameraConfig[];
+  cameraConfigs: CameraConfig[] = [];
   cameraGroups: CameraGroup[];
   cameraGroup: CameraGroup;
   message: Message;
@@ -73,6 +73,8 @@ export class PointMappingComponent implements OnInit {
           this.message = new Message('Camera group added successfully', Message.SUCCESS);
           this.refresh();
         });
+    } else {
+      this.message = new Message('Please upload camera group map image and type a name for camera group', Message.ERROR);
     }
   }
 

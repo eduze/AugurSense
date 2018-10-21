@@ -54,6 +54,8 @@ public class RestServer implements Startable {
     private static final String JETTY_CONFIG = "jetty.xml";
     private static final String CONTEXT_PATH = "/api/v1/*";
 
+    private static final int SERVER_PORT = 8000;
+
     private Set<Object> controllers = new HashSet<>();
     private Server jettyServer;
     private Server webServer;
@@ -73,7 +75,7 @@ public class RestServer implements Startable {
     }
 
     private void startRestServer() {
-        this.jettyServer = new Server(8000);
+        this.jettyServer = new Server(SERVER_PORT);
 
         ResourceConfig config = new ResourceConfig();
         controllers.forEach(config::register);
@@ -118,7 +120,7 @@ public class RestServer implements Startable {
             logger.error("Error occurred when starting REST server due to : {}", e.getMessage());
             throw new IllegalStateException("Unable to start REST server", e);
         }
-        logger.info("REST Server started successfully ...");
+        logger.info("REST Server started successfully on port {}...", SERVER_PORT);
     }
 
     /**

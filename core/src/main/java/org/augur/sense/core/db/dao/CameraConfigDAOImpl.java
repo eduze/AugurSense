@@ -28,6 +28,7 @@ import org.augur.sense.api.model.CameraConfig;
 import org.augur.sense.api.model.CameraGroup;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,14 +90,14 @@ public class CameraConfigDAOImpl extends AbstractDAOImpl implements CameraConfig
     @Override
     public CameraConfig findByCameraIpAndPort(String ipAndPort) {
         Session session = this.sessionFactory.getCurrentSession();
-        session.beginTransaction();
+        Transaction transaction = session.getTransaction().isActive() ? session.getTransaction() : session.beginTransaction();
         CameraConfig cameraConfig;
         try {
             cameraConfig = session.createQuery("from CameraConfig where ipAndPort=:ipAndPort", CameraConfig.class)
                     .setParameter("ipAndPort", ipAndPort).uniqueResult();
-            session.getTransaction().commit();
+            transaction.commit();
         } catch (Exception e) {
-            session.getTransaction().rollback();
+            transaction.rollback();
             logger.error("Error finding camera config by ip: {}", ipAndPort, e);
             throw new IllegalStateException("Error executing query", e);
         }
