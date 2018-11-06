@@ -8,7 +8,7 @@ We are developing a system for generating realtime analytics on movements of peo
   - Speed Bound Maps
 * Per Person Level Analytics using Short Term Re-Identification and Tracking.
 
-_CRAMP_SENSE_ is the Camera Module of system which is responsible for
+_CRAMP_SENSE_(in _sense/_ directory) is the Camera Module of system which is responsible for
 * Detecting New Persons
 * Mapping of detected persons to world space. (Ground Place Mapping)
 * Tracking of Persons (for purpose of detecting new persons)
@@ -17,15 +17,16 @@ _CRAMP_SENSE_ is the Camera Module of system which is responsible for
 
 ## Getting Started
 
-This consists of 3 main components.
+### Prerequisites
+- The current version of AugurSense strictly depends on [OpenPosePersonDetector](https://github.com/eduze/OpenPosePersonDetector). Please follow the installation guide provided in the README. In short, you will require to install OpenCV, OpenPose and [pyboostcvconverter](https://github.com/Algomorph/pyboostcvconverter).
+- Furthermore, inside maven project building we are using npm commands to build the Angular CLI project for Dashboard. Therefore, please install the [Angular CLI](https://cli.angular.io/) beforehand.
+- OpenCV Python (This is covered in OpenPose installation docs)
+- Once that is done, clone this repository.
 
-1. Sense (`/sense` directory) - Python components for processing video feeds.
-
-2. Angular Web App (`/ngapp` directory) - An angular web application for viewing
-analytics in real time.
-
-3. Java Server (`dist` and `core` directories) - Includes the REST API and database 
-connection logic.
+### Building Analytics Engine
+- Run `mvn clean install -DskipTests` in order to build the project.
+- Copy the `libOpenPersonDetectorAPI.so` file created when building OpenPosePersonDetector to the sense/ directory.
+- Install MySQL and create a new MySQL database (say `analytics_db`)
 
 ### Running in development mode
 
@@ -33,7 +34,7 @@ connection logic.
 properties need to be added to the *run configuration*. 
    * Use `-D` as shown when passing as VM options.
     ```
-    -Ddb.jdbc.url="jdbc:mysql://localhost:3306/analytics?createDatabaseIfNotExist=true"
+    -Ddb.jdbc.url="jdbc:mysql://localhost:3306/analytics_db?createDatabaseIfNotExist=true"
     -Ddb.user="root"
     -Ddb.password="root"
     -Dorg.augur.sense.mode="ACTIVE"
@@ -69,7 +70,7 @@ selected path.
 
 ## Contributors
 
-* Madhawa Vidanapathirana - madhawa.13@cse.mrt.ac.lk
-* Imesha Sudasingha - imesha.13@cse.mrt.ac.lk
-* Pasindu Kanchana - pasindukanchana.13@cse.mrt.ac.lk 
-* Jayan Vidanapathirana - jayancv.13@cse.mrt.ac.lk
+* Madhawa Vidanapathirana - madhawa.13@cse.mrt.ac.lk ([@madhawav](https://github.com/madhawav))
+* Imesha Sudasingha - imesha.13@cse.mrt.ac.lk ([@IMS94](https://github.com/IMS94))
+* Pasindu Kanchana - pasindukanchana.13@cse.mrt.ac.lk
+* Jayan Vidanapathirana - jayancv.13@cse.mrt.ac.lk ([@jayancv](https://github.com/Jayancv))
