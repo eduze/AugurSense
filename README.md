@@ -65,8 +65,8 @@ Under *Time Line* tab, the paths followed by each individual is shown. You
 can click on each path to see pictures of the person corresponding to the 
 selected path.
 
-(Note: this example timeline looks confusing because of the crowded test videos used)
-![Time Line](timeline.png)
+(Note: this example timeline is taken from a test ran on PETS 2009 dataset)
+![Time Line](global_map.png)
 
 ## Contributors
 
