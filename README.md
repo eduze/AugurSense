@@ -53,8 +53,7 @@ point mapping configuration. You can configure the mapping as shown below.
 ### Examples
 
 #### Real-time Processing
-Python client processing two CCTV videos (of Bandaranayake International Airport, Sri Lanka)
-in parallel. All the detected people are mapped to the ground map and tracked. We
+Python client processing two CCTV videos in parallel. All the detected people are mapped to the ground map and tracked. We
 are capable of tracing across cameras as well.
 
 ![Real-time Processing](real-time_processing.png)
