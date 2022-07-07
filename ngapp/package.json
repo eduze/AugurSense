@@ -26,7 +26,7 @@
     "@angular/router": "^5.2.11",
     "chart.js": "^2.7.3",
     "core-js": "^2.5.7",
-    "moment": "^2.22.2",
+    "moment": "^2.29.4",
     "ng2-charts": "^1.6.0",
     "nice-color-palettes": "^2.0.0",
     "primeng": "^5.2.7",
